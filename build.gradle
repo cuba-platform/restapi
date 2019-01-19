@@ -1,0 +1,227 @@
+
+buildscript {
+    ext.cubaVersion = '7.0-SNAPSHOT'
+    repositories {
+        maven {
+            url 'https://repo.cuba-platform.com/content/groups/work'
+            credentials {
+                username(rootProject.hasProperty('repoUser') ? rootProject['repoUser'] : 'cuba')
+                password(rootProject.hasProperty('repoPass') ? rootProject['repoPass'] : 'cuba123')
+            }
+        }
+        
+    }
+    dependencies {
+        classpath "com.haulmont.gradle:cuba-plugin:$cubaVersion"
+    }
+}
+
+def modulePrefix = 'restv2'
+
+def globalModule = project(":${modulePrefix}-global")
+def coreModule = project(":${modulePrefix}-core")
+def webModule = project(":${modulePrefix}-web")
+def restApiModule = project(":${modulePrefix}-rest-api")
+
+def servletApi = 'javax.servlet:javax.servlet-api:3.1.0'
+
+apply(plugin: 'cuba')
+
+cuba {
+    artifact {
+        group = 'com.haulmont.addon.restv2'
+        version = '0.1'
+        isSnapshot = true
+    }
+    tomcat {
+        dir = "$project.rootDir/deploy/tomcat"
+    }
+}
+
+dependencies {
+    appComponent("com.haulmont.cuba:cuba-global:$cubaVersion")
+}
+
+def hsql = 'org.hsqldb:hsqldb:2.2.9'
+
+configure([globalModule, coreModule, webModule, restApiModule]) {
+    apply(plugin: 'java')
+    apply(plugin: 'maven')
+    apply(plugin: 'cuba')
+
+    dependencies {
+        testCompile('junit:junit:4.12')
+    }
+
+    task sourceJar(type: Jar) {
+        from file('src')
+        classifier = 'sources'
+    }
+
+    artifacts {
+        archives sourceJar
+    }
+}
+
+configure(globalModule) {
+    entitiesEnhancing {
+        main {
+            enabled = true
+        }
+    }
+}
+
+configure(coreModule) {
+
+    configurations {
+        jdbc
+        dbscripts
+    }
+
+    dependencies {
+        compile(globalModule)
+        compileOnly(servletApi)
+        jdbc(hsql)
+        testRuntime(hsql)
+    }
+
+    task cleanConf(description: 'Cleans up conf directory') {
+        doLast {
+            def dir = new File(cuba.tomcat.dir, "/conf/${modulePrefix}-core")
+            if (dir.isDirectory()) {
+                ant.delete(includeemptydirs: true) {
+                    fileset(dir: dir, includes: '**/*', excludes: 'local.app.properties')
+                }
+            }
+        }
+    }
+
+    task deploy(dependsOn: [assemble, cleanConf], type: CubaDeployment) {
+        appName = "${modulePrefix}-core"
+        appJars(modulePrefix + '-global', modulePrefix + '-core')
+    }
+
+    task createDb(dependsOn: assembleDbScripts, description: 'Creates local database', type: CubaDbCreation) {
+        dbms = 'hsql'
+        host = 'localhost:9010'
+        dbName = 'restv2'
+        dbUser = 'sa'
+        dbPassword = ''
+    }
+
+    task updateDb(dependsOn: assembleDbScripts, description: 'Updates local database', type: CubaDbUpdate) {
+        dbms = 'hsql'
+        host = 'localhost:9010'
+        dbName = 'restv2'
+        dbUser = 'sa'
+        dbPassword = ''
+    }
+}
+
+configure(webModule) {
+    configurations {
+        webcontent
+    }
+
+    dependencies {
+        compileOnly(servletApi)
+        compile(globalModule)
+        compile(restApiModule)
+    }
+
+    task webArchive(type: Zip) {
+        from file("$buildDir/web")
+        from file('web')
+        classifier = 'web'
+    }
+
+    artifacts {
+        archives webArchive
+    }
+
+    task deployConf(type: Copy) {
+        from file('src')
+        include "com/haulmont/addon/restv2/**"
+        into "$cuba.tomcat.dir/conf/${modulePrefix}"
+    }
+
+    task clearMessagesCache(type: CubaClearMessagesCache) {
+        appName = "${modulePrefix}"
+    }
+    deployConf.dependsOn clearMessagesCache
+
+    task cleanConf(description: 'Cleans up conf directory') {
+        doLast {
+            def dir = new File(cuba.tomcat.dir, "/conf/${modulePrefix}")
+            if (dir.isDirectory()) {
+                ant.delete(includeemptydirs: true) {
+                    fileset(dir: dir, includes: '**/*', excludes: 'local.app.properties')
+                }
+            }
+        }
+    }
+
+    task deploy(dependsOn: [assemble, cleanConf], type: CubaDeployment) {
+        appName = "${modulePrefix}"
+        appJars(modulePrefix + '-global', modulePrefix + '-web', modulePrefix + '-rest-api')
+    }
+}
+
+
+configure(restApiModule) {
+
+    sourceSets {
+        main {
+            java {
+                srcDirs = ['src']
+            }
+        }
+    }
+    
+    dependencies {
+        compile(globalModule)
+
+        compile('commons-fileupload:commons-fileupload') // required for Spring multipart resolver
+
+        compile('org.springframework:spring-webmvc')
+        compile('org.springframework:spring-context-support')
+
+        compile('org.springframework.ldap:spring-ldap-core') {
+            exclude(group: 'org.slf4j', module: 'jcl-over-slf4j') // removed because it defines its own Log4j LogFactory via JDK services mechanism
+        }
+
+        compile('org.json:json')
+
+        compile('com.fasterxml.jackson.core:jackson-databind')
+        compile('com.fasterxml.jackson.core:jackson-annotations')
+        compile('com.fasterxml.jackson.dataformat:jackson-dataformat-yaml')
+
+        compile('org.springframework.security:spring-security-core')
+        compile('org.springframework.security:spring-security-web')
+        compile('org.springframework.security:spring-security-config')
+        compile('org.springframework.security.oauth:spring-security-oauth2')
+
+        compile('io.swagger:swagger-models')
+        compileOnly(servletApi)
+        
+    }
+}
+
+task undeploy(type: Delete, dependsOn: ":${modulePrefix}-web:cleanConf") {
+    delete("$cuba.tomcat.dir/shared")
+    delete("$cuba.tomcat.dir/webapps/${modulePrefix}-core")
+    delete("$cuba.tomcat.dir/webapps/${modulePrefix}")
+}
+
+task restart(dependsOn: ['stop', ":${modulePrefix}-core:deploy", ":${modulePrefix}-web:deploy"], description: 'Redeploys applications and restarts local Tomcat') {
+    doLast {
+        ant.waitfor(maxwait: 6, maxwaitunit: 'second', checkevery: 2, checkeveryunit: 'second') {
+            not {
+                socket(server: 'localhost', port: '8787')
+            }
+        }
+        start.execute()
+    }
+}
+
+

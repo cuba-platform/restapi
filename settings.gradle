@@ -1,0 +1,9 @@
+rootProject.name = 'rest-addon'
+def modulePrefix = 'restv2'
+include(":${modulePrefix}-global", ":${modulePrefix}-core", ":${modulePrefix}-web", ":${modulePrefix}-rest-api")
+project(":${modulePrefix}-global").projectDir = new File(settingsDir, 'modules/global')
+project(":${modulePrefix}-core").projectDir = new File(settingsDir, 'modules/core')
+project(":${modulePrefix}-web").projectDir = new File(settingsDir, 'modules/web')
+project(":${modulePrefix}-rest-api").projectDir = new File(settingsDir, 'modules/rest-api')
+
+
