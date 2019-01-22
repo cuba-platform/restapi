@@ -3,7 +3,7 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
          version="3.0">
-    
+
     <!-- Application properties config files -->
     <context-param>
         <param-name>appPropertiesConfig</param-name>
@@ -29,28 +29,12 @@
         <servlet-class>com.haulmont.cuba.web.sys.CubaApplicationServlet</servlet-class>
         <async-supported>true</async-supported>
     </servlet>
-    <servlet>
-        <servlet-name>dispatcher</servlet-name>
-        <servlet-class>com.haulmont.cuba.web.sys.CubaDispatcherServlet</servlet-class>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
-    <servlet>
-        <servlet-name>rest_api</servlet-name>
-        <servlet-class>com.haulmont.addon.restv2.sys.CubaRestApiServlet</servlet-class>
-        <load-on-startup>2</load-on-startup>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>dispatcher</servlet-name>
-        <url-pattern>/dispatch/*</url-pattern>
-    </servlet-mapping>
+
     <servlet-mapping>
         <servlet-name>app_servlet</servlet-name>
         <url-pattern>/*</url-pattern>
     </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>rest_api</servlet-name>
-        <url-pattern>/rest/*</url-pattern>
-    </servlet-mapping>
+
 
     <filter>
         <filter-name>cuba_filter</filter-name>
@@ -62,20 +46,4 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
-    <filter>
-        <filter-name>restSpringSecurityFilterChain</filter-name>
-        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
-        <init-param>
-            <param-name>contextAttribute</param-name>
-            <param-value>org.springframework.web.servlet.FrameworkServlet.CONTEXT.rest_api</param-value>
-        </init-param>
-        <init-param>
-            <param-name>targetBeanName</param-name>
-            <param-value>springSecurityFilterChain</param-value>
-        </init-param>
-    </filter>
-    <filter-mapping>
-        <filter-name>restSpringSecurityFilterChain</filter-name>
-        <url-pattern>/rest/*</url-pattern>
-    </filter-mapping>
 </web-app>

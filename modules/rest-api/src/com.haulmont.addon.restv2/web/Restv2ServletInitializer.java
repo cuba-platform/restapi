@@ -9,9 +9,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
+import org.springframework.web.filter.DelegatingFilterProxy;
+import org.springframework.web.servlet.FrameworkServlet;
 
 import javax.inject.Inject;
 import javax.servlet.*;
+import java.util.EnumSet;
 
 @Component(Restv2ServletInitializer.NAME)
 public class Restv2ServletInitializer {
@@ -20,8 +23,8 @@ public class Restv2ServletInitializer {
 
     public static final String NAME = "restv2_Restv2ServletInitializer";
 
-    protected static final String SERVLET_NAME = "restv2";
-    protected static final String SERVLET_MAPPING = "/restv2/*";
+    protected static final String SERVLET_NAME = "rest_api";
+    protected static final String SERVLET_MAPPING = "/rest/*";
 
     @Inject
     protected ServletRegistrationManager servletRegistrationManager;
@@ -41,13 +44,13 @@ public class Restv2ServletInitializer {
 
         servletCtx.addServlet(SERVLET_NAME, servlet).addMapping(SERVLET_MAPPING);
 
-//        DelegatingFilterProxy jpaWebApiSpringSecurityFilterChain = new DelegatingFilterProxy();
-//        jpaWebApiSpringSecurityFilterChain.setContextAttribute(FrameworkServlet.SERVLET_CONTEXT_PREFIX + SERVLET_NAME);
-//        jpaWebApiSpringSecurityFilterChain.setTargetBeanName("springSecurityFilterChain");
-//
-//        FilterRegistration.Dynamic springSecurityFilterChainReg =
-//                servletCtx.addFilter("jpaWebApiSpringSecurityFilterChain", jpaWebApiSpringSecurityFilterChain);
-//
-//        springSecurityFilterChainReg.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, SERVLET_MAPPING);
+        DelegatingFilterProxy springSecurityFilterChain = new DelegatingFilterProxy();
+        springSecurityFilterChain.setContextAttribute(FrameworkServlet.SERVLET_CONTEXT_PREFIX + SERVLET_NAME);
+        springSecurityFilterChain.setTargetBeanName("springSecurityFilterChain");
+
+        FilterRegistration.Dynamic springSecurityFilterChainReg =
+                servletCtx.addFilter("restSpringSecurityFilterChain", springSecurityFilterChain);
+
+        springSecurityFilterChainReg.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, SERVLET_MAPPING);
     }
 }
