@@ -16,8 +16,8 @@
 
 package com.haulmont.addon.restv2.service;
 
-import com.haulmont.addon.restv2.data.EnumInfo;
-import com.haulmont.addon.restv2.data.EnumValueInfo;
+import com.haulmont.addon.restv2.service.filter.data.EnumInfo;
+import com.haulmont.addon.restv2.service.filter.data.EnumValueInfo;
 import com.haulmont.addon.restv2.exception.RestAPIException;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.cuba.core.global.Messages;

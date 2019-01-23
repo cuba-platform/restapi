@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package com.haulmont.addon.restv2.data;
+package com.haulmont.addon.restv2.service.filter.data;
 
-public class EnumValueInfo {
+import java.util.List;
+
+public class EnumInfo {
     public String name;
-    public Object id;
-    public String caption;
+    public List<EnumValueInfo> values;
 
-    public EnumValueInfo(String name, Object id, String caption) {
+    public EnumInfo(String name, List<EnumValueInfo> values) {
         this.name = name;
-        this.id = id;
-        this.caption = caption;
+        this.values = values;
     }
 }

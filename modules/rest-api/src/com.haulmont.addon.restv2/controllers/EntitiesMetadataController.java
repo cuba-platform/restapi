@@ -16,7 +16,7 @@
 
 package com.haulmont.addon.restv2.controllers;
 
-import com.haulmont.addon.restv2.data.MetaClassInfo;
+import com.haulmont.addon.restv2.service.filter.data.MetaClassInfo;
 import com.haulmont.addon.restv2.service.EntitiesMetadataControllerManager;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;

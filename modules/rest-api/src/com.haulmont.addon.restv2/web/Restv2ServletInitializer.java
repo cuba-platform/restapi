@@ -31,7 +31,6 @@ public class Restv2ServletInitializer {
 
     @EventListener
     protected void init(ServletContextInitializedEvent event) {
-        log.debug("init - start");
         ApplicationContext appCtx = event.getApplicationContext();
         Servlet servlet = servletRegistrationManager.createServlet(appCtx, Restv2DispatcherServlet.class.getName());
 

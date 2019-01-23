@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.haulmont.addon.restv2.data;
+package com.haulmont.addon.restv2.service.filter.data;
 
 public class CreatedEntityInfo {
     protected Object id;

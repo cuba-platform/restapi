@@ -18,7 +18,7 @@ package com.haulmont.addon.restv2.service;
 
 import com.google.common.base.Joiner;
 import com.haulmont.addon.restv2.common.RestControllerUtils;
-import com.haulmont.addon.restv2.data.MetaClassInfo;
+import com.haulmont.addon.restv2.service.filter.data.MetaClassInfo;
 import com.haulmont.addon.restv2.exception.RestAPIException;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.app.serialization.ViewSerializationAPI;

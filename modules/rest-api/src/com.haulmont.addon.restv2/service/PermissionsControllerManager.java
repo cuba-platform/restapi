@@ -16,7 +16,7 @@
 
 package com.haulmont.addon.restv2.service;
 
-import com.haulmont.addon.restv2.data.PermissionInfo;
+import com.haulmont.addon.restv2.service.filter.data.PermissionInfo;
 import com.haulmont.addon.restv2.exception.RestAPIException;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.security.entity.PermissionType;

@@ -16,7 +16,7 @@
 
 package com.haulmont.addon.restv2.service;
 
-import com.haulmont.addon.restv2.data.UserInfo;
+import com.haulmont.addon.restv2.service.filter.data.UserInfo;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.security.entity.User;
 import org.springframework.stereotype.Component;

@@ -21,7 +21,7 @@ import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.remoting.discovery.ServerSelector;
-import com.haulmont.addon.restv2.data.FileInfo;
+import com.haulmont.addon.restv2.service.filter.data.FileInfo;
 import com.haulmont.addon.restv2.exception.RestAPIException;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;

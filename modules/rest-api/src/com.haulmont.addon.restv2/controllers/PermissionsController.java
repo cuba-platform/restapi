@@ -16,7 +16,7 @@
 
 package com.haulmont.addon.restv2.controllers;
 
-import com.haulmont.addon.restv2.data.PermissionInfo;
+import com.haulmont.addon.restv2.service.filter.data.PermissionInfo;
 import com.haulmont.addon.restv2.service.PermissionsControllerManager;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
