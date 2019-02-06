@@ -18,6 +18,7 @@ buildscript {
     }
     dependencies {
         classpath "com.haulmont.gradle:cuba-plugin:$cubaVersion"
+        classpath "com.haulmont.gradle:addon-gradle-plugin:1.0.3"
     }
 }
 
@@ -32,6 +33,7 @@ def portalModule = project(":${modulePrefix}-portal")
 def servletApi = 'javax.servlet:javax.servlet-api:3.1.0'
 
 apply(plugin: 'cuba')
+apply(plugin: 'addon-gradle-plugin')
 
 cuba {
     artifact {
@@ -54,6 +56,7 @@ configure([globalModule, coreModule, webModule, restApiModule, portalModule]) {
     apply(plugin: 'java')
     apply(plugin: 'maven')
     apply(plugin: 'cuba')
+    apply(plugin: 'addon-gradle-plugin')
 
     dependencies {
         testCompile('junit:junit:4.12')
@@ -117,7 +120,7 @@ configure(coreModule) {
 
     task createDb(dependsOn: assembleDbScripts, description: 'Creates local database', type: CubaDbCreation) {
         dbms = 'hsql'
-        host = 'localhost:9010'
+        host = 'localhost'
         dbName = 'restv2'
         dbUser = 'sa'
         dbPassword = ''
@@ -125,7 +128,7 @@ configure(coreModule) {
 
     task updateDb(dependsOn: assembleDbScripts, description: 'Updates local database', type: CubaDbUpdate) {
         dbms = 'hsql'
-        host = 'localhost:9010'
+        host = 'localhost'
         dbName = 'restv2'
         dbUser = 'sa'
         dbPassword = ''
