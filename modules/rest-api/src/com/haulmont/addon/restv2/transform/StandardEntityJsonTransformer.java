@@ -16,6 +16,7 @@
 
 package com.haulmont.addon.restv2.transform;
 
+import com.haulmont.addon.restv2.config.RestJsonTransformations;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;

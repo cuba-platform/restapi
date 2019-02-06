@@ -30,6 +30,16 @@
         <async-supported>true</async-supported>
     </servlet>
 
+    <servlet>
+        <servlet-name>dispatcher</servlet-name>
+        <servlet-class>com.haulmont.cuba.web.sys.CubaDispatcherServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>dispatcher</servlet-name>
+        <url-pattern>/dispatch/*</url-pattern>
+    </servlet-mapping>
+
     <servlet-mapping>
         <servlet-name>app_servlet</servlet-name>
         <url-pattern>/*</url-pattern>

@@ -39,14 +39,14 @@
     </mvc:interceptors>
 
     <!-- According to the spec the token endpoint should be secured by the basic authentication -->
-    <security:http pattern="/rest/v2/oauth/**"
+    <security:http pattern="/restv2/v2/oauth/**"
                    create-session="stateless"
                    authentication-manager-ref="clientAuthenticationManager"
                    xmlns="http://www.springframework.org/schema/security">
         <intercept-url pattern="/**" access="isAuthenticated()"/>
         <http-basic entry-point-ref="clientAuthenticationEntryPoint"/>
         <csrf disabled="true"/>
-        <cors configuration-source-ref="cuba_RestCorsSource"/>
+        <cors configuration-source-ref="restv2_RestCorsSource"/>
     </security:http>
 
     <bean id="clientAuthenticationEntryPoint"
@@ -109,7 +109,7 @@
         </property>
     </bean>
 
-    <bean id="cuba_ExternalOAuthTokenGranter" class="com.haulmont.addon.restv2.auth.ExternalOAuthTokenGranter">
+    <bean id="restv2_ExternalOAuthTokenGranter" class="com.haulmont.addon.restv2.auth.ExternalOAuthTokenGranter">
         <constructor-arg name="tokenServices" ref="tokenServices"/>
         <constructor-arg name="clientDetailsService" ref="clientDetailsService"/>
         <constructor-arg name="requestFactory" ref="oauthAuthorizationRequestManager"/>
@@ -122,62 +122,62 @@
     <oauth2:resource-server id="resourceFilter" token-services-ref="tokenServices"/>
 
     <!-- Documentation endpoint should be allowed for anyone and support cross-domain requests -->
-    <security:http pattern="/rest/v2/docs/**"
+    <security:http pattern="/restv2/v2/docs/**"
                    create-session="stateless"
                    entry-point-ref="oauthAuthenticationEntryPoint"
                    xmlns="http://www.springframework.org/schema/security">
         <csrf disabled="true"/>
-        <cors configuration-source-ref="cuba_RestCorsSource"/>
+        <cors configuration-source-ref="restv2_RestCorsSource"/>
     </security:http>
 
     <!-- LDAP auth -->
-    <security:http pattern="/rest/v2/ldap/**"
+    <security:http pattern="/restv2/v2/ldap/**"
                    create-session="stateless"
                    authentication-manager-ref="clientAuthenticationManager"
                    xmlns="http://www.springframework.org/schema/security">
         <intercept-url pattern="/**" access="isAuthenticated()"/>
         <http-basic entry-point-ref="clientAuthenticationEntryPoint"/>
         <csrf disabled="true"/>
-        <cors configuration-source-ref="cuba_RestCorsSource"/>
+        <cors configuration-source-ref="restv2_RestCorsSource"/>
     </security:http>
 
     <!-- API controllers endpoints -->
-    <security:http pattern="/rest/v2/**"
+    <security:http pattern="/restv2/v2/**"
                    create-session="stateless"
                    entry-point-ref="oauthAuthenticationEntryPoint"
                    xmlns="http://www.springframework.org/schema/security">
-        <intercept-url pattern="/rest/v2/entities/**" access="isAuthenticated()"/>
-        <intercept-url pattern="/rest/v2/queries/**" access="isAuthenticated()"/>
-        <intercept-url pattern="/rest/v2/services/**" access="isAuthenticated()"/>
-        <intercept-url pattern="/rest/v2/permissions" access="isAuthenticated()"/>
-        <intercept-url pattern="/rest/v2/metadata/**" access="isAuthenticated()"/>
-        <intercept-url pattern="/rest/v2/userInfo" access="isAuthenticated()"/>
-        <intercept-url pattern="/rest/v2/files/**" access="isAuthenticated()"/>
-        <intercept-url pattern="/rest/v2/messages/**" access="isAuthenticated()"/>
+        <intercept-url pattern="/restv2/v2/entities/**" access="isAuthenticated()"/>
+        <intercept-url pattern="/restv2/v2/queries/**" access="isAuthenticated()"/>
+        <intercept-url pattern="/restv2/v2/services/**" access="isAuthenticated()"/>
+        <intercept-url pattern="/restv2/v2/permissions" access="isAuthenticated()"/>
+        <intercept-url pattern="/restv2/v2/metadata/**" access="isAuthenticated()"/>
+        <intercept-url pattern="/restv2/v2/userInfo" access="isAuthenticated()"/>
+        <intercept-url pattern="/restv2/v2/files/**" access="isAuthenticated()"/>
+        <intercept-url pattern="/restv2/v2/messages/**" access="isAuthenticated()"/>
         <anonymous enabled="false"/>
         <csrf disabled="true"/>
-        <cors configuration-source-ref="cuba_RestCorsSource"/>
+        <cors configuration-source-ref="restv2_RestCorsSource"/>
 
         <custom-filter ref="firstRestEndpointFilter" before="FIRST"/>
         <custom-filter ref="resourceFilter" before="PRE_AUTH_FILTER"/>
-        <custom-filter ref="cuba_AnonymousAuthenticationFilter" after="PRE_AUTH_FILTER"/>
-        <custom-filter ref="cuba_RestLastSecurityFilter" position="LAST"/>
+        <custom-filter ref="restv2_AnonymousAuthenticationFilter" after="PRE_AUTH_FILTER"/>
+        <custom-filter ref="restv2_RestLastSecurityFilter" position="LAST"/>
     </security:http>
 
     <bean id="firstRestEndpointFilter" class="org.springframework.web.filter.CompositeFilter">
         <property name="filters">
             <list>
-                <ref bean="cuba_RestExceptionLoggingFilter"/>
+                <ref bean="restv2_RestExceptionLoggingFilter"/>
                 <ref bean="requestContextFilter"/>
             </list>
         </property>
     </bean>
 
-    <bean id="cuba_RestExceptionLoggingFilter" class="com.haulmont.addon.restv2.sys.RestExceptionLoggingFilter"/>
+    <bean id="restv2_RestExceptionLoggingFilter" class="com.haulmont.addon.restv2.sys.RestExceptionLoggingFilter"/>
 
-    <bean id="cuba_AnonymousAuthenticationFilter" class="com.haulmont.addon.restv2.auth.CubaAnonymousAuthenticationFilter"/>
+    <bean id="restv2_AnonymousAuthenticationFilter" class="com.haulmont.addon.restv2.auth.CubaAnonymousAuthenticationFilter"/>
 
-    <bean id="cuba_RestLastSecurityFilter" class="com.haulmont.addon.restv2.auth.CubaRestLastSecurityFilter"/>
+    <bean id="restv2_RestLastSecurityFilter" class="com.haulmont.addon.restv2.auth.CubaRestLastSecurityFilter"/>
 
     <bean id="oauthAuthenticationEntryPoint"
           class="org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint">
@@ -185,15 +185,15 @@
     </bean>
 
     <!-- The configuration defines a filter that handles CORS request first -->
-    <bean id="cuba_RestCorsSource" class="org.springframework.web.cors.UrlBasedCorsConfigurationSource">
+    <bean id="restv2_RestCorsSource" class="org.springframework.web.cors.UrlBasedCorsConfigurationSource">
         <property name="corsConfigurations">
             <map>
-                <entry key="/**" value-ref="cuba_RestCorsConfig"/>
+                <entry key="/**" value-ref="restv2_RestCorsConfig"/>
             </map>
         </property>
     </bean>
 
-    <bean id="cuba_RestCorsConfig" class="org.springframework.web.cors.CorsConfiguration">
+    <bean id="restv2_RestCorsConfig" class="org.springframework.web.cors.CorsConfiguration">
         <property name="allowedOrigins" value="${restv2.rest.allowedOrigins}"/>
         <property name="allowedHeaders" value="*"/>
         <property name="allowedMethods" value="*"/>
