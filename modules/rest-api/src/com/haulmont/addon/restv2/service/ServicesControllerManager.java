@@ -46,7 +46,7 @@ import java.util.stream.Collectors;
 
 
 /**
- * Class that executes business logic required by the {@link com.haulmont.restapi.controllers.ServicesController}. It
+ * Class that executes business logic required by the {@link com.haulmont.addon.restv2.controllers.ServicesController}. It
  * performs middleware services invocations.
  */
 @Component("restv2_ServicesControllerManager")

@@ -49,7 +49,7 @@ import java.lang.reflect.Method;
 import java.util.*;
 
 /**
- * Class that executes business logic required by the {@link com.haulmont.restapi.controllers.EntitiesController}. It
+ * Class that executes business logic required by the {@link com.haulmont.addon.restv2.controllers.EntitiesController}. It
  * performs CRUD operations with entities
  */
 @Component("restv2_EntitiesControllerManager")

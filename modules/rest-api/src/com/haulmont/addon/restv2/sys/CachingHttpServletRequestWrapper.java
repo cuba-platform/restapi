@@ -26,6 +26,7 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 
 
 /**
@@ -50,7 +51,7 @@ public class CachingHttpServletRequestWrapper extends HttpServletRequestWrapper 
 
     @Override
     public BufferedReader getReader() throws IOException {
-        return new BufferedReader(new InputStreamReader(this.getInputStream()));
+        return new BufferedReader(new InputStreamReader(this.getInputStream(), StandardCharsets.UTF_8));
     }
 
     private static class CustomServletInputStream extends ServletInputStream {
@@ -62,7 +63,7 @@ public class CachingHttpServletRequestWrapper extends HttpServletRequestWrapper 
         }
 
         @Override
-        public int read() throws IOException {
+        public int read() {
             return buffer.read();
         }
 

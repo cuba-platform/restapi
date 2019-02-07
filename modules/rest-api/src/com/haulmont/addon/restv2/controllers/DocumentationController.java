@@ -49,7 +49,7 @@ public class DocumentationController {
 
     @RequestMapping(value = "/swagger.yaml", method = RequestMethod.GET, produces = "application/yaml")
     public String getSwaggerYaml() {
-        return resources.getResourceAsString("classpath:rest-api-swagger.yaml");
+        return resources.getResourceAsString("classpath:com/haulmont/addon/restv2/rest-api-swagger.yaml");
     }
 
     @RequestMapping(value = "/swagger.json", method = RequestMethod.GET, produces = "application/json")

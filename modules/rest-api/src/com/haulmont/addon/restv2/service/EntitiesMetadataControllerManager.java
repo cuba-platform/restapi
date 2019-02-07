@@ -36,7 +36,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Class is used by the {@link com.haulmont.restapi.controllers.EntitiesMetadataController}. Class is sed for getting
+ * Class is used by the {@link com.haulmont.addon.restv2.controllers.EntitiesMetadataController}. Class is sed for getting
  * entities metadata. User permissions for entities access aren't taken into account at the moment.
  */
 @Component("restv2_EntitiesMetadataControllerManager")

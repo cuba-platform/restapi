@@ -30,7 +30,7 @@ import java.util.Map;
 
 /**
  * Class is used for getting current user permissions for the REST API. It contains a business logic required by the
- * {@link com.haulmont.restapi.controllers.PermissionsController}
+ * {@link com.haulmont.addon.restv2.controllers.PermissionsController}
  */
 @Component("restv2_PermissionsControllerManager")
 public class PermissionsControllerManager {

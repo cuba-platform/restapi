@@ -24,7 +24,7 @@ import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 
 /**
- * Class that is used by the {@link com.haulmont.restapi.controllers.UserInfoController} for getting an information
+ * Class that is used by the {@link com.haulmont.addon.restv2.controllers.UserInfoController} for getting an information
  * about the current user
  */
 @Component("restv2_UserInfoControllerManager")

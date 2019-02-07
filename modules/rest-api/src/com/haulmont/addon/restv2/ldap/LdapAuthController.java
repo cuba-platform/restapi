@@ -51,7 +51,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.*;
 
-@ConditionalOnAppProperty(property = "cuba.rest.ldap.enabled", value = "true")
+@ConditionalOnAppProperty(property = "restv2.rest.ldap.enabled", value = "true")
 @RestController
 public class LdapAuthController implements InitializingBean {
 
@@ -218,16 +218,16 @@ public class LdapAuthController implements InitializingBean {
     protected void checkRequiredConfigProperties(RestLdapConfig ldapConfig) {
         List<String> missingProperties = new ArrayList<>();
         if (StringUtils.isBlank(ldapConfig.getLdapBase())) {
-            missingProperties.add("cuba.web.ldap.base");
+            missingProperties.add("restv2.web.ldap.base");
         }
         if (ldapConfig.getLdapUrls().isEmpty()) {
-            missingProperties.add("cuba.web.ldap.urls");
+            missingProperties.add("restv2.web.ldap.urls");
         }
         if (StringUtils.isBlank(ldapConfig.getLdapUser())) {
-            missingProperties.add("cuba.web.ldap.user");
+            missingProperties.add("restv2.web.ldap.user");
         }
         if (StringUtils.isBlank(ldapConfig.getLdapPassword())) {
-            missingProperties.add("cuba.web.ldap.password");
+            missingProperties.add("restv2.web.ldap.password");
         }
 
         if (!missingProperties.isEmpty()) {
