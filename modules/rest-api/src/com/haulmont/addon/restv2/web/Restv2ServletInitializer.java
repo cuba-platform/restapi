@@ -23,7 +23,7 @@ public class Restv2ServletInitializer {
 
     public static final String NAME = "restv2_Restv2ServletInitializer";
 
-    protected static final String SERVLET_NAME = "rest_api";
+    protected static final String SERVLET_NAME = "rest_api_v2";
     protected static final String SERVLET_MAPPING = "/restv2/*";
 
     @Inject
@@ -48,7 +48,7 @@ public class Restv2ServletInitializer {
         springSecurityFilterChain.setTargetBeanName("springSecurityFilterChain");
 
         FilterRegistration.Dynamic springSecurityFilterChainReg =
-                servletCtx.addFilter("restSpringSecurityFilterChain", springSecurityFilterChain);
+                servletCtx.addFilter("restv2SpringSecurityFilterChain", springSecurityFilterChain);
 
         springSecurityFilterChainReg.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, SERVLET_MAPPING);
     }
