@@ -6,9 +6,7 @@
         <artifact name="restv2-global" appJar="true"/>
         <artifact name="restv2-core" classifier="db" ext="zip" configuration="dbscripts"/>
 
-        <property name="cuba.persistenceConfig" value="+com/haulmont/addon/restv2/persistence.xml"/>
         <property name="cuba.metadataConfig" value="+com/haulmont/addon/restv2/metadata.xml"/>
-        <property name="cuba.viewsConfig" value="+com/haulmont/addon/restv2/views.xml"/>
     </module>
     <module name="core" dependsOn="global" blocks="core">
         <artifact name="restv2-core" appJar="true"/>
@@ -27,9 +25,6 @@
         <property name="cuba.springContextConfig" value="+com/haulmont/addon/restv2/web-spring.xml"/>
         <property name="cuba.dispatcherSpringContextConfig"
                   value="+com/haulmont/addon/restv2/web-dispatcher-spring.xml"/>
-        <property name="cuba.windowConfig" value="+com/haulmont/addon/restv2/web-screens.xml"/>
-        <property name="cuba.menuConfig" value="+com/haulmont/addon/restv2/web-menu.xml"/>
-        <property name="cuba.permissionConfig" value="+com/haulmont/addon/restv2/web-permissions.xml"/>
         <property name="cuba.mainMessagePack" value="+com.haulmont.addon.restv2.web"/>
     </module>
     <module name="portal" dependsOn="global" blocks="portal">

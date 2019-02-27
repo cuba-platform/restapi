@@ -181,40 +181,12 @@ configure(portalModule) {
     }
 
     def webappName = "${modulePrefix}-portal"
-    def resourcesDir = "$cuba.tomcat.dir/webapps/$webappName/resources"
-    def ftlDir = "$cuba.tomcat.dir/webapps/$webappName/WEB-INF/templates"
 
     task deploy(dependsOn: assemble, type: CubaDeployment) {
         appName = webappName
         appJars(modulePrefix + '-global', modulePrefix + '-portal')
     }
-
-    task deployStatic() {
-        doLast {
-            copy {
-                from file('web/resources')
-                include '**/*.css'
-                include '**/*.js'
-                include '**/*.png'
-                include '**/*.gif'
-                include '**/*.jpg'
-                into resourcesDir
-            }
-            copy {
-                from file('web/WEB-INF/templates')
-                include '**/*.ftl'
-                into ftlDir
-            }
-        }
-    }
-
-    task cleanStatic() {
-        doLast {
-            delete resourcesDir
-            delete ftlDir
-        }
-    }
-
+    
     task webArchive(type: Zip) {
         from file('web')
         from file("$buildDir/web")
