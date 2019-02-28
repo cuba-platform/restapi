@@ -8,9 +8,9 @@
     <context-param>
         <param-name>appPropertiesConfig</param-name>
         <param-value>
-            classpath:com/haulmont/addon/restv2/web-app.properties
+            classpath:com/haulmont/addon/restapi/web-app.properties
             /WEB-INF/local.app.properties
-            "file:${catalina.base}/conf/restv2/local.app.properties"
+            "file:${catalina.base}/conf/restapi/local.app.properties"
         </param-value>
     </context-param>
     <!--Application components-->
