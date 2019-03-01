@@ -43,7 +43,7 @@ public class RestControllerExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(RestControllerExceptionHandler.class);
 
-    protected static final Collection<Class> serializableInvalidValueTypes =
+    protected static final Collection<Class> SERIALIZABLE_INVALID_VALUE_TYPES =
             Arrays.asList(String.class, Date.class, Number.class, Enum.class, UUID.class);
 
     @ExceptionHandler(RestAPIException.class)
@@ -151,7 +151,7 @@ public class RestControllerExceptionHandler {
                 Class<?> invalidValueClass = invalidValue.getClass();
 
                 boolean serializable = false;
-                for (Class serializableType : serializableInvalidValueTypes) {
+                for (Class serializableType : SERIALIZABLE_INVALID_VALUE_TYPES) {
                     //noinspection unchecked
                     if (serializableType.isAssignableFrom(invalidValueClass)) {
                         serializable = true;

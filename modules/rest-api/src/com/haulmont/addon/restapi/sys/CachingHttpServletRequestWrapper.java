@@ -58,7 +58,7 @@ public class CachingHttpServletRequestWrapper extends HttpServletRequestWrapper 
 
         private ByteArrayInputStream buffer;
 
-        public CustomServletInputStream(byte[] contents) {
+        CustomServletInputStream(byte[] contents) {
             this.buffer = new ByteArrayInputStream(contents);
         }
 

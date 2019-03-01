@@ -117,7 +117,8 @@ public abstract class AbstractEntityJsonTransformer implements EntityJsonTransfo
                 JsonNode childEntityNameNode = nestedJsonNode.get(ENTITY_NAME_PROP);
                 if (childEntityNameNode != null) {
                     String childEntityNameValue = childEntityNameNode.asText();
-                    EntityJsonTransformer childEntityTransformer = jsonTransformations.getTransformer(childEntityNameValue, this.version, this.direction);
+                    EntityJsonTransformer childEntityTransformer = jsonTransformations.getTransformer(childEntityNameValue,
+                            this.version, this.direction);
                     if (childEntityTransformer != null) {
                         String transformedChildEntityJson = childEntityTransformer.transformJson(objectMapper.writeValueAsString(nestedJsonNode));
                         JsonNode transformedChildJsonNode = objectMapper.readTree(transformedChildEntityJson);
@@ -140,7 +141,8 @@ public abstract class AbstractEntityJsonTransformer implements EntityJsonTransfo
                     JsonNode nestedEntityNameNode = firstArrayElement.get(ENTITY_NAME_PROP);
                     if (nestedEntityNameNode != null) {
                         String nestedEntityNameValue = nestedEntityNameNode.asText();
-                        EntityJsonTransformer nestedEntityTransformer = jsonTransformations.getTransformer(nestedEntityNameValue, this.version, this.direction);
+                        EntityJsonTransformer nestedEntityTransformer = jsonTransformations.getTransformer(nestedEntityNameValue,
+                                this.version, this.direction);
                         if (nestedEntityTransformer != null) {
                             String transformedChildEntityJson = nestedEntityTransformer.transformJson(objectMapper.writeValueAsString(nestedJsonNode));
                             JsonNode transformedChildJsonNode = objectMapper.readTree(transformedChildEntityJson);

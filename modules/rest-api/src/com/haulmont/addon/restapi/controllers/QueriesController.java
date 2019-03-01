@@ -50,7 +50,8 @@ public class QueriesController {
                                @RequestParam(required = false) Boolean returnCount,
                                @RequestParam(required = false) String modelVersion,
                                @RequestParam Map<String, String> params) {
-        String resultJson = queriesControllerManager.executeQueryGet(entityName, queryName, limit, offset, view, returnNulls, dynamicAttributes, modelVersion, params);
+        String resultJson = queriesControllerManager.executeQueryGet(entityName, queryName, limit, offset, view, returnNulls,
+                dynamicAttributes, modelVersion, params);
         ResponseEntity.BodyBuilder responseBuilder = ResponseEntity.status(HttpStatus.OK);
         if (BooleanUtils.isTrue(returnCount)) {
             String count = queriesControllerManager.getCountGet(entityName, queryName, modelVersion, params);
@@ -71,7 +72,8 @@ public class QueriesController {
                                @RequestParam(required = false) String modelVersion,
                                @RequestBody String paramsJson) {
 
-        String resultJson = queriesControllerManager.executeQueryPost(entityName, queryName, limit, offset, view, returnNulls, dynamicAttributes, modelVersion, paramsJson);
+        String resultJson = queriesControllerManager.executeQueryPost(entityName, queryName, limit, offset, view, returnNulls,
+                dynamicAttributes, modelVersion, paramsJson);
         ResponseEntity.BodyBuilder responseBuilder = ResponseEntity.status(HttpStatus.OK);
         if (BooleanUtils.isTrue(returnCount)) {
             String count = queriesControllerManager.getCountPost(entityName, queryName, modelVersion, paramsJson);

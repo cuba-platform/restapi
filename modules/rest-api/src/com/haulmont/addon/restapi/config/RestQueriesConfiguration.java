@@ -50,7 +50,7 @@ import java.util.stream.Collectors;
 @Component("restapi_RestQueriesConfiguration")
 public class RestQueriesConfiguration {
 
-    protected final String CUBA_REST_QUERIES_CONFIG_PROP_NAME = "cuba.rest.queriesConfig";
+    protected static final String CUBA_REST_QUERIES_CONFIG_PROP_NAME = "cuba.rest.queriesConfig";
 
     private final Logger log = LoggerFactory.getLogger(RestQueriesConfiguration.class);
 

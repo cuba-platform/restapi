@@ -54,7 +54,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 @Component("restapi_RestJsonTransformations")
 public class RestJsonTransformations {
 
-    protected final String CUBA_REST_JSON_TRANSFORMATION_CONFIG_PROP_NAME = "restapi.rest.jsonTransformationConfig";
+    protected static final String CUBA_REST_JSON_TRANSFORMATION_CONFIG_PROP_NAME = "restapi.rest.jsonTransformationConfig";
 
     private static final Logger log = LoggerFactory.getLogger(RestJsonTransformations.class);
 

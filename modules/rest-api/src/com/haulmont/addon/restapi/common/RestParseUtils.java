@@ -38,6 +38,7 @@ import java.text.ParseException;
 import java.util.*;
 
 /**
+ *
  */
 @Component("restapi_RestParseUtils")
 public class RestParseUtils {
@@ -108,7 +109,8 @@ public class RestParseUtils {
             MetaClass metaClass = null;
             if (argumentTypeClass != null) {
                 metaClass = metadata.getClassNN(argumentTypeClass);
-                String entityName = restControllerUtils.transformEntityNameIfRequired(metaClass.getName(), modelVersion, JsonTransformationDirection.TO_VERSION);
+                String entityName = restControllerUtils.transformEntityNameIfRequired(metaClass.getName(), modelVersion,
+                        JsonTransformationDirection.TO_VERSION);
                 value = restControllerUtils.transformJsonIfRequired(entityName, modelVersion, JsonTransformationDirection.FROM_VERSION, value);
             }
             return entitySerializationAPI.entitiesCollectionFromJson(value, metaClass);

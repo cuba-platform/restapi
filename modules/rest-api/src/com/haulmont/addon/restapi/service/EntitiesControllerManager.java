@@ -337,7 +337,7 @@ public class EntitiesControllerManager {
         try {
             importedEntities = entityImportExportService.importEntities(Collections.singletonList(entity),
                     entityImportView, true, restApiConfig.getOptimisticLockingEnabled());
-            importedEntities.forEach(it-> restControllerUtils.applyAttributesSecurity(it));
+            importedEntities.forEach(it -> restControllerUtils.applyAttributesSecurity(it));
         } catch (EntityImportException e) {
             throw new RestAPIException("Entity update failed", e.getMessage(), HttpStatus.BAD_REQUEST, e);
         }
@@ -473,7 +473,8 @@ public class EntitiesControllerManager {
     protected class SearchEntitiesRequestDTO {
         protected JsonObject filter;
         protected String view;
-        @Deprecated //the viewName property has been left for a backward compatibility. It will removed in future releases
+        @Deprecated
+        //the viewName property has been left for a backward compatibility. It will removed in future releases
         protected String viewName;
         protected Integer limit;
         protected Integer offset;

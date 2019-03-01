@@ -148,7 +148,8 @@ public class RestFilterParser {
         return groupCondition;
     }
 
-    protected RestFilterPropertyCondition parsePropertyCondition(JsonObject conditionJsonObject, MetaClass metaClass) throws RestFilterParseException {
+    protected RestFilterPropertyCondition parsePropertyCondition(JsonObject conditionJsonObject,
+                                                                 MetaClass metaClass) throws RestFilterParseException {
         RestFilterPropertyCondition condition = new RestFilterPropertyCondition();
 
         JsonElement propertyJsonElem = conditionJsonObject.get("property");
