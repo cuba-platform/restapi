@@ -9,7 +9,6 @@
     </module>
     <module name="core" dependsOn="global" blocks="core">
         <artifact name="restapi-core" appJar="true"/>
-        <artifact name="restapi-core" classifier="db" ext="zip" configuration="dbscripts"/>
 
         <property name="cuba.springContextConfig" value="+com/haulmont/addon/restapi/spring.xml"/>
         <property name="cuba.remotingSpringContextConfig" value="+com/haulmont/addon/restapi/remoting-spring.xml"/>
