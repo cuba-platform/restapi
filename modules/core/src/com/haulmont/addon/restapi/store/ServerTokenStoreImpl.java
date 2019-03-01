@@ -402,10 +402,10 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
     }
 
     protected void storeRefreshTokenToDatabase(String tokenValue,
-                                              byte[] tokenBytes,
-                                              byte[] authenticationBytes,
-                                              Date tokenExpiry,
-                                              String userLogin) {
+                                               byte[] tokenBytes,
+                                               byte[] authenticationBytes,
+                                               Date tokenExpiry,
+                                               String userLogin) {
         try (Transaction tx = persistence.getTransaction()) {
             EntityManager em = persistence.getEntityManager();
             RefreshToken refreshToken = metadata.create(RefreshToken.class);
@@ -693,7 +693,8 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
         String accessTokenValue;
         try (Transaction tx = persistence.createTransaction()) {
             EntityManager em = persistence.getEntityManager();
-            accessTokenValue = em.createQuery("select e.tokenValue from sys$AccessToken e where e.refreshTokenValue = :refreshTokenValue", String.class)
+            accessTokenValue = em.createQuery(
+                    "select e.tokenValue from sys$AccessToken e where e.refreshTokenValue = :refreshTokenValue", String.class)
                     .setParameter("refreshTokenValue", refreshTokenValue)
                     .getFirstResult();
             tx.commit();
