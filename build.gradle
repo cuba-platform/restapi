@@ -178,13 +178,14 @@ configure(portalModule) {
     dependencies {
         compileOnly(servletApi)
         compile(globalModule)
+        compile(restApiModule)
     }
 
     def webappName = "${modulePrefix}-portal"
 
     task deploy(dependsOn: assemble, type: CubaDeployment) {
         appName = webappName
-        appJars(modulePrefix + '-global', modulePrefix + '-portal')
+        appJars(modulePrefix + '-global', modulePrefix + '-portal', modulePrefix +'-rest-api')
     }
     
     task webArchive(type: Zip) {
