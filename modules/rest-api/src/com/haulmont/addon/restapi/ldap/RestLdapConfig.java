@@ -35,14 +35,14 @@ public interface RestLdapConfig extends Config {
     /**
      * @return true if LDAP authentication for REST API is enabled
      */
-    @Property("restapi.rest.ldap.enabled")
+    @Property("cuba.rest.ldap.enabled")
     @DefaultBoolean(false)
     boolean getLdapEnabled();
 
     /**
      * @return the urls of the LDAP servers
      */
-    @Property("restapi.rest.ldap.urls")
+    @Property("cuba.rest.ldap.urls")
     @Factory(factory = CommaSeparatedStringListTypeFactory.class)
     List<String> getLdapUrls();
 
@@ -51,26 +51,26 @@ public interface RestLdapConfig extends Config {
      * If a base suffix is set, you will not have to (and, indeed, must not) specify the full distinguished names in any
      * operations performed. For instance: dc=example,dc=com
      */
-    @Property("restapi.rest.ldap.base")
+    @Property("cuba.rest.ldap.base")
     String getLdapBase();
 
     /**
      * @return user that is used to connect to LDAP server.
      * For instance: cn=System User,ou=Employees,dc=mycompany,dc=com
      */
-    @Property("restapi.rest.ldap.user")
+    @Property("cuba.rest.ldap.user")
     String getLdapUser();
 
     /**
      * @return password that is used to connect to LDAP server
      */
-    @Property("restapi.rest.ldap.password")
+    @Property("cuba.rest.ldap.password")
     String getLdapPassword();
 
     /**
      * @return Field of LDAP object for user login matching.
      */
-    @Property("restapi.rest.ldap.userLoginField")
+    @Property("cuba.rest.ldap.userLoginField")
     @DefaultString("sAMAccountName")
     String getLdapUserLoginField();
 }

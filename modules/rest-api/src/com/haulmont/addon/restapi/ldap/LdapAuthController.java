@@ -51,7 +51,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.*;
 
-@ConditionalOnAppProperty(property = "restapi.rest.ldap.enabled", value = "true")
+@ConditionalOnAppProperty(property = "cuba.rest.ldap.enabled", value = "true")
 @RestController
 public class LdapAuthController implements InitializingBean {
 

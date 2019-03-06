@@ -65,11 +65,11 @@
     <!-- The predefined list of API clients. External apps must provide this credentials in Authentication header when
     accessing the auth token -->
     <oauth2:client-details-service id="clientDetailsService">
-        <oauth2:client client-id="${restapi.rest.client.id}"
-                       secret="${restapi.rest.client.secret}"
-                       access-token-validity="${restapi.rest.client.tokenExpirationTimeSec}"
-                       refresh-token-validity="${restapi.rest.client.refreshTokenExpirationTimeSec}"
-                       authorized-grant-types="${restapi.rest.client.authorizedGrantTypes}"
+        <oauth2:client client-id="${cuba.rest.client.id}"
+                       secret="${cuba.rest.client.secret}"
+                       access-token-validity="${cuba.rest.client.tokenExpirationTimeSec}"
+                       refresh-token-validity="${cuba.rest.client.refreshTokenExpirationTimeSec}"
+                       authorized-grant-types="${cuba.rest.client.authorizedGrantTypes}"
                        scope="rest-api"/>
     </oauth2:client-details-service>
 
@@ -96,8 +96,8 @@
     <bean id="tokenEnhancer" class="com.haulmont.addon.restapi.auth.CubaTokenEnhancer"/>
 
     <bean id="tokenServices" class="org.springframework.security.oauth2.provider.token.DefaultTokenServices">
-        <property name="supportRefreshToken" value="${restapi.rest.supportRefreshToken}"/>
-        <property name="reuseRefreshToken" value="${restapi.rest.reuseRefreshToken}"/>
+        <property name="supportRefreshToken" value="${cuba.rest.supportRefreshToken}"/>
+        <property name="reuseRefreshToken" value="${cuba.rest.reuseRefreshToken}"/>
         <property name="tokenStore" ref="tokenStore"/>
         <property name="clientDetailsService" ref="clientDetailsService"/>
         <property name="tokenEnhancer" ref="tokenEnhancer"/>
@@ -194,7 +194,7 @@
     </bean>
 
     <bean id="restapi_RestCorsConfig" class="org.springframework.web.cors.CorsConfiguration">
-        <property name="allowedOrigins" value="${restapi.rest.allowedOrigins}"/>
+        <property name="allowedOrigins" value="${cuba.rest.allowedOrigins}"/>
         <property name="allowedHeaders" value="*"/>
         <property name="allowedMethods" value="*"/>
         <property name="allowCredentials" value="true"/>
@@ -207,6 +207,6 @@
     </bean>
 
     <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
-        <property name="maxUploadSize" value="${restapi.rest.maxUploadSize}"/>
+        <property name="maxUploadSize" value="${cuba.rest.maxUploadSize}"/>
     </bean>
 </beans>

@@ -31,16 +31,16 @@ import java.util.List;
  */
 @Source(type = SourceType.APP)
 public interface RestApiConfig extends Config {
-    @Property("restapi.trustedClientPassword")
+    @Property("cuba.trustedClientPassword")
     String getTrustedClientPassword();
 
     /**
      * @return authorized rest client id
      */
-    @Property("restapi.rest.client.id")
+    @Property("cuba.rest.client.id")
     String getRestClientId();
 
-    @Property("restapi.rest.standardAuthenticationEnabled")
+    @Property("cuba.rest.standardAuthenticationEnabled")
     @DefaultBoolean(true)
     boolean getStandardAuthenticationEnabled();
 
@@ -48,28 +48,28 @@ public interface RestApiConfig extends Config {
      * @return list of users that are not allowed to use external authentication. They can use only standard authentication.
      *         Empty list means that everyone is allowed to login using external authentication.
      */
-    @Property("restapi.rest.standardAuthenticationUsers")
+    @Property("cuba.rest.standardAuthenticationUsers")
     @Factory(factory = CommaSeparatedStringListTypeFactory.class)
     List<String> getStandardAuthenticationUsers();
 
     /**
      * @return anonymous access to REST API is allowed
      */
-    @Property("restapi.rest.anonymousEnabled")
+    @Property("cuba.rest.anonymousEnabled")
     @DefaultBoolean(false)
     boolean getRestAnonymousEnabled();
 
     /**
      * @return token masking in application logs is enabled
      */
-    @Property("restapi.rest.tokenMaskingEnabled")
+    @Property("cuba.rest.tokenMaskingEnabled")
     @DefaultBoolean(true)
     boolean getTokenMaskingEnabled();
 
     /**
      * @return whether the passed entities versions should be validated before entities are persisted
      */
-    @Property("restapi.rest.optimisticLockingEnabled")
+    @Property("cuba.rest.optimisticLockingEnabled")
     @DefaultBoolean(false)
     boolean getOptimisticLockingEnabled();
 
@@ -78,7 +78,7 @@ public interface RestApiConfig extends Config {
      * @return Whether to use an login/password authentication on client
      * instead of login/password authentication on middleware.
      */
-    @Property("restapi.checkPasswordOnClient")
+    @Property("cuba.checkPasswordOnClient")
     @DefaultBoolean(false)
     boolean getCheckPasswordOnClient();
 }

@@ -19,7 +19,7 @@
         <task:scheduled ref="cuba_PortalAnonymousSessionHolder" method="pingSession" fixed-delay="600000"/>
     </task:scheduled-tasks>
     
-    <bean class="com.haulmont.cuba.portal.sys.remoting.PortalRemoteProxyBeanCreator">
+    <bean id="restapi_proxyCreator" class="com.haulmont.cuba.portal.sys.remoting.PortalRemoteProxyBeanCreator">
         <property name="serverSelector"
                   ref="cuba_ServerSelector"/>
         <property name="remoteServices">
