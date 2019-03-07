@@ -218,7 +218,7 @@ configure(restApiModule) {
     dependencies {
         compile(globalModule)
 
-        compile("com.haulmont.cuba:cuba-client:$cubaVersion")
+        compile("com.haulmont.cuba:cuba-client-tests:$cubaVersion")
 
         compile('org.jmockit:jmockit:1.39')
 
