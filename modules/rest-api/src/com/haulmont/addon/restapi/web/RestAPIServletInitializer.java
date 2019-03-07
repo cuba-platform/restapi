@@ -24,7 +24,7 @@ public class RestAPIServletInitializer {
     public static final String NAME = "restapi_RestAPIServletInitializer";
 
     protected static final String SERVLET_NAME = "rest_api";
-    protected static final String SERVLET_MAPPING = "/restapi/*";
+    protected static final String SERVLET_MAPPING = "/rest/*";
 
     @Inject
     protected ServletRegistrationManager servletRegistrationManager;
