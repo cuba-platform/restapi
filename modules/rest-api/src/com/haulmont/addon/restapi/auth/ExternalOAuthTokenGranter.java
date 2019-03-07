@@ -25,7 +25,7 @@ import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.security.auth.AuthenticationService;
 import com.haulmont.cuba.security.auth.TrustedClientCredentials;
 import com.haulmont.cuba.security.global.LoginException;
-import com.haulmont.cuba.security.global.RestApiAccessDeniedException;
+import com.haulmont.addon.restapi.exception.RestApiAccessDeniedException;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;

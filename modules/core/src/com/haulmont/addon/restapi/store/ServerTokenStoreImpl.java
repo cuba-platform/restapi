@@ -17,6 +17,7 @@
 package com.haulmont.addon.restapi.store;
 
 import com.google.common.base.Strings;
+import com.haulmont.addon.restapi.config.RestConfig;
 import com.haulmont.addon.restapi.rest.RestUserSessionInfo;
 import com.haulmont.addon.restapi.rest.ServerTokenStore;
 import com.haulmont.cuba.core.EntityManager;
@@ -25,7 +26,6 @@ import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.app.ClusterListener;
 import com.haulmont.cuba.core.app.ClusterListenerAdapter;
 import com.haulmont.cuba.core.app.ClusterManagerAPI;
-import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.entity.AccessToken;
 import com.haulmont.cuba.core.entity.RefreshToken;
 import com.haulmont.cuba.core.global.Metadata;
@@ -73,7 +73,7 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
     protected ClusterManagerAPI clusterManagerAPI;
 
     @Inject
-    protected ServerConfig serverConfig;
+    protected RestConfig restConfig;
 
     @Inject
     protected Persistence persistence;
@@ -226,7 +226,7 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
     public byte[] getAccessTokenByAuthentication(String authenticationKey) {
         byte[] accessTokenBytes;
         accessTokenBytes = getAccessTokenByAuthenticationFromMemory(authenticationKey);
-        if (accessTokenBytes == null && serverConfig.getRestStoreTokensInDb()) {
+        if (accessTokenBytes == null && restConfig.getRestStoreTokensInDb()) {
             AccessToken accessToken = getAccessTokenByAuthenticationKeyFromDatabase(authenticationKey);
             if (accessToken != null) {
                 accessTokenBytes = accessToken.getTokenBytes();
@@ -243,7 +243,7 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
     @Override
     public Set<String> getAccessTokenValuesByUserLogin(String userLogin) {
         Set<String> tokenValues = getAccessTokenValuesByUserLoginFromMemory(userLogin);
-        if (serverConfig.getRestStoreTokensInDb()) {
+        if (restConfig.getRestStoreTokensInDb()) {
             tokenValues.addAll(getAccessTokenValuesByUserLoginFromDatabase(userLogin));
         }
         return tokenValues;
@@ -270,7 +270,7 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
     @Override
     public Set<String> getRefreshTokenValuesByUserLogin(String userLogin) {
         Set<String> tokenValues = getRefreshTokenValuesByUserLoginFromMemory(userLogin);
-        if (serverConfig.getRestStoreTokensInDb()) {
+        if (restConfig.getRestStoreTokensInDb()) {
             tokenValues.addAll(getRefreshTokenValuesByUserLoginFromDatabase(userLogin));
         }
         return tokenValues;
@@ -305,7 +305,7 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
                                  String refreshTokenValue) {
         storeAccessTokenToMemory(tokenValue, accessTokenBytes, authenticationKey, authenticationBytes, tokenExpiry,
                 userLogin, refreshTokenValue);
-        if (serverConfig.getRestStoreTokensInDb()) {
+        if (restConfig.getRestStoreTokensInDb()) {
             try (Transaction tx = persistence.getTransaction()) {
                 removeAccessTokenFromDatabase(tokenValue);
                 storeAccessTokenToDatabase(tokenValue, accessTokenBytes, authenticationKey, authenticationBytes,
@@ -376,7 +376,7 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
                                   Date tokenExpiry,
                                   String userLogin) {
         storeRefreshTokenToMemory(refreshTokenValue, refreshTokenBytes, authenticationBytes, tokenExpiry, userLogin);
-        if (serverConfig.getRestStoreTokensInDb()) {
+        if (restConfig.getRestStoreTokensInDb()) {
             try (Transaction tx = persistence.getTransaction()) {
                 removeRefreshTokenFromDatabase(refreshTokenValue);
                 storeRefreshTokenToDatabase(refreshTokenValue, refreshTokenBytes, authenticationBytes,
@@ -424,7 +424,7 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
     public byte[] getAccessTokenByTokenValue(String accessTokenValue) {
         byte[] accessTokenBytes;
         accessTokenBytes = getAccessTokenByTokenValueFromMemory(accessTokenValue);
-        if (accessTokenBytes == null && serverConfig.getRestStoreTokensInDb()) {
+        if (accessTokenBytes == null && restConfig.getRestStoreTokensInDb()) {
             AccessToken accessToken = getAccessTokenByTokenValueFromDatabase(accessTokenValue);
             if (accessToken != null) {
                 accessTokenBytes = accessToken.getTokenBytes();
@@ -442,7 +442,7 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
     public byte[] getAuthenticationByTokenValue(String tokenValue) {
         byte[] authenticationBytes;
         authenticationBytes = getAuthenticationByTokenValueFromMemory(tokenValue);
-        if (authenticationBytes == null && serverConfig.getRestStoreTokensInDb()) {
+        if (authenticationBytes == null && restConfig.getRestStoreTokensInDb()) {
             AccessToken accessToken = getAccessTokenByTokenValueFromDatabase(tokenValue);
             if (accessToken != null) {
                 authenticationBytes = accessToken.getAuthenticationBytes();
@@ -501,7 +501,7 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
     @Override
     public byte[] getRefreshTokenByTokenValue(String tokenValue) {
         byte[] tokenBytes = getRefreshTokenByTokenValueFromMemory(tokenValue);
-        if (tokenBytes == null && serverConfig.getRestStoreTokensInDb()) {
+        if (tokenBytes == null && restConfig.getRestStoreTokensInDb()) {
             RefreshToken refreshToken = getRefreshTokenByTokenValueFromDatabase(tokenValue);
             if (refreshToken != null) {
                 tokenBytes = refreshToken.getTokenBytes();
@@ -542,7 +542,7 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
     @Override
     public RestUserSessionInfo getSessionInfoByTokenValue(String tokenValue) {
         RestUserSessionInfo sessionInfo = accessTokenValueToSessionInfoStore.get(tokenValue);
-        if (sessionInfo == null && serverConfig.getRestStoreTokensInDb()) {
+        if (sessionInfo == null && restConfig.getRestStoreTokensInDb()) {
             AccessToken accessToken = getAccessTokenByTokenValueFromDatabase(tokenValue);
             if (accessToken != null) {
                 String localeStr = accessToken.getLocale();
@@ -575,7 +575,7 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
     @Override
     public void removeAccessToken(String tokenValue) {
         removeAccessTokenFromMemory(tokenValue);
-        if (serverConfig.getRestStoreTokensInDb()) {
+        if (restConfig.getRestStoreTokensInDb()) {
             removeAccessTokenFromDatabase(tokenValue);
         }
         clusterManagerAPI.send(new TokenStoreRemoveAccessTokenMsg(tokenValue));
@@ -628,7 +628,7 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
     public void removeRefreshToken(String refreshTokenValue) {
         removeRefreshTokenFromMemory(refreshTokenValue);
 
-        if (serverConfig.getRestStoreTokensInDb()) {
+        if (restConfig.getRestStoreTokensInDb()) {
             removeRefreshTokenFromDatabase(refreshTokenValue);
         }
     }
@@ -658,7 +658,7 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
     public void deleteExpiredTokens() {
         deleteExpiredAccessTokensInMemory();
         deleteExpiredRefreshTokensInMemory();
-        if (serverConfig.getRestStoreTokensInDb() && clusterManagerAPI.isMaster()) {
+        if (restConfig.getRestStoreTokensInDb() && clusterManagerAPI.isMaster()) {
             deleteExpiredAccessTokensInDatabase();
             deleteExpiredRefreshTokensInDatabase();
         }
@@ -682,7 +682,7 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
 
     protected String getAccessTokenValueByRefreshTokenValue(String refreshTokenValue) {
         String accessTokenValue = refreshTokenValueToAccessTokenValueStore.get(refreshTokenValue);
-        if (accessTokenValue == null && serverConfig.getRestStoreTokensInDb()) {
+        if (accessTokenValue == null && restConfig.getRestStoreTokensInDb()) {
             accessTokenValue = getAccessTokenValueByRefreshTokenValueFromDatabase(refreshTokenValue);
         }
         return accessTokenValue;

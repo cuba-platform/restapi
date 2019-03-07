@@ -1,13 +1,14 @@
 buildscript {
-    ext.cubaVersion = '7.0.1'
+    ext.cubaVersion = '7.1-SNAPSHOT'
     repositories {
+        mavenLocal()
         jcenter()
         maven {
             url "https://dl.bintray.com/cuba-platform/main"
         }
     }
     dependencies {
-        classpath "com.haulmont.gradle:cuba-plugin:$cubaVersion"
+        classpath "com.haulmont.gradle:cuba-plugin:7.0.1"
         classpath "com.haulmont.gradle:addon-gradle-plugin:1.0.3"
     }
 }
@@ -132,7 +133,6 @@ configure(webModule) {
 
     dependencies {
         compileOnly(servletApi)
-        compile(globalModule)
         compile(restApiModule)
     }
 
@@ -177,7 +177,6 @@ configure(webModule) {
 configure(portalModule) {
     dependencies {
         compileOnly(servletApi)
-        compile(globalModule)
         compile(restApiModule)
     }
 
@@ -219,34 +218,33 @@ configure(restApiModule) {
     dependencies {
         compile(globalModule)
 
-        compile("com.haulmont.cuba:cuba-client-tests:$cubaVersion")
+        compile("com.haulmont.cuba:cuba-client:$cubaVersion")
 
         compile('org.jmockit:jmockit:1.39')
 
-        compile('commons-fileupload:commons-fileupload') // required for Spring multipart resolver
+        compile('commons-fileupload:commons-fileupload:1.3.3') // required for Spring multipart resolver
 
-        compile('org.springframework:spring-webmvc')
-        compile('org.springframework:spring-context-support')
+        compile('org.springframework:spring-webmvc:5.1.2.RELEASE')
+        compile('org.springframework:spring-context-support:5.1.2.RELEASE')
 
-        compile('org.springframework.ldap:spring-ldap-core') {
+        compile('org.springframework.ldap:spring-ldap-core:2.3.2.RELEASE') {
             exclude(group: 'org.slf4j', module: 'jcl-over-slf4j')
             // removed because it defines its own Log4j LogFactory via JDK services mechanism
         }
 
-        compile('org.json:json')
+        compile('org.json:json:20180130')
 
-        compile('com.fasterxml.jackson.core:jackson-databind')
-        compile('com.fasterxml.jackson.core:jackson-annotations')
-        compile('com.fasterxml.jackson.dataformat:jackson-dataformat-yaml')
+        compile('com.fasterxml.jackson.core:jackson-databind:2.9.8')
+        compile('com.fasterxml.jackson.core:jackson-annotations:2.9.8')
+        compile('com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.9.8')
 
-        compile('org.springframework.security:spring-security-core')
-        compile('org.springframework.security:spring-security-web')
-        compile('org.springframework.security:spring-security-config')
-        compile('org.springframework.security.oauth:spring-security-oauth2')
+        compile('org.springframework.security:spring-security-core:5.1.1.RELEASE')
+        compile('org.springframework.security:spring-security-web:5.1.1.RELEASE')
+        compile('org.springframework.security:spring-security-config:5.1.1.RELEASE')
+        compile('org.springframework.security.oauth:spring-security-oauth2:2.3.4.RELEASE')
 
-        compile('io.swagger:swagger-models')
+        compile('io.swagger:swagger-models:1.5.21')
         compileOnly(servletApi)
-
     }
 }
 
