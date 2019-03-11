@@ -10,7 +10,7 @@
         <property name="beans">
             <map>
                 <entry key="${cuba.webContextName}.restapi:type=ServerTokenStore"
-                       value-ref="cuba_ServerTokenStoreMBean"/>
+                       value-ref="restapi_ServerTokenStoreMBean"/>
             </map>
         </property>
     </bean>

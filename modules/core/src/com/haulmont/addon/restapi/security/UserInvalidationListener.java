@@ -37,7 +37,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-@Component("cuba_UserInvalidationListener")
+@Component("restapi_UserInvalidationListener")
 public class UserInvalidationListener {
 
     private final Logger log = LoggerFactory.getLogger(UserInvalidationListener.class);
