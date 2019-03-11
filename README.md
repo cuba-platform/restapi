@@ -30,20 +30,22 @@ To install the component in your project, do the following steps:
 3. On the **App components** pane click the **Plus** button next to **Custom components**.
 
 4. Paste the add-on coordinates in the corresponding field as follows: `group:name:version`.
+    
+    - Artifact group: `com.haulmont.addon.restapi`;
+    - Artifact name: `restapi-global`;
+    - Version: `add-on version`.
+      
+    Specify the add-on version compatible with the used version of the CUBA platform.
 
-  - Artifact group: `com.haulmont.addon.restapi`;
-  - Artifact name: `restapi-global`;
-  - Version: `add-on version`.
-
-Specify the add-on version compatible with the used version of the CUBA platform.
-
-| Platform Version | Add-on Version |
-|------------------|----------------|
-|7.0.x             | 0.1-SNAPSHOT   |
+    | Platform Version | Add-on Version |
+    |------------------|----------------|
+    |7.0.x             | 0.1-SNAPSHOT   |
+    
+    Example: `com.haulmont.addon.restapi:restapi-global:0.1-SNAPSHOT`
 
 5. Click **OK** to save the project properties.
 
-After that the REST v2 API functions will be available at the `{host:port}/{module prefix}/restapi/v2/*` URL.
+After that the REST v2 API functions will be available at the `{host:port}/{module prefix}/rest/v2/*` URL.
 
 # 3. Usage <a name="usage"></a>
 
