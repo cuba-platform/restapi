@@ -22,6 +22,15 @@
         <property name="cuba.springContextConfig" value="+com/haulmont/addon/restapi/web-spring.xml"/>
         <property name="cuba.dispatcherSpringContextConfig"
                   value="+com/haulmont/addon/restapi/web-dispatcher-spring.xml"/>
+        <property name="cuba.rest.client.id" value="client"/>
+        <property name="cuba.rest.client.secret" value="{noop}secret"/>
+        <property name="cuba.rest.client.tokenExpirationTimeSec" value="43200"/>
+        <property name="cuba.rest.client.refreshTokenExpirationTimeSec" value="31536000"/>
+        <property name="cuba.rest.client.authorizedGrantTypes" value="password,external,refresh_token"/>
+        <property name="cuba.rest.supportRefreshToken" value="true"/>
+        <property name="cuba.rest.reuseRefreshToken" value="true"/>
+        <property name="cuba.rest.allowedOrigins" value="*"/>
+        <property name="cuba.rest.maxUploadSize" value="20971520"/>
     </module>
     <module name="portal" dependsOn="global" blocks="portal">
         <artifact name="restapi-portal" appJar="true"/>
@@ -32,5 +41,14 @@
                   value="+com/haulmont/addon/restapi/portal-security-spring.xml com/haulmont/addon/restapi/portal-spring.xml"/>
         <property name="cuba.dispatcherSpringContextConfig"
                   value="+com/haulmont/addon/restapi/portal-dispatcher-spring.xml"/>
+        <property name="cuba.rest.client.id" value="client"/>
+        <property name="cuba.rest.client.secret" value="{noop}secret"/>
+        <property name="cuba.rest.client.tokenExpirationTimeSec" value="43200"/>
+        <property name="cuba.rest.client.refreshTokenExpirationTimeSec" value="31536000"/>
+        <property name="cuba.rest.client.authorizedGrantTypes" value="password,external,refresh_token"/>
+        <property name="cuba.rest.supportRefreshToken" value="true"/>
+        <property name="cuba.rest.reuseRefreshToken" value="true"/>
+        <property name="cuba.rest.allowedOrigins" value="*"/>
+        <property name="cuba.rest.maxUploadSize" value="20971520"/>
     </module>
 </app-component>
