@@ -1,7 +1,5 @@
-package com.haulmont.addon.restapi.security;
-
 /*
- * Copyright (c) 2008-2017 Haulmont.
+ * Copyright (c) 2008-2019 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +13,8 @@ package com.haulmont.addon.restapi.security;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+package com.haulmont.addon.restapi.security;
 
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Transaction;
