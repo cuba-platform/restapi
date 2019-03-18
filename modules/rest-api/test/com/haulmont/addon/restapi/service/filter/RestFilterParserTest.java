@@ -21,6 +21,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.client.testsupport.CubaClientTestCase;
 import com.haulmont.cuba.core.global.filter.OpManagerImpl;
 import mockit.Expectations;
+import mockit.Mocked;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Assert;
 import org.junit.Before;
@@ -44,6 +45,10 @@ public class RestFilterParserTest extends CubaClientTestCase {
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
+
+    @SuppressWarnings("unused")
+    @Mocked
+    private RandomStringUtils randomStringUtils;
 
     @SuppressWarnings("ReassignmentInjectVariable")
     @Before
