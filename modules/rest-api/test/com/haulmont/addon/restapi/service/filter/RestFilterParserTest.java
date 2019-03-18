@@ -16,12 +16,11 @@
 
 package com.haulmont.addon.restapi.service.filter;
 
-
 import com.haulmont.addon.restapi.service.filter.testmodel.TestEnum;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.client.testsupport.CubaClientTestCase;
 import com.haulmont.cuba.core.global.filter.OpManagerImpl;
-import mockit.*;
+import mockit.Expectations;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Assert;
 import org.junit.Before;
@@ -39,9 +38,6 @@ import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 
-
-/**
- */
 public class RestFilterParserTest extends CubaClientTestCase {
 
     private RestFilterParser restFilterParser;
@@ -49,9 +45,7 @@ public class RestFilterParserTest extends CubaClientTestCase {
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
-    @Mocked
-    private RandomStringUtils randomStringUtils;
-
+    @SuppressWarnings("ReassignmentInjectVariable")
     @Before
     public void setUp() {
         addEntityPackage("com.haulmont.cuba");
@@ -158,6 +152,7 @@ public class RestFilterParserTest extends CubaClientTestCase {
 
         Map<String, Object> queryParameters = parseResult.getQueryParameters();
 
+        //noinspection unchecked
         List<Integer> param1Value = (List<Integer>) queryParameters.get("paramName1");
         assertEquals(Arrays.asList(1, 2, 3), param1Value);
     }

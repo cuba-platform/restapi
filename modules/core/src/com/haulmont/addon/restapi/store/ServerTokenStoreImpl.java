@@ -738,9 +738,9 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
 
     protected static class TokenExpiry implements Delayed {
 
-        private final long expiry;
+        protected final long expiry;
 
-        private final String value;
+        protected final String value;
 
         public TokenExpiry(String value, Date date) {
             this.value = value;

@@ -16,7 +16,5 @@
   -->
 
 <metadata xmlns="http://schemas.haulmont.com/cuba/metadata.xsd">
-
     <metadata-model root-package="com.haulmont.addon.restapi" namespace="restapi"/>
-
 </metadata>

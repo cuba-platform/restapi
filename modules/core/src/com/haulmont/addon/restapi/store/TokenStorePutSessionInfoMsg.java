@@ -24,6 +24,7 @@ import java.io.Serializable;
  * Cluster message containing an information about the mapping between token value and middleware session
  */
 public class TokenStorePutSessionInfoMsg implements Serializable {
+
     protected String tokenValue;
     protected RestUserSessionInfo sessionInfo;
 

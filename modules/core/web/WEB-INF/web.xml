@@ -17,9 +17,9 @@
   -->
 
 <web-app xmlns="http://java.sun.com/xml/ns/javaee"
-           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-           xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
-           version="3.0">
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+         version="3.0">
 
     <!-- Application properties config files -->
     <context-param>
@@ -30,11 +30,13 @@
             "file:${catalina.base}/conf/restapi-core/local.app.properties"
         </param-value>
     </context-param>
+
     <!--Application components-->
     <context-param>
         <param-name>appComponents</param-name>
         <param-value>com.haulmont.cuba</param-value>
     </context-param>
+
     <listener>
         <listener-class>com.haulmont.cuba.core.sys.AppContextLoader</listener-class>
     </listener>
@@ -49,5 +51,4 @@
         <servlet-name>remoting</servlet-name>
         <url-pattern>/remoting/*</url-pattern>
     </servlet-mapping>
-
 </web-app>

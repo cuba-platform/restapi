@@ -26,6 +26,7 @@ import com.haulmont.cuba.security.global.LoginException;
 @SupportedByClient
 @Logging(Logging.Type.BRIEF)
 public class RestApiAccessDeniedException extends LoginException {
+
     public RestApiAccessDeniedException(String message) {
         super(message);
     }

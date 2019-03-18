@@ -23,6 +23,7 @@ import java.util.Date;
  * Cluster message containing an information about the REST API access token to be stored
  */
 public class TokenStoreAddAccessTokenMsg implements Serializable {
+
     protected String accessTokenValue;
     protected String refreshTokenValue;
     protected byte[] accessTokenBytes;

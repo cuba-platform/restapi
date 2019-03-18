@@ -25,7 +25,6 @@ import java.util.UUID;
 public class RestUserSessionInfo implements Serializable {
 
     protected UUID id;
-
     protected Locale locale;
 
     public RestUserSessionInfo(UserSession userSession) {

@@ -21,9 +21,11 @@
 
     <context:annotation-config/>
 
-    <bean name="/restapi_ServerTokenStore" class="com.haulmont.cuba.core.sys.remoting.HttpServiceExporter">
+    <bean name="/restapi_ServerTokenStore"
+          class="com.haulmont.cuba.core.sys.remoting.HttpServiceExporter">
         <property name="service" ref="restapi_ServerTokenStore"/>
-        <property name="serviceInterface" value="com.haulmont.addon.restapi.rest.ServerTokenStore"/>
+        <property name="serviceInterface"
+                  value="com.haulmont.addon.restapi.rest.ServerTokenStore"/>
     </bean>
 
 </beans>

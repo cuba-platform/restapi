@@ -23,6 +23,7 @@ import java.util.Date;
  * Cluster message containing an information about the REST API refresh token to be stored
  */
 public class TokenStoreAddRefreshTokenMsg implements Serializable {
+
     protected String tokenValue;
     protected byte[] tokenBytes;
     protected byte[] authenticationBytes;

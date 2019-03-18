@@ -23,21 +23,26 @@
 
         <property name="cuba.metadataConfig" value="+com/haulmont/addon/restapi/metadata.xml"/>
     </module>
+
     <module name="core" dependsOn="global" blocks="core">
         <artifact name="restapi-core" appJar="true"/>
 
-        <property name="cuba.springContextConfig" value="+com/haulmont/addon/restapi/spring.xml"/>
-        <property name="cuba.remotingSpringContextConfig" value="+com/haulmont/addon/restapi/remoting-spring.xml"/>
+        <property name="cuba.springContextConfig"
+                  value="+com/haulmont/addon/restapi/spring.xml"/>
+        <property name="cuba.remotingSpringContextConfig"
+                  value="+com/haulmont/addon/restapi/remoting-spring.xml"/>
     </module>
+
     <module name="web" dependsOn="global" blocks="web">
         <artifact name="restapi-web" appJar="true"/>
         <artifact name="restapi-rest-api" appJar="true"/>
         <artifact name="restapi-web" classifier="web" ext="zip" configuration="webcontent"/>
 
-        <property name="cuba.restapiSpringContextConfig" value="+com/haulmont/addon/restapi/restapi-dispatcher-spring.xml"/>
-        <property name="cuba.springContextConfig" value="+com/haulmont/addon/restapi/web-spring.xml"/>
-        <property name="cuba.dispatcherSpringContextConfig"
-                  value="+com/haulmont/addon/restapi/web-dispatcher-spring.xml"/>
+        <property name="cuba.restapiSpringContextConfig"
+                  value="+com/haulmont/addon/restapi/restapi-dispatcher-spring.xml"/>
+        <property name="cuba.springContextConfig"
+                  value="+com/haulmont/addon/restapi/web-spring.xml"/>
+
         <property name="cuba.rest.client.id" value="client"/>
         <property name="cuba.rest.client.secret" value="{noop}secret"/>
         <property name="cuba.rest.client.tokenExpirationTimeSec" value="43200"/>
@@ -48,15 +53,18 @@
         <property name="cuba.rest.allowedOrigins" value="*"/>
         <property name="cuba.rest.maxUploadSize" value="20971520"/>
     </module>
+
     <module name="portal" dependsOn="global" blocks="portal">
         <artifact name="restapi-portal" appJar="true"/>
         <artifact name="restapi-rest-api" appJar="true"/>
 
-        <property name="cuba.restapiSpringContextConfig" value="+com/haulmont/addon/restapi/restapi-dispatcher-spring.xml"/>
+        <property name="cuba.restapiSpringContextConfig"
+                  value="+com/haulmont/addon/restapi/restapi-dispatcher-spring.xml"/>
         <property name="cuba.springContextConfig"
                   value="+com/haulmont/addon/restapi/portal-security-spring.xml com/haulmont/addon/restapi/portal-spring.xml"/>
         <property name="cuba.dispatcherSpringContextConfig"
                   value="+com/haulmont/addon/restapi/portal-dispatcher-spring.xml"/>
+
         <property name="cuba.rest.client.id" value="client"/>
         <property name="cuba.rest.client.secret" value="{noop}secret"/>
         <property name="cuba.rest.client.tokenExpirationTimeSec" value="43200"/>

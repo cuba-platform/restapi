@@ -9,3 +9,4 @@ modules/*/build/*
 .idea/*
 out
 test-run
+*.sql

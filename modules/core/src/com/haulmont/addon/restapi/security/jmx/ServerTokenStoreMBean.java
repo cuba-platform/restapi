@@ -26,6 +26,7 @@ import org.springframework.jmx.export.annotation.ManagedResource;
  */
 @ManagedResource(description = "Manages user REST API tokens")
 public interface ServerTokenStoreMBean {
+
     String NAME = "restapi_ServerTokenStoreMBean";
 
     @ManagedOperation(description = "Removes all REST API tokens for the specified user")

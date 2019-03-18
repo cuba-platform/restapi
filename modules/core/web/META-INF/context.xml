@@ -16,7 +16,6 @@
   -->
 
 <Context>
-
     <!-- Database connection -->
     <Resource
       name="jdbc/CubaDS"
@@ -31,5 +30,4 @@
 
     <!-- Switch off session serialization -->
     <Manager pathname=""/>
-
 </Context>

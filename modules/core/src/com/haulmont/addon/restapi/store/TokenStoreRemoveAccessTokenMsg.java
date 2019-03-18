@@ -22,6 +22,7 @@ import java.io.Serializable;
  * Cluster message containing an information about the access token to be revoked
  */
 public class TokenStoreRemoveAccessTokenMsg implements Serializable {
+
     protected String tokenValue;
 
     public TokenStoreRemoveAccessTokenMsg(String tokenValue) {
