@@ -1,4 +1,4 @@
-create table RESTAPI_ACCESS_TOKEN (
+create table SYS_ACCESS_TOKEN (
     ID uniqueidentifier not null,
     CREATE_TS datetime,
     --
@@ -14,7 +14,7 @@ create table RESTAPI_ACCESS_TOKEN (
     primary key (ID)
 )^
 
-create table RESTAPI_REFRESH_TOKEN (
+create table SYS_REFRESH_TOKEN (
     ID uniqueidentifier not null,
     CREATE_TS datetime,
     --

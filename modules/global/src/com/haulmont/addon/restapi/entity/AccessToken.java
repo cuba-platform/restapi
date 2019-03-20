@@ -24,8 +24,8 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import java.util.Date;
 
-@Entity(name = "restapi$AccessToken")
-@Table(name = "RESTAPI_ACCESS_TOKEN")
+@Entity(name = "sys$AccessToken")
+@Table(name = "SYS_ACCESS_TOKEN")
 @SystemLevel
 public class AccessToken extends BaseUuidEntity {
 

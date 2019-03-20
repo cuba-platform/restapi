@@ -24,8 +24,8 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import java.util.Date;
 
-@Entity(name = "restapi$RefreshToken")
-@Table(name = "RESTAPI_REFRESH_TOKEN")
+@Entity(name = "sys$RefreshToken")
+@Table(name = "SYS_REFRESH_TOKEN")
 @SystemLevel
 public class RefreshToken extends BaseUuidEntity {
 
