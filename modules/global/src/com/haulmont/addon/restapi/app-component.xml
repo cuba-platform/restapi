@@ -20,6 +20,7 @@
 
     <module name="global" blocks="*">
         <artifact name="restapi-global" appJar="true"/>
+        <artifact name="restapi-core" classifier="db" ext="zip" configuration="dbscripts"/>
 
         <property name="cuba.metadataConfig" value="+com/haulmont/addon/restapi/metadata.xml"/>
     </module>
@@ -27,6 +28,7 @@
     <module name="core" dependsOn="global" blocks="core">
         <artifact name="restapi-core" appJar="true"/>
 
+        <property name="cuba.persistenceConfig" value="+com/haulmont/addon/restapi/persistence.xml"/>
         <property name="cuba.springContextConfig"
                   value="+com/haulmont/addon/restapi/spring.xml"/>
         <property name="cuba.remotingSpringContextConfig"
@@ -61,9 +63,7 @@
         <property name="cuba.restapiSpringContextConfig"
                   value="+com/haulmont/addon/restapi/restapi-dispatcher-spring.xml"/>
         <property name="cuba.springContextConfig"
-                  value="+com/haulmont/addon/restapi/portal-security-spring.xml com/haulmont/addon/restapi/portal-spring.xml"/>
-        <property name="cuba.dispatcherSpringContextConfig"
-                  value="+com/haulmont/addon/restapi/portal-dispatcher-spring.xml"/>
+                  value="+com/haulmont/addon/restapi/portal-spring.xml"/>
 
         <property name="cuba.rest.client.id" value="client"/>
         <property name="cuba.rest.client.secret" value="{noop}secret"/>
