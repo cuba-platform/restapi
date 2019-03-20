@@ -17,7 +17,6 @@
 package com.haulmont.addon.restapi.entity;
 
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
-import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 
 import javax.persistence.Column;
