@@ -46,7 +46,7 @@
         <intercept-url pattern="/**" access="isAuthenticated()"/>
         <http-basic entry-point-ref="clientAuthenticationEntryPoint"/>
         <csrf disabled="true"/>
-        <cors configuration-source-ref="restapi_RestCorsSource"/>
+        <cors configuration-source-ref="cuba_RestCorsSource"/>
     </security:http>
 
     <bean id="clientAuthenticationEntryPoint"
@@ -109,7 +109,7 @@
         </property>
     </bean>
 
-    <bean id="restapi_ExternalOAuthTokenGranter" class="com.haulmont.addon.restapi.auth.ExternalOAuthTokenGranter">
+    <bean id="cuba_ExternalOAuthTokenGranter" class="com.haulmont.addon.restapi.auth.ExternalOAuthTokenGranter">
         <constructor-arg name="tokenServices" ref="tokenServices"/>
         <constructor-arg name="clientDetailsService" ref="clientDetailsService"/>
         <constructor-arg name="requestFactory" ref="oauthAuthorizationRequestManager"/>
@@ -127,7 +127,7 @@
                    entry-point-ref="oauthAuthenticationEntryPoint"
                    xmlns="http://www.springframework.org/schema/security">
         <csrf disabled="true"/>
-        <cors configuration-source-ref="restapi_RestCorsSource"/>
+        <cors configuration-source-ref="cuba_RestCorsSource"/>
     </security:http>
 
     <!-- LDAP auth -->
@@ -138,7 +138,7 @@
         <intercept-url pattern="/**" access="isAuthenticated()"/>
         <http-basic entry-point-ref="clientAuthenticationEntryPoint"/>
         <csrf disabled="true"/>
-        <cors configuration-source-ref="restapi_RestCorsSource"/>
+        <cors configuration-source-ref="cuba_RestCorsSource"/>
     </security:http>
 
     <!-- API controllers endpoints -->
@@ -156,28 +156,28 @@
         <intercept-url pattern="/rest/v2/messages/**" access="isAuthenticated()"/>
         <anonymous enabled="false"/>
         <csrf disabled="true"/>
-        <cors configuration-source-ref="restapi_RestCorsSource"/>
+        <cors configuration-source-ref="cuba_RestCorsSource"/>
 
         <custom-filter ref="firstRestEndpointFilter" before="FIRST"/>
         <custom-filter ref="resourceFilter" before="PRE_AUTH_FILTER"/>
-        <custom-filter ref="restapi_AnonymousAuthenticationFilter" after="PRE_AUTH_FILTER"/>
-        <custom-filter ref="restapi_RestLastSecurityFilter" position="LAST"/>
+        <custom-filter ref="cuba_AnonymousAuthenticationFilter" after="PRE_AUTH_FILTER"/>
+        <custom-filter ref="cuba_RestLastSecurityFilter" position="LAST"/>
     </security:http>
 
     <bean id="firstRestEndpointFilter" class="org.springframework.web.filter.CompositeFilter">
         <property name="filters">
             <list>
-                <ref bean="restapi_RestExceptionLoggingFilter"/>
+                <ref bean="cuba_RestExceptionLoggingFilter"/>
                 <ref bean="requestContextFilter"/>
             </list>
         </property>
     </bean>
 
-    <bean id="restapi_RestExceptionLoggingFilter" class="com.haulmont.addon.restapi.sys.RestExceptionLoggingFilter"/>
+    <bean id="cuba_RestExceptionLoggingFilter" class="com.haulmont.addon.restapi.sys.RestExceptionLoggingFilter"/>
 
-    <bean id="restapi_AnonymousAuthenticationFilter" class="com.haulmont.addon.restapi.auth.CubaAnonymousAuthenticationFilter"/>
+    <bean id="cuba_AnonymousAuthenticationFilter" class="com.haulmont.addon.restapi.auth.CubaAnonymousAuthenticationFilter"/>
 
-    <bean id="restapi_RestLastSecurityFilter" class="com.haulmont.addon.restapi.auth.CubaRestLastSecurityFilter"/>
+    <bean id="cuba_RestLastSecurityFilter" class="com.haulmont.addon.restapi.auth.CubaRestLastSecurityFilter"/>
 
     <bean id="oauthAuthenticationEntryPoint"
           class="org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint">
@@ -185,15 +185,16 @@
     </bean>
 
     <!-- The configuration defines a filter that handles CORS request first -->
-    <bean id="restapi_RestCorsSource" class="org.springframework.web.cors.UrlBasedCorsConfigurationSource">
+    <bean id="cuba_RestCorsSource"
+          class="org.springframework.web.cors.UrlBasedCorsConfigurationSource">
         <property name="corsConfigurations">
             <map>
-                <entry key="/**" value-ref="restapi_RestCorsConfig"/>
+                <entry key="/**" value-ref="cuba_RestCorsConfig"/>
             </map>
         </property>
     </bean>
 
-    <bean id="restapi_RestCorsConfig" class="org.springframework.web.cors.CorsConfiguration">
+    <bean id="cuba_RestCorsConfig" class="org.springframework.web.cors.CorsConfiguration">
         <property name="allowedOrigins" value="${cuba.rest.allowedOrigins}"/>
         <property name="allowedHeaders" value="*"/>
         <property name="allowedMethods" value="*"/>

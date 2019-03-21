@@ -39,7 +39,7 @@ public class RestAPIDispatcherServlet extends DispatcherServlet {
 
     private static final long serialVersionUID = -4884517938479910144L;
 
-    public static final String SPRING_CONTEXT_CONFIG = "cuba.restapiSpringContextConfig";
+    public static final String SPRING_CONTEXT_CONFIG = "cuba.restSpringContextConfig";
 
     /*
      * The field is used to prevent double initialization of the servlet.
