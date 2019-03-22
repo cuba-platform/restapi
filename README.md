@@ -1,10 +1,8 @@
 [![license](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg?style=flat)](http://www.apache.org/licenses/LICENSE-2.0)
+[![Build Status](https://travis-ci.org/cuba-platform/restapi.svg?branch=master)](https://travis-ci.org/cuba-platform/restapi)
+[![Documentation](https://img.shields.io/badge/documentation-online-03a9f4.svg)](https://github.com/cuba-platform/restapi/wiki)
 
-- [1. Overview](#overview)
-- [2. Installation](#installation)
-- [3. Usage](#usage)
-
-# 1. Overview <a name="overview"></a>
+# Overview
 
 The universal REST v2 API of the platform enables working with the platform by sending simple HTTP-request.
 
@@ -19,7 +17,7 @@ The universal REST API provides the following functionality:
 
 REST API uses the OAuth2 protocol for authentication and supports anonymous access.
 
-# 2. Installation <a name="installation"></a>
+# Installation
 
 To install the component in your project, do the following steps:
 
@@ -39,18 +37,10 @@ To install the component in your project, do the following steps:
 
     | Platform Version | Add-on Version |
     |------------------|----------------|
-    |7.0.x             | 0.1-SNAPSHOT   |
+    | 7.1-SNAPSHOT     | 0.1-SNAPSHOT   |
     
     Example: `com.haulmont.addon.restapi:restapi-global:0.1-SNAPSHOT`
 
 5. Click **OK** to save the project properties.
 
 After that the REST v2 API functions will be available at the `{host:port}/{module prefix}/rest/v2/*` URL.
-
-# 3. Usage <a name="usage"></a>
-
-All functions require an authenticated user session, which means that you must perform the login first and then pass the resulting session identifier to subsequent requests.
-
-The detailed documentation of the API endpoints: http://files.cuba-platform.com/swagger/7.0.
-
-The [Using REST API](https://doc.cuba-platform.com/manual-7.0/rest_api_v2_usage_example.html) cookbook section contains a lot of examples demonstrating REST API features in action. Below we provide a formal description of some features and configuration options.
