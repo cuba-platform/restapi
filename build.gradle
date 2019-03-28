@@ -19,6 +19,17 @@ buildscript {
     ext.cubaVersion = '7.1-SNAPSHOT'
     repositories {
         mavenLocal()
+
+        if (System.getenv('HAULMONT_REPOSITORY_URL')) {
+            maven {
+                credentials {
+                    username System.getenv('HAULMONT_REPOSITORY_USER')
+                    password System.getenv('HAULMONT_REPOSITORY_PASSWORD')
+                }
+                url System.getenv('HAULMONT_REPOSITORY_URL')
+            }
+        }
+        
         jcenter()
 
         /*
