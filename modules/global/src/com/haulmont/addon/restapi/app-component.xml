@@ -20,15 +20,15 @@
 
     <module name="global" blocks="*">
         <artifact name="restapi-global" appJar="true"/>
-        <artifact name="restapi-core" classifier="db" ext="zip" configuration="dbscripts"/>
 
+        <property name="cuba.persistenceConfig" value="+com/haulmont/addon/restapi/persistence.xml"/>
         <property name="cuba.metadataConfig" value="+com/haulmont/addon/restapi/metadata.xml"/>
     </module>
 
     <module name="core" dependsOn="global" blocks="core">
         <artifact name="restapi-core" appJar="true"/>
+        <artifact name="restapi-core" classifier="db" ext="zip" configuration="dbscripts"/>
 
-        <property name="cuba.persistenceConfig" value="+com/haulmont/addon/restapi/persistence.xml"/>
         <property name="cuba.springContextConfig"
                   value="+com/haulmont/addon/restapi/spring.xml"/>
         <property name="cuba.remotingSpringContextConfig"
