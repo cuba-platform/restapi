@@ -28,20 +28,17 @@ buildscript {
                 }
                 url System.getenv('HAULMONT_REPOSITORY_URL')
             }
-        }
-        
-        jcenter()
+        } else {
+            jcenter()
+            
+            /*maven { url "https://dl.bintray.com/cuba-platform/main" }*/
 
-        /*
-         * maven { url "https://dl.bintray.com/cuba-platform/main" }
-         *
-         * TODO: temprorary - use Bintray later
-         */
-        maven {
-            url 'https://repo.cuba-platform.com/content/groups/work'
-            credentials {
-                username 'cuba'
-                password 'cuba123'
+            maven {
+                url 'https://repo.cuba-platform.com/content/groups/work'
+                credentials {
+                    username 'cuba'
+                    password 'cuba123'
+                }
             }
         }
     }
