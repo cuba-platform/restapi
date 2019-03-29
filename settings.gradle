@@ -15,9 +15,15 @@
  *
  */
 
-rootProject.name = 'rest-addon'
+rootProject.name = 'restapi'
 def modulePrefix = 'restapi'
-include(":${modulePrefix}-global", ":${modulePrefix}-core", ":${modulePrefix}-web", ":${modulePrefix}-rest-api", ":${modulePrefix}-portal")
+
+include(":${modulePrefix}-global",
+        ":${modulePrefix}-core",
+        ":${modulePrefix}-web",
+        ":${modulePrefix}-rest-api",
+        ":${modulePrefix}-portal")
+
 project(":${modulePrefix}-global").projectDir = new File(settingsDir, 'modules/global')
 project(":${modulePrefix}-core").projectDir = new File(settingsDir, 'modules/core')
 project(":${modulePrefix}-web").projectDir = new File(settingsDir, 'modules/web')
