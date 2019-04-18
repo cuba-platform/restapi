@@ -13,14 +13,17 @@
   ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
-  ~
   -->
 
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:task="http://www.springframework.org/schema/task"
        xmlns:context="http://www.springframework.org/schema/context">
 
-    <context:component-scan base-package="com.haulmont.addon.restapi.web"/>
+    <context:component-scan base-package="com.haulmont.addon.restapi">
+        <context:exclude-filter type="regex" expression="com\.haulmont\.addon\.restapi\.api\..*"/>
+        <context:exclude-filter type="regex" expression="com\.haulmont\.addon\.restapi\.rest\..*"/>
+        <context:exclude-filter type="regex" expression="com\.haulmont\.addon\.restapi\.store\..*"/>
+    </context:component-scan>
 
     <!--cuba_PortalAnonymousSessionHolder-->
     <bean id="anonymousSessionPingScheduler" class="org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler">

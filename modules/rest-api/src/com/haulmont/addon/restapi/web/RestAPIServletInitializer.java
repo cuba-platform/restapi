@@ -16,7 +16,7 @@
 
 package com.haulmont.addon.restapi.web;
 
-import com.haulmont.addon.restapi.rest.sys.RestAPIDispatcherServlet;
+import com.haulmont.addon.restapi.api.sys.RestAPIDispatcherServlet;
 import com.haulmont.cuba.core.sys.AbstractWebAppContextLoader;
 import com.haulmont.cuba.core.sys.servlet.ServletRegistrationManager;
 import com.haulmont.cuba.core.sys.servlet.events.ServletContextInitializedEvent;

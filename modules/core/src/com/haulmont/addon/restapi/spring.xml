@@ -13,7 +13,6 @@
   ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
-  ~
   -->
 
 <beans xmlns="http://www.springframework.org/schema/beans"
@@ -21,7 +20,9 @@
        xmlns:task="http://www.springframework.org/schema/task">
 
     <!-- Annotation-based beans -->
-    <context:component-scan base-package="com.haulmont.addon.restapi"/>
+    <context:component-scan base-package="com.haulmont.addon.restapi">
+        <context:exclude-filter type="regex" expression="com\.haulmont\.addon\.restapi\.api\..*"/>
+    </context:component-scan>
 
     <bean id="restapi_MBeanExporter" class="com.haulmont.cuba.core.sys.jmx.MBeanExporter" lazy-init="false">
         <property name="beans">

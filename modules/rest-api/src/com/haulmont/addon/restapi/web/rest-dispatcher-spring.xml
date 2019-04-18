@@ -24,7 +24,7 @@
     <bean class="com.haulmont.cuba.core.sys.CubaPropertyPlaceholderConfigurer"/>
 
     <context:annotation-config/>
-    <context:component-scan base-package="com.haulmont.addon.restapi"/>
+    <context:component-scan base-package="com.haulmont.addon.restapi.api"/>
 
     <!-- Override web implementation bean in main context -->
     <bean id="cuba_Events" class="com.haulmont.cuba.core.sys.EventsImpl"/>
@@ -34,7 +34,7 @@
     <mvc:interceptors>
         <mvc:interceptor>
             <mvc:mapping path="/**"/>
-            <bean class="com.haulmont.addon.restapi.rest.sys.RestCleanupInterceptor"/>
+            <bean class="com.haulmont.addon.restapi.api.sys.RestCleanupInterceptor"/>
         </mvc:interceptor>
     </mvc:interceptors>
 
@@ -91,9 +91,9 @@
         <security:authentication-provider ref="userAuthenticationProvider"/>
     </security:authentication-manager>
 
-    <bean id="userAuthenticationProvider" class="com.haulmont.addon.restapi.rest.auth.CubaUserAuthenticationProvider"/>
+    <bean id="userAuthenticationProvider" class="com.haulmont.addon.restapi.api.auth.CubaUserAuthenticationProvider"/>
 
-    <bean id="tokenEnhancer" class="com.haulmont.addon.restapi.rest.auth.CubaTokenEnhancer"/>
+    <bean id="tokenEnhancer" class="com.haulmont.addon.restapi.api.auth.CubaTokenEnhancer"/>
 
     <bean id="tokenServices" class="org.springframework.security.oauth2.provider.token.DefaultTokenServices">
         <property name="supportRefreshToken" value="${cuba.rest.supportRefreshToken}"/>
@@ -103,13 +103,13 @@
         <property name="tokenEnhancer" ref="tokenEnhancer"/>
     </bean>
 
-    <bean id="tokenStore" class="com.haulmont.addon.restapi.rest.auth.ClientProxyTokenStore">
+    <bean id="tokenStore" class="com.haulmont.addon.restapi.api.auth.ClientProxyTokenStore">
         <property name="authenticationKeyGenerator">
-            <bean class="com.haulmont.addon.restapi.rest.auth.UniqueAuthenticationKeyGenerator"/>
+            <bean class="com.haulmont.addon.restapi.api.auth.UniqueAuthenticationKeyGenerator"/>
         </property>
     </bean>
 
-    <bean id="cuba_ExternalOAuthTokenGranter" class="com.haulmont.addon.restapi.rest.auth.ExternalOAuthTokenGranter">
+    <bean id="cuba_ExternalOAuthTokenGranter" class="com.haulmont.addon.restapi.api.auth.ExternalOAuthTokenGranter">
         <constructor-arg name="tokenServices" ref="tokenServices"/>
         <constructor-arg name="clientDetailsService" ref="clientDetailsService"/>
         <constructor-arg name="requestFactory" ref="oauthAuthorizationRequestManager"/>
@@ -173,11 +173,11 @@
         </property>
     </bean>
 
-    <bean id="cuba_RestExceptionLoggingFilter" class="com.haulmont.addon.restapi.rest.sys.RestExceptionLoggingFilter"/>
+    <bean id="cuba_RestExceptionLoggingFilter" class="com.haulmont.addon.restapi.api.sys.RestExceptionLoggingFilter"/>
 
-    <bean id="cuba_AnonymousAuthenticationFilter" class="com.haulmont.addon.restapi.rest.auth.CubaAnonymousAuthenticationFilter"/>
+    <bean id="cuba_AnonymousAuthenticationFilter" class="com.haulmont.addon.restapi.api.auth.CubaAnonymousAuthenticationFilter"/>
 
-    <bean id="cuba_RestLastSecurityFilter" class="com.haulmont.addon.restapi.rest.auth.CubaRestLastSecurityFilter"/>
+    <bean id="cuba_RestLastSecurityFilter" class="com.haulmont.addon.restapi.api.auth.CubaRestLastSecurityFilter"/>
 
     <bean id="oauthAuthenticationEntryPoint"
           class="org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint">

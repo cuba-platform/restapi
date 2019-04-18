@@ -12,7 +12,6 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 buildscript {
@@ -314,3 +313,16 @@ task restart(dependsOn: ['stop', ":${modulePrefix}-core:deploy", ":${modulePrefi
         start.execute()
     }
 }
+
+task buildWar(type: CubaWarBuilding) {
+    appProperties = ['cuba.automaticDatabaseUpdate': true]
+    webXmlPath = 'modules/web/web/WEB-INF/single-war-web.xml'
+    appHome = '../app_home'
+}
+
+task copyWarToTomcat(type: Copy) {
+    from "${project.buildDir}/distributions/war"
+    include "*.war"
+    into "${cuba.tomcat.dir}/webapps"
+}
+
