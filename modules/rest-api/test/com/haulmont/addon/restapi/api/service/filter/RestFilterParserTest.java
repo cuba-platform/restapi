@@ -54,7 +54,7 @@ public class RestFilterParserTest extends CubaClientTestCase {
     @Before
     public void setUp() {
         addEntityPackage("com.haulmont.cuba");
-        addEntityPackage("com.haulmont.addon.restapi.rest.service.filter.testmodel");
+        addEntityPackage("com.haulmont.addon.restapi.api.service.filter.testmodel");
         setupInfrastructure();
 
         restFilterParser = new RestFilterParser();
