@@ -38,7 +38,7 @@ import javax.validation.ConstraintViolationException;
 import javax.validation.ValidationException;
 import java.util.*;
 
-@ControllerAdvice("com.haulmont.addon.restapi.controllers")
+@ControllerAdvice("com.haulmont.addon.restapi.api.controllers")
 public class RestControllerExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(RestControllerExceptionHandler.class);

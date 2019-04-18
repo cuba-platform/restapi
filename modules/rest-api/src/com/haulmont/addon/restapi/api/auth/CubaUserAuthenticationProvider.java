@@ -85,7 +85,7 @@ public class CubaUserAuthenticationProvider implements AuthenticationProvider {
     @Inject
     protected GlobalConfig globalConfig;
 
-    protected static final String MSG_PACK = "com.haulmont.addon.restapi.auth";
+    protected static final String MSG_PACK = "com.haulmont.addon.restapi.api.auth";
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
