@@ -314,15 +314,3 @@ task restart(dependsOn: ['stop', ":${modulePrefix}-core:deploy", ":${modulePrefi
     }
 }
 
-task buildWar(type: CubaWarBuilding) {
-    appProperties = ['cuba.automaticDatabaseUpdate': true]
-    webXmlPath = 'modules/web/web/WEB-INF/single-war-web.xml'
-    appHome = '../app_home'
-}
-
-task copyWarToTomcat(type: Copy) {
-    from "${project.buildDir}/distributions/war"
-    include "*.war"
-    into "${cuba.tomcat.dir}/webapps"
-}
-
