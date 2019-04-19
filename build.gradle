@@ -30,7 +30,7 @@ buildscript {
             }
         } else {
             jcenter()
-            
+
             /*maven { url "https://dl.bintray.com/cuba-platform/main" }*/
 
             maven {
@@ -130,6 +130,12 @@ configure(globalModule) {
         manifest {
             attributes('App-Component-Id': cuba.artifact.group)
             attributes('App-Component-Version': cuba.artifact.version + (cuba.artifact.isSnapshot ? '-SNAPSHOT' : ''))
+        }
+    }
+
+    entitiesEnhancing {
+        main {
+            enabled = true
         }
     }
 }
