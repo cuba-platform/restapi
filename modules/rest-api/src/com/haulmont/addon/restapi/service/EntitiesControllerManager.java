@@ -23,12 +23,12 @@ import com.haulmont.addon.restapi.common.RestControllerUtils;
 import com.haulmont.addon.restapi.config.RestApiConfig;
 import com.haulmont.addon.restapi.controllers.EntitiesController;
 import com.haulmont.addon.restapi.exception.RestAPIException;
-import com.haulmont.addon.restapi.service.filter.data.EntitiesSearchResult;
-import com.haulmont.addon.restapi.transform.JsonTransformationDirection;
-import com.haulmont.addon.restapi.service.filter.data.CreatedEntityInfo;
 import com.haulmont.addon.restapi.service.filter.RestFilterParseException;
 import com.haulmont.addon.restapi.service.filter.RestFilterParseResult;
 import com.haulmont.addon.restapi.service.filter.RestFilterParser;
+import com.haulmont.addon.restapi.service.filter.data.CreatedEntityInfo;
+import com.haulmont.addon.restapi.service.filter.data.EntitiesSearchResult;
+import com.haulmont.addon.restapi.transform.JsonTransformationDirection;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.client.sys.PersistenceManagerClient;
 import com.haulmont.cuba.core.app.importexport.EntityImportException;
@@ -463,7 +463,11 @@ public class EntitiesControllerManager {
         }
 
         if (mainEntity != null) {
-            String json = entitySerializationAPI.toJson(mainEntity);
+            //we pass the EntitySerializationOption.DO_NOT_SERIALIZE_RO_NON_PERSISTENT_PROPERTIES because for create and update operations in the
+            //result JSON we don't want to return results for entity methods annotated with @MetaProperty annotation. We do this because such methods
+            //may use other entities properties (references to other entities) and as a result we get an UnfetchedAttributeException while
+            //producing the JSON for response
+            String json = entitySerializationAPI.toJson(mainEntity, null, EntitySerializationOption.DO_NOT_SERIALIZE_RO_NON_PERSISTENT_PROPERTIES);
             json = restControllerUtils.transformJsonIfRequired(metaClass.getName(), version, JsonTransformationDirection.TO_VERSION, json);
             return new CreatedEntityInfo(mainEntity.getId(), json);
         }
