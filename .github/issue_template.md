@@ -1,6 +1,6 @@
 <!-- 
-Please use https://www.cuba-platform.com/discuss for discussion, support, and reporting problems about Restapi-addon.
-This repository is only for issues of the Restapi-addon.
+Please use https://www.cuba-platform.com/discuss for discussion, support, and reporting problems about REST API addon.
+This repository is only for issues of the REST API addon.
 
 When creating an issue, provide as much as possible of the following information: 
 -->
