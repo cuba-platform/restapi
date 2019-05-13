@@ -41,7 +41,7 @@
         <artifact name="restapi-web" classifier="web" ext="zip" configuration="webcontent"/>
 
         <property name="cuba.restSpringContextConfig"
-                  value="+com/haulmont/addon/restapi/restapi-dispatcher-spring.xml"/>
+                  value="+com/haulmont/addon/restapi/rest-dispatcher-spring.xml"/>
         <property name="cuba.springContextConfig"
                   value="+com/haulmont/addon/restapi/web-spring.xml"/>
 
@@ -61,7 +61,7 @@
         <artifact name="restapi-rest-api" appJar="true"/>
 
         <property name="cuba.restSpringContextConfig"
-                  value="+com/haulmont/addon/restapi/restapi-dispatcher-spring.xml"/>
+                  value="+com/haulmont/addon/restapi/rest-dispatcher-spring.xml"/>
         <property name="cuba.springContextConfig"
                   value="+com/haulmont/addon/restapi/portal-spring.xml"/>
 
