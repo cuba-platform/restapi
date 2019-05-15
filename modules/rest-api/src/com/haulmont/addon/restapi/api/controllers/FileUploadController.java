@@ -111,7 +111,7 @@ public class FileUploadController {
         }
     }
 
-    private void fileExistence(@RequestParam(required = false) String id) {
+    protected void fileExistence(@Nullable String id) {
         if(!Strings.isNullOrEmpty(id)) {
             MetaClass metaClass = metadata.getClass(FileDescriptor.class);
             LoadContext<FileDescriptor> ctx = new LoadContext<>(metaClass);
@@ -119,9 +119,9 @@ public class FileUploadController {
             FileDescriptor fileDescriptor = dataManager.load(ctx);
 
             if (fileDescriptor != null) {
-                log.error("FileDescription with id = {} already exists", id);
+                log.error("FileDescriptor with id = {} already exists", id);
                 throw new RestAPIException("File already exists",
-                        String.format("FileDescription id = %s already exists", id),
+                        String.format("FileDescriptor with id = %s already exists", id),
                         HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }
