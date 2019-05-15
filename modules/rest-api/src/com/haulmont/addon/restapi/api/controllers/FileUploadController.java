@@ -21,7 +21,6 @@ import com.haulmont.addon.restapi.api.exception.RestAPIException;
 import com.haulmont.addon.restapi.api.service.filter.data.FileInfo;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.app.DataService;
-import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.remoting.discovery.ServerSelector;
@@ -112,7 +111,7 @@ public class FileUploadController {
     }
 
     protected void fileExistence(@Nullable String id) {
-        if(!Strings.isNullOrEmpty(id)) {
+        if (!Strings.isNullOrEmpty(id)) {
             MetaClass metaClass = metadata.getClass(FileDescriptor.class);
             LoadContext<FileDescriptor> ctx = new LoadContext<>(metaClass);
             ctx.setId(UUID.fromString(id));
