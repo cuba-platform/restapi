@@ -18,11 +18,13 @@ package com.haulmont.addon.restapi.api.controllers;
 
 import com.google.common.base.Strings;
 import com.haulmont.addon.restapi.api.exception.RestAPIException;
+import com.haulmont.addon.restapi.api.service.filter.data.FileInfo;
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.app.DataService;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.remoting.discovery.ServerSelector;
-import com.haulmont.addon.restapi.api.service.filter.data.FileInfo;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,6 +46,7 @@ import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import java.io.InputStream;
 import java.util.Collections;
+import java.util.UUID;
 
 /**
  * REST API controller that is used for uploading files
@@ -74,14 +77,20 @@ public class FileUploadController {
     @Inject
     protected FileLoader fileLoader;
 
+    @Inject
+    protected DataManager dataManager;
+
+
     /**
      * Method for simple file upload. File contents are placed in the request body. Optional file name parameter is
      * passed as a query param.
      */
     @PostMapping(consumes = "!multipart/form-data")
     public ResponseEntity<FileInfo> uploadFile(HttpServletRequest request,
+                                               @RequestParam(required = false) String id,
                                                @RequestParam(required = false) String name) {
         try {
+            fileExistence(id);
             String contentLength = request.getHeader("Content-Length");
 
             long size = 0;
@@ -89,8 +98,7 @@ public class FileUploadController {
                 size = Long.parseLong(contentLength);
             } catch (NumberFormatException ignored) {
             }
-
-            FileDescriptor fd = createFileDescriptor(name, size);
+            FileDescriptor fd = createFileDescriptor(id, name, size);
 
             ServletInputStream is = request.getInputStream();
             uploadToMiddleware(is, fd);
@@ -103,20 +111,38 @@ public class FileUploadController {
         }
     }
 
+    private void fileExistence(@RequestParam(required = false) String id) {
+        if(!Strings.isNullOrEmpty(id)) {
+            MetaClass metaClass = metadata.getClass(FileDescriptor.class);
+            LoadContext<FileDescriptor> ctx = new LoadContext<>(metaClass);
+            ctx.setId(UUID.fromString(id));
+            FileDescriptor fileDescriptor = dataManager.load(ctx);
+
+            if (fileDescriptor != null) {
+                log.error("FileDescription with id = {} already exists", id);
+                throw new RestAPIException("File already exists",
+                        String.format("FileDescription id = %s already exists", id),
+                        HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        }
+    }
+
     /**
      * Method for multipart file upload. It expects the file contents to be passed in the part called 'file'
      */
     @PostMapping(consumes = "multipart/form-data")
     public ResponseEntity<FileInfo> uploadFile(@RequestParam("file") MultipartFile file,
+                                               @RequestParam(required = false) String id,
                                                @RequestParam(required = false) String name,
                                                HttpServletRequest request) {
         try {
+            fileExistence(id);
             if (Strings.isNullOrEmpty(name)) {
                 name = file.getOriginalFilename();
             }
 
             long size = file.getSize();
-            FileDescriptor fd = createFileDescriptor(name, size);
+            FileDescriptor fd = createFileDescriptor(id, name, size);
 
             InputStream is = file.getInputStream();
             uploadToMiddleware(is, fd);
@@ -146,8 +172,11 @@ public class FileUploadController {
         dataService.commit(commitContext);
     }
 
-    protected FileDescriptor createFileDescriptor(@Nullable String fileName, long size) {
+    protected FileDescriptor createFileDescriptor(@Nullable String id, @Nullable String fileName, long size) {
         FileDescriptor fd = metadata.create(FileDescriptor.class);
+        if (!Strings.isNullOrEmpty(id)) {
+            fd.setId(UUID.fromString(id));
+        }
         if (Strings.isNullOrEmpty(fileName)) {
             fileName = fd.getId().toString();
         }
