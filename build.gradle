@@ -15,7 +15,7 @@
  */
 
 buildscript {
-    ext.cubaVersion = '7.1-SNAPSHOT'
+    ext.cubaVersion = '7.2-SNAPSHOT'
     repositories {
         mavenLocal()
 
@@ -73,7 +73,7 @@ bom.load file('modules/global/src/com/haulmont/addon/restapi/bom.properties')
 cuba {
     artifact {
         group = 'com.haulmont.addon.restapi'
-        version = '7.1'
+        version = project.cubaVersion.replace('-SNAPSHOT', '')
         isSnapshot = true
     }
     tomcat {
