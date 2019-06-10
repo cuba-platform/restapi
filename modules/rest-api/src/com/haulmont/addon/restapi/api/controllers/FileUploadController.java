@@ -19,7 +19,6 @@ package com.haulmont.addon.restapi.api.controllers;
 import com.google.common.base.Strings;
 import com.haulmont.addon.restapi.api.exception.RestAPIException;
 import com.haulmont.addon.restapi.api.service.filter.data.FileInfo;
-import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.*;
@@ -89,7 +88,7 @@ public class FileUploadController {
                                                @RequestParam(required = false) String id,
                                                @RequestParam(required = false) String name) {
         try {
-            fileExistence(id);
+            checkFileExists(id);
             String contentLength = request.getHeader("Content-Length");
 
             long size = 0;
@@ -110,19 +109,19 @@ public class FileUploadController {
         }
     }
 
-    protected void fileExistence(@Nullable String id) {
-        if (!Strings.isNullOrEmpty(id)) {
-            MetaClass metaClass = metadata.getClass(FileDescriptor.class);
-            LoadContext<FileDescriptor> ctx = new LoadContext<>(metaClass);
-            ctx.setId(UUID.fromString(id));
-            FileDescriptor fileDescriptor = dataManager.load(ctx);
+    protected void checkFileExists(@Nullable String id) {
+        if (Strings.isNullOrEmpty(id)) {
+            return;
+        }
+        LoadContext<FileDescriptor> ctx = new LoadContext<>(FileDescriptor.class)
+                .setId(UUID.fromString(id));
+        FileDescriptor fileDescriptor = dataManager.load(ctx);
 
-            if (fileDescriptor != null) {
-                log.error("FileDescriptor with id = {} already exists", id);
-                throw new RestAPIException("File already exists",
-                        String.format("FileDescriptor with id = %s already exists", id),
-                        HttpStatus.INTERNAL_SERVER_ERROR);
-            }
+        if (fileDescriptor != null) {
+            log.error("File with id = {} already exists", id);
+            throw new RestAPIException("File already exists",
+                    String.format("File with id = %s already exists", id),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -135,7 +134,7 @@ public class FileUploadController {
                                                @RequestParam(required = false) String name,
                                                HttpServletRequest request) {
         try {
-            fileExistence(id);
+            checkFileExists(id);
             if (Strings.isNullOrEmpty(name)) {
                 name = file.getOriginalFilename();
             }
