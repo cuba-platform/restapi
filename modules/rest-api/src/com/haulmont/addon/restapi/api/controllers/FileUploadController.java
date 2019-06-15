@@ -45,6 +45,7 @@ import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import java.io.InputStream;
 import java.util.Collections;
+import java.util.UUID;
 
 /**
  * REST API controller that is used for uploading files
@@ -75,6 +76,9 @@ public class FileUploadController {
     @Inject
     protected FileLoader fileLoader;
 
+    @Inject
+    protected DataManager dataManager;
+
     protected static final String FILE_UPLOAD_PERMISSION_NAME = "cuba.restApi.fileUpload.enabled";
 
     /**
@@ -83,9 +87,11 @@ public class FileUploadController {
      */
     @PostMapping(consumes = "!multipart/form-data")
     public ResponseEntity<FileInfo> uploadFile(HttpServletRequest request,
+                                               @RequestParam(required = false) String id,
                                                @RequestParam(required = false) String name) {
         checkFileUploadPermission();
         try {
+            checkFileExists(id);
             String contentLength = request.getHeader("Content-Length");
 
             long size = 0;
@@ -93,8 +99,7 @@ public class FileUploadController {
                 size = Long.parseLong(contentLength);
             } catch (NumberFormatException ignored) {
             }
-
-            FileDescriptor fd = createFileDescriptor(name, size);
+            FileDescriptor fd = createFileDescriptor(id, name, size);
 
             ServletInputStream is = request.getInputStream();
             uploadToMiddleware(is, fd);
@@ -107,21 +112,39 @@ public class FileUploadController {
         }
     }
 
+    protected void checkFileExists(@Nullable String id) {
+        if (Strings.isNullOrEmpty(id)) {
+            return;
+        }
+        LoadContext<FileDescriptor> ctx = new LoadContext<>(FileDescriptor.class)
+                .setId(UUID.fromString(id));
+        FileDescriptor fileDescriptor = dataManager.load(ctx);
+
+        if (fileDescriptor != null) {
+            log.error("File with id = {} already exists", id);
+            throw new RestAPIException("File already exists",
+                    String.format("File with id = %s already exists", id),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     /**
      * Method for multipart file upload. It expects the file contents to be passed in the part called 'file'
      */
     @PostMapping(consumes = "multipart/form-data")
     public ResponseEntity<FileInfo> uploadFile(@RequestParam("file") MultipartFile file,
+                                               @RequestParam(required = false) String id,
                                                @RequestParam(required = false) String name,
                                                HttpServletRequest request) {
         checkFileUploadPermission();
         try {
+            checkFileExists(id);
             if (Strings.isNullOrEmpty(name)) {
                 name = file.getOriginalFilename();
             }
 
             long size = file.getSize();
-            FileDescriptor fd = createFileDescriptor(name, size);
+            FileDescriptor fd = createFileDescriptor(id, name, size);
 
             InputStream is = file.getInputStream();
             uploadToMiddleware(is, fd);
@@ -159,8 +182,11 @@ public class FileUploadController {
         dataService.commit(commitContext);
     }
 
-    protected FileDescriptor createFileDescriptor(@Nullable String fileName, long size) {
+    protected FileDescriptor createFileDescriptor(@Nullable String id, @Nullable String fileName, long size) {
         FileDescriptor fd = metadata.create(FileDescriptor.class);
+        if (!Strings.isNullOrEmpty(id)) {
+            fd.setId(UUID.fromString(id));
+        }
         if (Strings.isNullOrEmpty(fileName)) {
             fileName = fd.getId().toString();
         }
