@@ -23,6 +23,7 @@ import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.remoting.discovery.ServerSelector;
+import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,6 +79,7 @@ public class FileUploadController {
     @Inject
     protected DataManager dataManager;
 
+    protected static final String FILE_UPLOAD_PERMISSION_NAME = "cuba.restApi.fileUpload.enabled";
 
     /**
      * Method for simple file upload. File contents are placed in the request body. Optional file name parameter is
@@ -87,6 +89,7 @@ public class FileUploadController {
     public ResponseEntity<FileInfo> uploadFile(HttpServletRequest request,
                                                @RequestParam(required = false) String id,
                                                @RequestParam(required = false) String name) {
+        checkFileUploadPermission();
         try {
             checkFileExists(id);
             String contentLength = request.getHeader("Content-Length");
@@ -133,6 +136,7 @@ public class FileUploadController {
                                                @RequestParam(required = false) String id,
                                                @RequestParam(required = false) String name,
                                                HttpServletRequest request) {
+        checkFileUploadPermission();
         try {
             checkFileExists(id);
             if (Strings.isNullOrEmpty(name)) {
@@ -150,6 +154,14 @@ public class FileUploadController {
         } catch (Exception e) {
             log.error("File upload failed", e);
             throw new RestAPIException("File upload failed", "File upload failed", HttpStatus.INTERNAL_SERVER_ERROR, e);
+        }
+    }
+
+    protected void checkFileUploadPermission() {
+        UserSession userSession = userSessionSource.getUserSession();
+        if (!userSession.isSpecificPermitted(FILE_UPLOAD_PERMISSION_NAME)) {
+            log.warn(FILE_UPLOAD_PERMISSION_NAME + " is not permitted for user " + userSession.getUser().getLogin());
+            throw new RestAPIException("File upload failed", "File upload is not permitted", HttpStatus.FORBIDDEN);
         }
     }
 

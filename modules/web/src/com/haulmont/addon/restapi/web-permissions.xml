@@ -19,6 +19,7 @@
         <category id="cuba">
             <category id="cuba.restApi">
                 <permission id="cuba.restApi.enabled"/>
+                <permission id="cuba.restApi.fileUpload.enabled"/>
             </category>
         </category>
     </specific>
