@@ -301,6 +301,10 @@ configure(restApiModule) {
         compile(bom['io.swagger:swagger-models'])
         compileOnly(servletApi)
     }
+
+    test {
+        jvmArgs "-javaagent:${classpath.find { it.name.contains("jmockit") }.absolutePath}"
+    }
 }
 
 task undeploy(type: Delete, dependsOn: ":${modulePrefix}-web:cleanConf") {
