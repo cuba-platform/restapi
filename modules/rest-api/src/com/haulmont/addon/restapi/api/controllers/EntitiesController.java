@@ -21,15 +21,13 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 import com.haulmont.addon.restapi.api.service.EntitiesControllerManager;
 import com.haulmont.addon.restapi.api.service.filter.data.EntitiesSearchResult;
-import com.haulmont.addon.restapi.api.service.filter.data.CreatedEntityInfo;
+import com.haulmont.addon.restapi.api.service.filter.data.ResponseInfo;
 import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.util.UriComponents;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -107,19 +105,15 @@ public class EntitiesController {
     }
 
     @PostMapping("/{entityName}")
-    public ResponseEntity<String> createEntity(@RequestBody String entityJson,
+    public ResponseEntity<String> createEntity(@RequestBody String bodyJson,
                                                @PathVariable String entityName,
                                                @RequestParam(required = false) String modelVersion,
                                                HttpServletRequest request) {
-        CreatedEntityInfo entityInfo = entitiesControllerManager.createEntity(entityJson, entityName, modelVersion);
 
-        UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(request.getRequestURL().toString())
-                .path("/{id}")
-                .buildAndExpand(entityInfo.getId().toString());
-
+        ResponseInfo responseInfo = entitiesControllerManager.createResponseInfoForCreation(bodyJson, entityName, modelVersion, request);
         HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setLocation(uriComponents.toUri());
-        return new ResponseEntity<>(entityInfo.getJson(), httpHeaders, HttpStatus.CREATED);
+        httpHeaders.setLocation(responseInfo.getUrl());
+        return new ResponseEntity<>(responseInfo.getBodyJson(), httpHeaders, HttpStatus.CREATED);
     }
 
     @PutMapping("/{entityName}/{entityId}")
@@ -127,8 +121,16 @@ public class EntitiesController {
                                @PathVariable String entityName,
                                @PathVariable String entityId,
                                @RequestParam(required = false) String modelVersion) {
-        CreatedEntityInfo entityInfo = entitiesControllerManager.updateEntity(entityJson, entityName, entityId, modelVersion);
-        return entityInfo.getJson();
+        ResponseInfo entityInfo = entitiesControllerManager.updateEntity(entityJson, entityName, entityId, modelVersion);
+        return entityInfo.getBodyJson();
+    }
+
+    @PutMapping("/{entityName}")
+    public String updateEntities(@RequestBody String entityJson,
+                                 @PathVariable String entityName,
+                                 @RequestParam(required = false) String modelVersion) {
+        ResponseInfo entityInfo = entitiesControllerManager.updateEntities(entityJson, entityName, modelVersion);
+        return entityInfo.getBodyJson();
     }
 
     @DeleteMapping(path = "/{entityName}/{entityId}")
@@ -136,5 +138,12 @@ public class EntitiesController {
                              @PathVariable String entityId,
                              @RequestParam(required = false) String modelVersion) {
         entitiesControllerManager.deleteEntity(entityName, entityId, modelVersion);
+    }
+
+    @DeleteMapping("/{entityName}")
+    public void deleteEntities(@RequestBody String entitiesIdJson,
+                               @PathVariable String entityName,
+                               @RequestParam(required = false) String modelVersion) {
+        entitiesControllerManager.deleteEntities(entityName, entitiesIdJson, modelVersion);
     }
 }

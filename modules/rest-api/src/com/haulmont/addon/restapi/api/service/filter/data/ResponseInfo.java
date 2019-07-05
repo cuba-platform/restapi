@@ -12,32 +12,36 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 
 package com.haulmont.addon.restapi.api.service.filter.data;
 
-public class CreatedEntityInfo {
-    protected Object id;
-    protected String json;
+import java.net.URI;
 
-    public CreatedEntityInfo(Object id, String json) {
-        this.id = id;
-        this.json = json;
+public class ResponseInfo {
+
+    private URI url;
+    private String bodyJson;
+
+    public ResponseInfo(URI url, String bodyJson) {
+        this.url = url;
+        this.bodyJson = bodyJson;
     }
 
-    public Object getId() {
-        return id;
+    public URI getUrl() {
+        return url;
     }
 
-    public void setId(Object id) {
-        this.id = id;
+    public void setUrl(URI url) {
+        this.url = url;
     }
 
-    public String getJson() {
-        return json;
+    public String getBodyJson() {
+        return bodyJson;
     }
 
-    public void setJson(String json) {
-        this.json = json;
+    public void setBodyJson(String bodyJson) {
+        this.bodyJson = bodyJson;
     }
 }

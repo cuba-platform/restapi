@@ -17,17 +17,16 @@
 package com.haulmont.addon.restapi.api.service;
 
 import com.google.common.base.Strings;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
+import com.google.gson.*;
 import com.haulmont.addon.restapi.api.common.RestControllerUtils;
 import com.haulmont.addon.restapi.api.config.RestApiConfig;
 import com.haulmont.addon.restapi.api.controllers.EntitiesController;
 import com.haulmont.addon.restapi.api.exception.RestAPIException;
-import com.haulmont.addon.restapi.api.service.filter.RestFilterParser;
 import com.haulmont.addon.restapi.api.service.filter.RestFilterParseException;
 import com.haulmont.addon.restapi.api.service.filter.RestFilterParseResult;
-import com.haulmont.addon.restapi.api.service.filter.data.CreatedEntityInfo;
+import com.haulmont.addon.restapi.api.service.filter.RestFilterParser;
 import com.haulmont.addon.restapi.api.service.filter.data.EntitiesSearchResult;
+import com.haulmont.addon.restapi.api.service.filter.data.ResponseInfo;
 import com.haulmont.addon.restapi.api.transform.JsonTransformationDirection;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.client.sys.PersistenceManagerClient;
@@ -43,9 +42,12 @@ import com.haulmont.cuba.security.entity.EntityOp;
 import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Method;
 import java.util.*;
 
@@ -277,13 +279,62 @@ public class EntitiesControllerManager {
         return json;
     }
 
-    public CreatedEntityInfo createEntity(String entityJson, String entityName, String modelVersion) {
+    public ResponseInfo createResponseInfoForCreation(String bodyJson,
+                                                      String entityName,
+                                                      String modelVersion,
+                                                      HttpServletRequest request) {
+        JsonParser jsonParser = new JsonParser();
+        JsonElement jsonElement = jsonParser.parse(bodyJson);
+
+        ResponseInfo responseInfo;
+        if (jsonElement.isJsonArray()) {
+            responseInfo = createResponseInfoEntities(request, bodyJson, entityName, modelVersion);
+        } else {
+            responseInfo = createResponseInfoEntity(request, bodyJson, entityName, modelVersion);
+        }
+        return responseInfo;
+    }
+
+    protected ResponseInfo createResponseInfoEntity(HttpServletRequest request, String entityJson, String entityName, String modelVersion) {
         String transformedEntityName = restControllerUtils.transformEntityNameIfRequired(entityName, modelVersion, JsonTransformationDirection.FROM_VERSION);
         MetaClass metaClass = restControllerUtils.getMetaClass(transformedEntityName);
         checkCanCreateEntity(metaClass);
 
         entityJson = restControllerUtils.transformJsonIfRequired(entityName, modelVersion, JsonTransformationDirection.FROM_VERSION, entityJson);
 
+        Entity entity = createEntityFromJson(metaClass, entityJson);
+
+        UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(request.getRequestURL().toString())
+                .path("/{id}")
+                .buildAndExpand(entity.getId().toString());
+        String jsonBody = createEntityJson(entity, metaClass, modelVersion);
+        return new ResponseInfo(uriComponents.toUri(), jsonBody);
+    }
+
+    protected ResponseInfo createResponseInfoEntities(HttpServletRequest request, String entitiesJson, String entityName, String modelVersion) {
+        String transformedEntityName = restControllerUtils.transformEntityNameIfRequired(entityName, modelVersion, JsonTransformationDirection.FROM_VERSION);
+        MetaClass metaClass = restControllerUtils.getMetaClass(transformedEntityName);
+        checkCanCreateEntity(metaClass);
+
+        entitiesJson = restControllerUtils.transformJsonIfRequired(entityName, modelVersion, JsonTransformationDirection.FROM_VERSION, entitiesJson);
+
+        Collection<Entity> mainCollectionEntity = new LinkedList<>();
+
+        JsonParser jsonParser = new JsonParser();
+        JsonArray entitiesJsonArray = (JsonArray) jsonParser.parse(entitiesJson);
+
+        for (int i = 0; i < entitiesJsonArray.size(); i++) {
+            String entityJson = entitiesJsonArray.get(i).toString();
+            Entity mainEntity = createEntityFromJson(metaClass, entityJson);
+            mainCollectionEntity.add(mainEntity);
+        }
+        UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(request.getRequestURL().toString()).buildAndExpand();
+        String jsonBody = createEntitiesJson(mainCollectionEntity, metaClass, modelVersion);
+
+        return new ResponseInfo(uriComponents.toUri(), jsonBody);
+    }
+
+    protected Entity createEntityFromJson(MetaClass metaClass, String entityJson) {
         Entity entity;
         try {
             entity = entitySerializationAPI.entityFromJson(entityJson, metaClass);
@@ -301,16 +352,47 @@ public class EntitiesControllerManager {
         }
 
         //if many entities were created (because of @Composition references) we must find the main entity
-        return getMainEntityInfo(importedEntities, metaClass, modelVersion);
+        return getMainEntity(importedEntities, metaClass);
     }
 
-    public CreatedEntityInfo updateEntity(String entityJson,
-                                          String entityName,
-                                          String entityId,
-                                          String modelVersion) {
+    public ResponseInfo updateEntity(String entityJson,
+                                     String entityName,
+                                     String entityId,
+                                     String modelVersion) {
         String transformedEntityName = restControllerUtils.transformEntityNameIfRequired(entityName, modelVersion, JsonTransformationDirection.FROM_VERSION);
         MetaClass metaClass = restControllerUtils.getMetaClass(transformedEntityName);
         checkCanUpdateEntity(metaClass);
+
+        //there may be multiple entities in importedEntities (because of @Composition references), so we must find
+        // the main entity that will be returned
+        Entity entity = getUpdatedEntity(entityName, modelVersion, transformedEntityName, metaClass, entityJson, entityId);
+        String jsonBody = createEntityJson(entity, metaClass, modelVersion);
+        return new ResponseInfo(null, jsonBody);
+    }
+
+    public ResponseInfo updateEntities(String entitiesJson,
+                                       String entityName,
+                                       String modelVersion) {
+        String transformedEntityName = restControllerUtils.transformEntityNameIfRequired(entityName, modelVersion, JsonTransformationDirection.FROM_VERSION);
+        MetaClass metaClass = restControllerUtils.getMetaClass(transformedEntityName);
+        checkCanUpdateEntity(metaClass);
+
+        JsonParser jsonParser = new JsonParser();
+        JsonArray entitiesJsonArray = (JsonArray) jsonParser.parse(entitiesJson);
+
+        Collection<Entity> entities = new LinkedList<>();
+        for (int i = 0; i < entitiesJsonArray.size(); i++) {
+            String entityJson = entitiesJsonArray.get(i).toString();
+            String entityId = entitiesJsonArray.get(i).getAsJsonObject().get("id").getAsString();
+
+            Entity mainEntity = getUpdatedEntity(entityName, modelVersion, transformedEntityName, metaClass, entityJson, entityId);
+            entities.add(mainEntity);
+        }
+        String bodyJson = createEntitiesJson(entities, metaClass, modelVersion);
+        return new ResponseInfo(null, bodyJson);
+    }
+
+    protected Entity getUpdatedEntity(String entityName, String modelVersion, String transformedEntityName, MetaClass metaClass, String entityJson, String entityId) {
         Object id = getIdFromString(entityId, metaClass);
 
         LoadContext loadContext = new LoadContext(metaClass).setId(id);
@@ -341,9 +423,10 @@ public class EntitiesControllerManager {
         } catch (EntityImportException e) {
             throw new RestAPIException("Entity update failed", e.getMessage(), HttpStatus.BAD_REQUEST, e);
         }
+
         //there may be multiple entities in importedEntities (because of @Composition references), so we must find
         // the main entity that will be returned
-        return getMainEntityInfo(importedEntities, metaClass, modelVersion);
+        return getMainEntity(importedEntities, metaClass);
     }
 
     public void deleteEntity(String entityName,
@@ -356,6 +439,26 @@ public class EntitiesControllerManager {
         Entity entity = dataManager.load(new LoadContext<>(metaClass).setId(id));
         checkEntityIsNotNull(entityName, entityId, entity);
         dataManager.remove(entity);
+    }
+
+    public void deleteEntities(String entityName,
+                               String entitiesIdJson,
+                               String modelVersion) {
+        entityName = restControllerUtils.transformEntityNameIfRequired(entityName, modelVersion, JsonTransformationDirection.FROM_VERSION);
+        MetaClass metaClass = restControllerUtils.getMetaClass(entityName);
+        checkCanDeleteEntity(metaClass);
+
+        JsonParser jsonParser = new JsonParser();
+        JsonArray entitiesJsonArray = (JsonArray) jsonParser.parse(entitiesIdJson);
+
+        for (int i = 0; i < entitiesJsonArray.size(); i++) {
+            String entityId = entitiesJsonArray.get(i).getAsString();
+
+            Object id = getIdFromString(entityId, metaClass);
+            Entity entity = dataManager.load(new LoadContext<>(metaClass).setId(id));
+            checkEntityIsNotNull(entityName, entityId, entity);
+            dataManager.remove(entity);
+        }
     }
 
     private Object getIdFromString(String entityId, MetaClass metaClass) {
@@ -450,10 +553,9 @@ public class EntitiesControllerManager {
     }
 
     /**
-     * Finds entity with given metaClass and converts it to JSON.
+     * Finds entity with given metaClass.
      */
-    @Nullable
-    protected CreatedEntityInfo getMainEntityInfo(Collection<Entity> importedEntities, MetaClass metaClass, String version) {
+    protected Entity getMainEntity(Collection<Entity> importedEntities, MetaClass metaClass) {
         Entity mainEntity = null;
         if (importedEntities.size() > 1) {
             Optional<Entity> first = importedEntities.stream().filter(e -> e.getMetaClass().equals(metaClass)).findFirst();
@@ -461,17 +563,29 @@ public class EntitiesControllerManager {
         } else {
             mainEntity = importedEntities.iterator().next();
         }
+        return mainEntity;
+    }
 
-        if (mainEntity != null) {
-            //we pass the EntitySerializationOption.DO_NOT_SERIALIZE_RO_NON_PERSISTENT_PROPERTIES because for create and update operations in the
-            //result JSON we don't want to return results for entity methods annotated with @MetaProperty annotation. We do this because such methods
-            //may use other entities properties (references to other entities) and as a result we get an UnfetchedAttributeException while
-            //producing the JSON for response
-            String json = entitySerializationAPI.toJson(mainEntity, null, EntitySerializationOption.DO_NOT_SERIALIZE_RO_NON_PERSISTENT_PROPERTIES);
+    /**
+     * We pass the EntitySerializationOption.DO_NOT_SERIALIZE_RO_NON_PERSISTENT_PROPERTIES because for create and update operations in the
+     * result JSON we don't want to return results for entity methods annotated with @MetaProperty annotation. We do this because such methods
+     * may use other entities properties (references to other entities) and as a result we get an UnfetchedAttributeException while
+     * producing the JSON for response
+     */
+    @Nullable
+    protected String createEntityJson(Entity entity, MetaClass metaClass, String version) {
+        if (entity != null) {
+            String json = entitySerializationAPI.toJson(entity, null, EntitySerializationOption.DO_NOT_SERIALIZE_RO_NON_PERSISTENT_PROPERTIES);
             json = restControllerUtils.transformJsonIfRequired(metaClass.getName(), version, JsonTransformationDirection.TO_VERSION, json);
-            return new CreatedEntityInfo(mainEntity.getId(), json);
+            return json;
         }
         return null;
+    }
+
+    protected String createEntitiesJson(Collection<Entity> entities, MetaClass metaClass, String version) {
+        String json = entitySerializationAPI.toJson(entities, null, EntitySerializationOption.DO_NOT_SERIALIZE_RO_NON_PERSISTENT_PROPERTIES);
+        json = restControllerUtils.transformJsonIfRequired(metaClass.getName(), version, JsonTransformationDirection.TO_VERSION, json);
+        return json;
     }
 
     protected class SearchEntitiesRequestDTO {
