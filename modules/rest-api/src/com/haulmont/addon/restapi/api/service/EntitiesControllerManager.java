@@ -17,7 +17,11 @@
 package com.haulmont.addon.restapi.api.service;
 
 import com.google.common.base.Strings;
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonElement;
 import com.haulmont.addon.restapi.api.common.RestControllerUtils;
 import com.haulmont.addon.restapi.api.config.RestApiConfig;
 import com.haulmont.addon.restapi.api.controllers.EntitiesController;
@@ -28,6 +32,7 @@ import com.haulmont.addon.restapi.api.service.filter.RestFilterParser;
 import com.haulmont.addon.restapi.api.service.filter.data.EntitiesSearchResult;
 import com.haulmont.addon.restapi.api.service.filter.data.ResponseInfo;
 import com.haulmont.addon.restapi.api.transform.JsonTransformationDirection;
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.client.sys.PersistenceManagerClient;
 import com.haulmont.cuba.core.app.importexport.EntityImportException;
@@ -90,6 +95,8 @@ public class EntitiesControllerManager {
 
     @Inject
     protected RestApiConfig restApiConfig;
+
+    protected JsonParser jsonParser = new JsonParser();
 
     public String loadEntity(String entityName,
                              String entityId,
@@ -279,18 +286,17 @@ public class EntitiesControllerManager {
         return json;
     }
 
-    public ResponseInfo createResponseInfoForCreation(String bodyJson,
-                                                      String entityName,
-                                                      String modelVersion,
-                                                      HttpServletRequest request) {
-        JsonParser jsonParser = new JsonParser();
-        JsonElement jsonElement = jsonParser.parse(bodyJson);
+    public ResponseInfo createEntity(String entityJson,
+                                     String entityName,
+                                     String modelVersion,
+                                     HttpServletRequest request) {
+        JsonElement jsonElement = jsonParser.parse(entityJson);
 
         ResponseInfo responseInfo;
         if (jsonElement.isJsonArray()) {
-            responseInfo = createResponseInfoEntities(request, bodyJson, entityName, modelVersion);
+            responseInfo = createResponseInfoEntities(request, entityJson, entityName, modelVersion);
         } else {
-            responseInfo = createResponseInfoEntity(request, bodyJson, entityName, modelVersion);
+            responseInfo = createResponseInfoEntity(request, entityJson, entityName, modelVersion);
         }
         return responseInfo;
     }
@@ -307,8 +313,8 @@ public class EntitiesControllerManager {
         UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(request.getRequestURL().toString())
                 .path("/{id}")
                 .buildAndExpand(entity.getId().toString());
-        String jsonBody = createEntityJson(entity, metaClass, modelVersion);
-        return new ResponseInfo(uriComponents.toUri(), jsonBody);
+        String bodyJson = createEntityJson(entity, metaClass, modelVersion);
+        return new ResponseInfo(uriComponents.toUri(), bodyJson);
     }
 
     protected ResponseInfo createResponseInfoEntities(HttpServletRequest request, String entitiesJson, String entityName, String modelVersion) {
@@ -318,9 +324,7 @@ public class EntitiesControllerManager {
 
         entitiesJson = restControllerUtils.transformJsonIfRequired(entityName, modelVersion, JsonTransformationDirection.FROM_VERSION, entitiesJson);
 
-        Collection<Entity> mainCollectionEntity = new LinkedList<>();
-
-        JsonParser jsonParser = new JsonParser();
+        Collection<Entity> mainCollectionEntity = new ArrayList<>();
         JsonArray entitiesJsonArray = (JsonArray) jsonParser.parse(entitiesJson);
 
         for (int i = 0; i < entitiesJsonArray.size(); i++) {
@@ -329,9 +333,9 @@ public class EntitiesControllerManager {
             mainCollectionEntity.add(mainEntity);
         }
         UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(request.getRequestURL().toString()).buildAndExpand();
-        String jsonBody = createEntitiesJson(mainCollectionEntity, metaClass, modelVersion);
+        String bodyJson = createEntitiesJson(mainCollectionEntity, metaClass, modelVersion);
 
-        return new ResponseInfo(uriComponents.toUri(), jsonBody);
+        return new ResponseInfo(uriComponents.toUri(), bodyJson);
     }
 
     protected Entity createEntityFromJson(MetaClass metaClass, String entityJson) {
@@ -366,8 +370,8 @@ public class EntitiesControllerManager {
         //there may be multiple entities in importedEntities (because of @Composition references), so we must find
         // the main entity that will be returned
         Entity entity = getUpdatedEntity(entityName, modelVersion, transformedEntityName, metaClass, entityJson, entityId);
-        String jsonBody = createEntityJson(entity, metaClass, modelVersion);
-        return new ResponseInfo(null, jsonBody);
+        String bodyJson = createEntityJson(entity, metaClass, modelVersion);
+        return new ResponseInfo(null, bodyJson);
     }
 
     public ResponseInfo updateEntities(String entitiesJson,
@@ -377,10 +381,9 @@ public class EntitiesControllerManager {
         MetaClass metaClass = restControllerUtils.getMetaClass(transformedEntityName);
         checkCanUpdateEntity(metaClass);
 
-        JsonParser jsonParser = new JsonParser();
         JsonArray entitiesJsonArray = (JsonArray) jsonParser.parse(entitiesJson);
 
-        Collection<Entity> entities = new LinkedList<>();
+        Collection<Entity> entities = new ArrayList<>();
         for (int i = 0; i < entitiesJsonArray.size(); i++) {
             String entityJson = entitiesJsonArray.get(i).toString();
             String entityId = entitiesJsonArray.get(i).getAsJsonObject().get("id").getAsString();
@@ -448,7 +451,6 @@ public class EntitiesControllerManager {
         MetaClass metaClass = restControllerUtils.getMetaClass(entityName);
         checkCanDeleteEntity(metaClass);
 
-        JsonParser jsonParser = new JsonParser();
         JsonArray entitiesJsonArray = (JsonArray) jsonParser.parse(entitiesIdJson);
 
         for (int i = 0; i < entitiesJsonArray.size(); i++) {
@@ -572,14 +574,12 @@ public class EntitiesControllerManager {
      * may use other entities properties (references to other entities) and as a result we get an UnfetchedAttributeException while
      * producing the JSON for response
      */
-    @Nullable
     protected String createEntityJson(Entity entity, MetaClass metaClass, String version) {
-        if (entity != null) {
-            String json = entitySerializationAPI.toJson(entity, null, EntitySerializationOption.DO_NOT_SERIALIZE_RO_NON_PERSISTENT_PROPERTIES);
-            json = restControllerUtils.transformJsonIfRequired(metaClass.getName(), version, JsonTransformationDirection.TO_VERSION, json);
-            return json;
-        }
-        return null;
+        Preconditions.checkNotNullArgument(entity);
+
+        String json = entitySerializationAPI.toJson(entity, null, EntitySerializationOption.DO_NOT_SERIALIZE_RO_NON_PERSISTENT_PROPERTIES);
+        json = restControllerUtils.transformJsonIfRequired(metaClass.getName(), version, JsonTransformationDirection.TO_VERSION, json);
+        return json;
     }
 
     protected String createEntitiesJson(Collection<Entity> entities, MetaClass metaClass, String version) {

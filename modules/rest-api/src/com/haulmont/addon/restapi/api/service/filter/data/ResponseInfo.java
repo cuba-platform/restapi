@@ -21,8 +21,8 @@ import java.net.URI;
 
 public class ResponseInfo {
 
-    private URI url;
-    private String bodyJson;
+    protected URI url;
+    protected String bodyJson;
 
     public ResponseInfo(URI url, String bodyJson) {
         this.url = url;
@@ -33,15 +33,7 @@ public class ResponseInfo {
         return url;
     }
 
-    public void setUrl(URI url) {
-        this.url = url;
-    }
-
     public String getBodyJson() {
         return bodyJson;
-    }
-
-    public void setBodyJson(String bodyJson) {
-        this.bodyJson = bodyJson;
     }
 }
