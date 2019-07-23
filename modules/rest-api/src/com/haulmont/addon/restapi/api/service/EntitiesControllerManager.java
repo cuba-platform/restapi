@@ -395,7 +395,12 @@ public class EntitiesControllerManager {
         return new ResponseInfo(null, bodyJson);
     }
 
-    protected Entity getUpdatedEntity(String entityName, String modelVersion, String transformedEntityName, MetaClass metaClass, String entityJson, String entityId) {
+    protected Entity getUpdatedEntity(String entityName,
+                                      String modelVersion,
+                                      String transformedEntityName,
+                                      MetaClass metaClass,
+                                      String entityJson,
+                                      String entityId) {
         Object id = getIdFromString(entityId, metaClass);
 
         LoadContext loadContext = new LoadContext(metaClass).setId(id);
