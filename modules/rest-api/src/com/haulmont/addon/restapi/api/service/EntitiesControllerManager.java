@@ -96,8 +96,6 @@ public class EntitiesControllerManager {
     @Inject
     protected RestApiConfig restApiConfig;
 
-    protected JsonParser jsonParser = new JsonParser();
-
     public String loadEntity(String entityName,
                              String entityId,
                              @Nullable String viewName,
@@ -290,7 +288,7 @@ public class EntitiesControllerManager {
                                      String entityName,
                                      String modelVersion,
                                      HttpServletRequest request) {
-        JsonElement jsonElement = jsonParser.parse(entityJson);
+        JsonElement jsonElement = new JsonParser().parse(entityJson);
 
         ResponseInfo responseInfo;
         if (jsonElement.isJsonArray()) {
@@ -325,7 +323,7 @@ public class EntitiesControllerManager {
         entitiesJson = restControllerUtils.transformJsonIfRequired(entityName, modelVersion, JsonTransformationDirection.FROM_VERSION, entitiesJson);
 
         Collection<Entity> mainCollectionEntity = new ArrayList<>();
-        JsonArray entitiesJsonArray = (JsonArray) jsonParser.parse(entitiesJson);
+        JsonArray entitiesJsonArray = (JsonArray) new JsonParser().parse(entitiesJson);
 
         for (int i = 0; i < entitiesJsonArray.size(); i++) {
             String entityJson = entitiesJsonArray.get(i).toString();
@@ -381,7 +379,7 @@ public class EntitiesControllerManager {
         MetaClass metaClass = restControllerUtils.getMetaClass(transformedEntityName);
         checkCanUpdateEntity(metaClass);
 
-        JsonArray entitiesJsonArray = (JsonArray) jsonParser.parse(entitiesJson);
+        JsonArray entitiesJsonArray = (JsonArray) new JsonParser().parse(entitiesJson);
 
         Collection<Entity> entities = new ArrayList<>();
         for (int i = 0; i < entitiesJsonArray.size(); i++) {
@@ -456,7 +454,7 @@ public class EntitiesControllerManager {
         MetaClass metaClass = restControllerUtils.getMetaClass(entityName);
         checkCanDeleteEntity(metaClass);
 
-        JsonArray entitiesJsonArray = (JsonArray) jsonParser.parse(entitiesIdJson);
+        JsonArray entitiesJsonArray = (JsonArray) new JsonParser().parse(entitiesIdJson);
 
         for (int i = 0; i < entitiesJsonArray.size(); i++) {
             String entityId = entitiesJsonArray.get(i).getAsString();
