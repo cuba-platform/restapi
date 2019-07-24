@@ -23,9 +23,9 @@ import com.haulmont.addon.restapi.api.common.RestControllerUtils;
 import com.haulmont.addon.restapi.api.config.RestApiConfig;
 import com.haulmont.addon.restapi.api.controllers.EntitiesController;
 import com.haulmont.addon.restapi.api.exception.RestAPIException;
-import com.haulmont.addon.restapi.api.service.filter.RestFilterParser;
 import com.haulmont.addon.restapi.api.service.filter.RestFilterParseException;
 import com.haulmont.addon.restapi.api.service.filter.RestFilterParseResult;
+import com.haulmont.addon.restapi.api.service.filter.RestFilterParser;
 import com.haulmont.addon.restapi.api.service.filter.data.CreatedEntityInfo;
 import com.haulmont.addon.restapi.api.service.filter.data.EntitiesSearchResult;
 import com.haulmont.addon.restapi.api.transform.JsonTransformationDirection;
@@ -41,6 +41,7 @@ import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.entity.EntityOp;
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
@@ -277,7 +278,10 @@ public class EntitiesControllerManager {
         return json;
     }
 
-    public CreatedEntityInfo createEntity(String entityJson, String entityName, String modelVersion) {
+    public CreatedEntityInfo createEntity(String entityJson,
+                                          String entityName,
+                                          @Nullable String responseView,
+                                          @Nullable String modelVersion) {
         String transformedEntityName = restControllerUtils.transformEntityNameIfRequired(entityName, modelVersion, JsonTransformationDirection.FROM_VERSION);
         MetaClass metaClass = restControllerUtils.getMetaClass(transformedEntityName);
         checkCanCreateEntity(metaClass);
@@ -301,13 +305,14 @@ public class EntitiesControllerManager {
         }
 
         //if many entities were created (because of @Composition references) we must find the main entity
-        return getMainEntityInfo(importedEntities, metaClass, modelVersion);
+        return getMainEntityInfo(importedEntities, metaClass, responseView, modelVersion);
     }
 
     public CreatedEntityInfo updateEntity(String entityJson,
                                           String entityName,
                                           String entityId,
-                                          String modelVersion) {
+                                          @Nullable String responseView,
+                                          @Nullable String modelVersion) {
         String transformedEntityName = restControllerUtils.transformEntityNameIfRequired(entityName, modelVersion, JsonTransformationDirection.FROM_VERSION);
         MetaClass metaClass = restControllerUtils.getMetaClass(transformedEntityName);
         checkCanUpdateEntity(metaClass);
@@ -343,7 +348,7 @@ public class EntitiesControllerManager {
         }
         //there may be multiple entities in importedEntities (because of @Composition references), so we must find
         // the main entity that will be returned
-        return getMainEntityInfo(importedEntities, metaClass, modelVersion);
+        return getMainEntityInfo(importedEntities, metaClass, responseView, modelVersion);
     }
 
     public void deleteEntity(String entityName,
@@ -453,7 +458,7 @@ public class EntitiesControllerManager {
      * Finds entity with given metaClass and converts it to JSON.
      */
     @Nullable
-    protected CreatedEntityInfo getMainEntityInfo(Collection<Entity> importedEntities, MetaClass metaClass, String version) {
+    protected CreatedEntityInfo getMainEntityInfo(Collection<Entity> importedEntities, MetaClass metaClass, String responseView, String version) {
         Entity mainEntity = null;
         if (importedEntities.size() > 1) {
             Optional<Entity> first = importedEntities.stream().filter(e -> e.getMetaClass().equals(metaClass)).findFirst();
@@ -463,15 +468,29 @@ public class EntitiesControllerManager {
         }
 
         if (mainEntity != null) {
-            //we pass the EntitySerializationOption.DO_NOT_SERIALIZE_RO_NON_PERSISTENT_PROPERTIES because for create and update operations in the
-            //result JSON we don't want to return results for entity methods annotated with @MetaProperty annotation. We do this because such methods
-            //may use other entities properties (references to other entities) and as a result we get an UnfetchedAttributeException while
-            //producing the JSON for response
-            String json = entitySerializationAPI.toJson(mainEntity, null, EntitySerializationOption.DO_NOT_SERIALIZE_RO_NON_PERSISTENT_PROPERTIES);
-            json = restControllerUtils.transformJsonIfRequired(metaClass.getName(), version, JsonTransformationDirection.TO_VERSION, json);
+            View view = findOrCreateReponseView(mainEntity, responseView);
+            String json = entitySerializationAPI.toJson(mainEntity, view, EntitySerializationOption.SERIALIZE_INSTANCE_NAME);
             return new CreatedEntityInfo(mainEntity.getId(), json);
         }
         return null;
+    }
+
+    protected View findOrCreateReponseView(Entity entity, String responseView) {
+        if (StringUtils.isEmpty(responseView)) {
+            return new View(Entity.class, false)
+                    .addProperty("id")
+                    .addProperty(EntitySerializationAPI.ENTITY_NAME_PROP)
+                    .addProperty(EntitySerializationAPI.INSTANCE_NAME_PROP);
+        }
+
+        View view = metadata.getViewRepository().findView(entity.getMetaClass(), responseView);
+
+        if (view == null) {
+            throw new RestAPIException("View not found",
+                    String.format("View '%s' not found for entity '%s'", responseView, entity.getMetaClass().getName()),
+                    HttpStatus.NOT_FOUND);
+        }
+        return view;
     }
 
     protected class SearchEntitiesRequestDTO {
