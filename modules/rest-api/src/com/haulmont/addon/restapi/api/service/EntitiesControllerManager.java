@@ -278,7 +278,10 @@ public class EntitiesControllerManager {
         return json;
     }
 
-    public CreatedEntityInfo createEntity(String entityJson, String entityName, String responseView, String modelVersion) {
+    public CreatedEntityInfo createEntity(String entityJson,
+                                          String entityName,
+                                          @Nullable String responseView,
+                                          @Nullable String modelVersion) {
         String transformedEntityName = restControllerUtils.transformEntityNameIfRequired(entityName, modelVersion, JsonTransformationDirection.FROM_VERSION);
         MetaClass metaClass = restControllerUtils.getMetaClass(transformedEntityName);
         checkCanCreateEntity(metaClass);
@@ -308,8 +311,8 @@ public class EntitiesControllerManager {
     public CreatedEntityInfo updateEntity(String entityJson,
                                           String entityName,
                                           String entityId,
-                                          String responseView,
-                                          String modelVersion) {
+                                          @Nullable String responseView,
+                                          @Nullable String modelVersion) {
         String transformedEntityName = restControllerUtils.transformEntityNameIfRequired(entityName, modelVersion, JsonTransformationDirection.FROM_VERSION);
         MetaClass metaClass = restControllerUtils.getMetaClass(transformedEntityName);
         checkCanUpdateEntity(metaClass);
@@ -411,14 +414,6 @@ public class EntitiesControllerManager {
         }
     }
 
-    protected void checkViewIsNotNull(String entityName, String viewName, View view) {
-        if (view == null) {
-            throw new RestAPIException("View not found",
-                    String.format("View '%s' not found for entity '%s'", viewName, entityName),
-                    HttpStatus.NOT_FOUND);
-        }
-    }
-
     protected void checkEntityIsNotNull(String entityName, String entityId, Entity entity) {
         if (entity == null) {
             throw new RestAPIException("Entity not found",
@@ -473,14 +468,14 @@ public class EntitiesControllerManager {
         }
 
         if (mainEntity != null) {
-            View view = createResponseView(mainEntity, responseView);
+            View view = findOrCreateReponseView(mainEntity, responseView);
             String json = entitySerializationAPI.toJson(mainEntity, view, EntitySerializationOption.SERIALIZE_INSTANCE_NAME);
             return new CreatedEntityInfo(mainEntity.getId(), json);
         }
         return null;
     }
 
-    protected View createResponseView(Entity entity, String responseView) {
+    protected View findOrCreateReponseView(Entity entity, String responseView) {
         if (StringUtils.isEmpty(responseView)) {
             return new View(Entity.class, false)
                     .addProperty("id")
@@ -489,7 +484,12 @@ public class EntitiesControllerManager {
         }
 
         View view = metadata.getViewRepository().findView(entity.getMetaClass(), responseView);
-        checkViewIsNotNull(entity.getMetaClass().getName(), responseView, view);
+
+        if (view == null) {
+            throw new RestAPIException("View not found",
+                    String.format("View '%s' not found for entity '%s'", responseView, entity.getMetaClass().getName()),
+                    HttpStatus.NOT_FOUND);
+        }
         return view;
     }
 
