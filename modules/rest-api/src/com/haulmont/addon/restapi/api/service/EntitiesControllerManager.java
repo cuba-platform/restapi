@@ -323,7 +323,7 @@ public class EntitiesControllerManager {
         entitiesJson = restControllerUtils.transformJsonIfRequired(entityName, modelVersion, JsonTransformationDirection.FROM_VERSION, entitiesJson);
 
         Collection<Entity> mainCollectionEntity = new ArrayList<>();
-        JsonArray entitiesJsonArray = (JsonArray) new JsonParser().parse(entitiesJson);
+        JsonArray entitiesJsonArray = new JsonParser().parse(entitiesJson).getAsJsonArray();
 
         for (int i = 0; i < entitiesJsonArray.size(); i++) {
             String entityJson = entitiesJsonArray.get(i).toString();
@@ -379,7 +379,7 @@ public class EntitiesControllerManager {
         MetaClass metaClass = restControllerUtils.getMetaClass(transformedEntityName);
         checkCanUpdateEntity(metaClass);
 
-        JsonArray entitiesJsonArray = (JsonArray) new JsonParser().parse(entitiesJson);
+        JsonArray entitiesJsonArray = new JsonParser().parse(entitiesJson).getAsJsonArray();
 
         Collection<Entity> entities = new ArrayList<>();
         for (int i = 0; i < entitiesJsonArray.size(); i++) {
@@ -454,7 +454,7 @@ public class EntitiesControllerManager {
         MetaClass metaClass = restControllerUtils.getMetaClass(entityName);
         checkCanDeleteEntity(metaClass);
 
-        JsonArray entitiesJsonArray = (JsonArray) new JsonParser().parse(entitiesIdJson);
+        JsonArray entitiesJsonArray = new JsonParser().parse(entitiesIdJson).getAsJsonArray();
 
         for (int i = 0; i < entitiesJsonArray.size(); i++) {
             String entityId = entitiesJsonArray.get(i).getAsString();
