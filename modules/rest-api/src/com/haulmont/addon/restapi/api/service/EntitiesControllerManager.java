@@ -470,6 +470,7 @@ public class EntitiesControllerManager {
         if (mainEntity != null) {
             View view = findOrCreateReponseView(mainEntity, responseView);
             String json = entitySerializationAPI.toJson(mainEntity, view, EntitySerializationOption.SERIALIZE_INSTANCE_NAME);
+            json = restControllerUtils.transformJsonIfRequired(metaClass.getName(), version, JsonTransformationDirection.TO_VERSION, json);
             return new CreatedEntityInfo(mainEntity.getId(), json);
         }
         return null;
