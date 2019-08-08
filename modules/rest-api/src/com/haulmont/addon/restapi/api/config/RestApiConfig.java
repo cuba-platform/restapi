@@ -98,4 +98,11 @@ public interface RestApiConfig extends Config {
     @Property("cuba.web.externalRestBypassPatterns")
     @Factory(factory = CommaSeparatedStringListTypeFactory.class)
     List<String> getExternalRestBypassPatterns();
+
+    /**
+     * @return Parameter "responseView" in request is enabled
+     */
+    @Property("cuba.rest.responseViewEnabled")
+    @DefaultBoolean(true)
+    boolean getRestResponseViewEnabled();
 }

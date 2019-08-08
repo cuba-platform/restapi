@@ -467,13 +467,23 @@ public class EntitiesControllerManager {
             mainEntity = importedEntities.iterator().next();
         }
 
-        if (mainEntity != null) {
-            View view = findOrCreateResponseView(mainEntity, responseView);
-            String json = entitySerializationAPI.toJson(mainEntity, view, EntitySerializationOption.SERIALIZE_INSTANCE_NAME);
-            json = restControllerUtils.transformJsonIfRequired(metaClass.getName(), version, JsonTransformationDirection.TO_VERSION, json);
-            return new CreatedEntityInfo(mainEntity.getId(), json);
+        if (mainEntity == null) {
+            return null;
         }
-        return null;
+
+        String json;
+        if (restApiConfig.getRestResponseViewEnabled()) {
+            View view = findOrCreateResponseView(mainEntity, responseView);
+            json = entitySerializationAPI.toJson(mainEntity, view, EntitySerializationOption.SERIALIZE_INSTANCE_NAME);
+        } else {
+            //we pass the EntitySerializationOption.DO_NOT_SERIALIZE_RO_NON_PERSISTENT_PROPERTIES because for create and update operations in the
+            //result JSON we don't want to return results for entity methods annotated with @MetaProperty annotation. We do this because such methods
+            //may use other entities properties (references to other entities) and as a result we get an UnfetchedAttributeException while
+            //producing the JSON for response
+            json = entitySerializationAPI.toJson(mainEntity, null, EntitySerializationOption.DO_NOT_SERIALIZE_RO_NON_PERSISTENT_PROPERTIES);
+        }
+        json = restControllerUtils.transformJsonIfRequired(metaClass.getName(), version, JsonTransformationDirection.TO_VERSION, json);
+        return new CreatedEntityInfo(mainEntity.getId(), json);
     }
 
     protected View findOrCreateResponseView(Entity entity, String responseView) {
