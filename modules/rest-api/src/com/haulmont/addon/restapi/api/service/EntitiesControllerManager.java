@@ -468,7 +468,7 @@ public class EntitiesControllerManager {
         }
 
         if (mainEntity != null) {
-            View view = findOrCreateReponseView(mainEntity, responseView);
+            View view = findOrCreateResponseView(mainEntity, responseView);
             String json = entitySerializationAPI.toJson(mainEntity, view, EntitySerializationOption.SERIALIZE_INSTANCE_NAME);
             json = restControllerUtils.transformJsonIfRequired(metaClass.getName(), version, JsonTransformationDirection.TO_VERSION, json);
             return new CreatedEntityInfo(mainEntity.getId(), json);
@@ -476,7 +476,7 @@ public class EntitiesControllerManager {
         return null;
     }
 
-    protected View findOrCreateReponseView(Entity entity, String responseView) {
+    protected View findOrCreateResponseView(Entity entity, String responseView) {
         if (StringUtils.isEmpty(responseView)) {
             return new View(Entity.class, false)
                     .addProperty("id")
