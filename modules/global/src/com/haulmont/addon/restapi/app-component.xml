@@ -58,6 +58,7 @@
         <property name="cuba.rest.reuseRefreshToken" value="true"/>
         <property name="cuba.rest.allowedOrigins" value="*"/>
         <property name="cuba.rest.maxUploadSize" value="20971520"/>
+        <property name="cuba.rest.responseViewEnabled" value="true"/>
     </module>
 
     <module name="portal" dependsOn="global" blocks="portal">
@@ -78,5 +79,6 @@
         <property name="cuba.rest.reuseRefreshToken" value="true"/>
         <property name="cuba.rest.allowedOrigins" value="*"/>
         <property name="cuba.rest.maxUploadSize" value="20971520"/>
+        <property name="cuba.rest.responseViewEnabled" value="true"/>
     </module>
 </app-component>

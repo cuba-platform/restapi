@@ -100,7 +100,7 @@ public interface RestApiConfig extends Config {
     List<String> getExternalRestBypassPatterns();
 
     /**
-     * @return Parameter "responseView" in request is enabled
+     * @return whether "responseView" param is required
      */
     @Property("cuba.rest.responseViewEnabled")
     @DefaultBoolean(true)
