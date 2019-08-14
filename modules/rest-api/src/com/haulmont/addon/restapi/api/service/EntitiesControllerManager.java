@@ -287,8 +287,8 @@ public class EntitiesControllerManager {
 
     public ResponseInfo createEntity(String entityJson,
                                      String entityName,
-                                     String modelVersion,
                                      String responseView,
+                                     String modelVersion,
                                      HttpServletRequest request) {
         JsonElement jsonElement = new JsonParser().parse(entityJson);
 
