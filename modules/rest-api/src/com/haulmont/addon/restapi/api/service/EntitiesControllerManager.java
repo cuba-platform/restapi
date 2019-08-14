@@ -45,6 +45,7 @@ import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.entity.EntityOp;
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponents;
@@ -287,19 +288,24 @@ public class EntitiesControllerManager {
     public ResponseInfo createEntity(String entityJson,
                                      String entityName,
                                      String modelVersion,
+                                     String responseView,
                                      HttpServletRequest request) {
         JsonElement jsonElement = new JsonParser().parse(entityJson);
 
         ResponseInfo responseInfo;
         if (jsonElement.isJsonArray()) {
-            responseInfo = createResponseInfoEntities(request, entityJson, entityName, modelVersion);
+            responseInfo = createResponseInfoEntities(request, entityJson, entityName, responseView, modelVersion);
         } else {
-            responseInfo = createResponseInfoEntity(request, entityJson, entityName, modelVersion);
+            responseInfo = createResponseInfoEntity(request, entityJson, entityName, responseView, modelVersion);
         }
         return responseInfo;
     }
 
-    protected ResponseInfo createResponseInfoEntity(HttpServletRequest request, String entityJson, String entityName, String modelVersion) {
+    protected ResponseInfo createResponseInfoEntity(HttpServletRequest request,
+                                                    String entityJson,
+                                                    String entityName,
+                                                    String responseView,
+                                                    String modelVersion) {
         String transformedEntityName = restControllerUtils.transformEntityNameIfRequired(entityName, modelVersion, JsonTransformationDirection.FROM_VERSION);
         MetaClass metaClass = restControllerUtils.getMetaClass(transformedEntityName);
         checkCanCreateEntity(metaClass);
@@ -311,11 +317,15 @@ public class EntitiesControllerManager {
         UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(request.getRequestURL().toString())
                 .path("/{id}")
                 .buildAndExpand(entity.getId().toString());
-        String bodyJson = createEntityJson(entity, metaClass, modelVersion);
+        String bodyJson = createEntityJson(entity, metaClass, responseView, modelVersion);
         return new ResponseInfo(uriComponents.toUri(), bodyJson);
     }
 
-    protected ResponseInfo createResponseInfoEntities(HttpServletRequest request, String entitiesJson, String entityName, String modelVersion) {
+    protected ResponseInfo createResponseInfoEntities(HttpServletRequest request,
+                                                      String entitiesJson,
+                                                      String entityName,
+                                                      String responseView,
+                                                      String modelVersion) {
         String transformedEntityName = restControllerUtils.transformEntityNameIfRequired(entityName, modelVersion, JsonTransformationDirection.FROM_VERSION);
         MetaClass metaClass = restControllerUtils.getMetaClass(transformedEntityName);
         checkCanCreateEntity(metaClass);
@@ -331,7 +341,7 @@ public class EntitiesControllerManager {
             mainCollectionEntity.add(mainEntity);
         }
         UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(request.getRequestURL().toString()).buildAndExpand();
-        String bodyJson = createEntitiesJson(mainCollectionEntity, metaClass, modelVersion);
+        String bodyJson = createEntitiesJson(mainCollectionEntity, metaClass, responseView, modelVersion);
 
         return new ResponseInfo(uriComponents.toUri(), bodyJson);
     }
@@ -360,6 +370,7 @@ public class EntitiesControllerManager {
     public ResponseInfo updateEntity(String entityJson,
                                      String entityName,
                                      String entityId,
+                                     String responseView,
                                      String modelVersion) {
         String transformedEntityName = restControllerUtils.transformEntityNameIfRequired(entityName, modelVersion, JsonTransformationDirection.FROM_VERSION);
         MetaClass metaClass = restControllerUtils.getMetaClass(transformedEntityName);
@@ -368,12 +379,13 @@ public class EntitiesControllerManager {
         //there may be multiple entities in importedEntities (because of @Composition references), so we must find
         // the main entity that will be returned
         Entity entity = getUpdatedEntity(entityName, modelVersion, transformedEntityName, metaClass, entityJson, entityId);
-        String bodyJson = createEntityJson(entity, metaClass, modelVersion);
+        String bodyJson = createEntityJson(entity, metaClass, responseView, modelVersion);
         return new ResponseInfo(null, bodyJson);
     }
 
     public ResponseInfo updateEntities(String entitiesJson,
                                        String entityName,
+                                       String responseView,
                                        String modelVersion) {
         String transformedEntityName = restControllerUtils.transformEntityNameIfRequired(entityName, modelVersion, JsonTransformationDirection.FROM_VERSION);
         MetaClass metaClass = restControllerUtils.getMetaClass(transformedEntityName);
@@ -389,7 +401,7 @@ public class EntitiesControllerManager {
             Entity mainEntity = getUpdatedEntity(entityName, modelVersion, transformedEntityName, metaClass, entityJson, entityId);
             entities.add(mainEntity);
         }
-        String bodyJson = createEntitiesJson(entities, metaClass, modelVersion);
+        String bodyJson = createEntitiesJson(entities, metaClass, responseView, modelVersion);
         return new ResponseInfo(null, bodyJson);
     }
 
@@ -577,19 +589,49 @@ public class EntitiesControllerManager {
      * may use other entities properties (references to other entities) and as a result we get an UnfetchedAttributeException while
      * producing the JSON for response
      */
-    protected String createEntityJson(Entity entity, MetaClass metaClass, String version) {
+    protected String createEntityJson(Entity entity, MetaClass metaClass, String responseView, String version) {
         Preconditions.checkNotNullArgument(entity);
 
-        String json = entitySerializationAPI.toJson(entity, null, EntitySerializationOption.DO_NOT_SERIALIZE_RO_NON_PERSISTENT_PROPERTIES);
+        String json;
+        if (restApiConfig.getRestResponseViewEnabled()) {
+            View view = findOrCreateResponseView(metaClass, responseView);
+            json = entitySerializationAPI.toJson(entity, view, EntitySerializationOption.SERIALIZE_INSTANCE_NAME);
+        } else {
+            json = entitySerializationAPI.toJson(entity, null, EntitySerializationOption.DO_NOT_SERIALIZE_RO_NON_PERSISTENT_PROPERTIES);
+        }
+        return restControllerUtils.transformJsonIfRequired(metaClass.getName(), version, JsonTransformationDirection.TO_VERSION, json);
+    }
+
+    protected String createEntitiesJson(Collection<Entity> entities, MetaClass metaClass, String responseView, String version) {
+        String json;
+        if (restApiConfig.getRestResponseViewEnabled()) {
+            View view = findOrCreateResponseView(metaClass, responseView);
+            json = entitySerializationAPI.toJson(entities, view, EntitySerializationOption.SERIALIZE_INSTANCE_NAME);
+        } else {
+            json = entitySerializationAPI.toJson(entities, null, EntitySerializationOption.DO_NOT_SERIALIZE_RO_NON_PERSISTENT_PROPERTIES);
+        }
         json = restControllerUtils.transformJsonIfRequired(metaClass.getName(), version, JsonTransformationDirection.TO_VERSION, json);
         return json;
     }
 
-    protected String createEntitiesJson(Collection<Entity> entities, MetaClass metaClass, String version) {
-        String json = entitySerializationAPI.toJson(entities, null, EntitySerializationOption.DO_NOT_SERIALIZE_RO_NON_PERSISTENT_PROPERTIES);
-        json = restControllerUtils.transformJsonIfRequired(metaClass.getName(), version, JsonTransformationDirection.TO_VERSION, json);
-        return json;
+    protected View findOrCreateResponseView(MetaClass metaClass, String responseView) {
+        if (StringUtils.isEmpty(responseView)) {
+            return new View(Entity.class, false)
+                    .addProperty("id")
+                    .addProperty(EntitySerializationAPI.ENTITY_NAME_PROP)
+                    .addProperty(EntitySerializationAPI.INSTANCE_NAME_PROP);
+        }
+
+        View view = metadata.getViewRepository().findView(metaClass, responseView);
+
+        if (view == null) {
+            throw new RestAPIException("View not found",
+                    String.format("View '%s' not found for entity '%s'", responseView, metaClass.getName()),
+                    HttpStatus.NOT_FOUND);
+        }
+        return view;
     }
+
 
     protected class SearchEntitiesRequestDTO {
         protected JsonObject filter;

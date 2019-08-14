@@ -107,10 +107,10 @@ public class EntitiesController {
     @PostMapping("/{entityName}")
     public ResponseEntity<String> createEntity(@RequestBody String entityJson,
                                                @PathVariable String entityName,
+                                               @RequestParam(required = false) String responseView,
                                                @RequestParam(required = false) String modelVersion,
                                                HttpServletRequest request) {
-
-        ResponseInfo responseInfo = entitiesControllerManager.createEntity(entityJson, entityName, modelVersion, request);
+        ResponseInfo responseInfo = entitiesControllerManager.createEntity(entityJson, entityName, responseView, modelVersion, request);
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation(responseInfo.getUrl());
         return new ResponseEntity<>(responseInfo.getBodyJson(), httpHeaders, HttpStatus.CREATED);
@@ -120,15 +120,17 @@ public class EntitiesController {
     public String updateEntity(@RequestBody String entityJson,
                                @PathVariable String entityName,
                                @PathVariable String entityId,
+                               @RequestParam(required = false) String responseView,
                                @RequestParam(required = false) String modelVersion) {
-        return entitiesControllerManager.updateEntity(entityJson, entityName, entityId, modelVersion).getBodyJson();
+        return entitiesControllerManager.updateEntity(entityJson, entityName, entityId, responseView, modelVersion).getBodyJson();
     }
 
     @PutMapping("/{entityName}")
     public String updateEntities(@RequestBody String entitiesJson,
                                  @PathVariable String entityName,
+                                 @RequestParam(required = false) String responseView,
                                  @RequestParam(required = false) String modelVersion) {
-        return entitiesControllerManager.updateEntities(entitiesJson, entityName, modelVersion).getBodyJson();
+        return entitiesControllerManager.updateEntities(entitiesJson, entityName, responseView, modelVersion).getBodyJson();
     }
 
     @DeleteMapping(path = "/{entityName}/{entityId}")
