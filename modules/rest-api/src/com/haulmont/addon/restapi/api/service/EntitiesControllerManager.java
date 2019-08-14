@@ -234,17 +234,9 @@ public class EntitiesControllerManager {
                                        MetaClass metaClass,
                                        Map<String, Object> queryParameters) {
         LoadContext<Entity> ctx = new LoadContext<>(metaClass);
-        if (!Strings.isNullOrEmpty(sort)) {
-            boolean descSortOrder = false;
-            if (sort.startsWith("-")) {
-                descSortOrder = true;
-                sort = sort.substring(1);
-            } else if (sort.startsWith("+")) {
-                sort = sort.substring(1);
-            }
-            queryString += " order by e." + sort + (descSortOrder ? " desc" : "");
-        }
-        LoadContext.Query query = new LoadContext.Query(queryString);
+        String resultQueryString = createResultQueryString(queryString, sort);
+        LoadContext.Query query = new LoadContext.Query(resultQueryString);
+
         if (limit != null) {
             query.setMaxResults(limit);
         } else {
@@ -276,6 +268,29 @@ public class EntitiesControllerManager {
         String json = entitySerializationAPI.toJson(entities, view, serializationOptions.toArray(new EntitySerializationOption[0]));
         json = restControllerUtils.transformJsonIfRequired(metaClass.getName(), modelVersion, JsonTransformationDirection.TO_VERSION, json);
         return json;
+    }
+
+    private String createResultQueryString(String queryString, @Nullable String sort) {
+        if (Strings.isNullOrEmpty(sort)) {
+            return queryString;
+        }
+
+        String orderBy = " order by ";
+        sort = sort.replaceAll("\\s+", "");
+        String[] columns = sort.split(",");
+
+        for (String column : columns) {
+            boolean descSortOrder = false;
+            if (column.startsWith("-")) {
+                descSortOrder = true;
+                column = column.substring(1);
+            } else if (sort.startsWith("+")) {
+                column = column.substring(1);
+            }
+            orderBy += "e." + column + (descSortOrder ? " desc, " : " asc, ");
+        }
+        queryString += orderBy.substring(0, orderBy.length() - 2);
+        return  queryString;
     }
 
     public CreatedEntityInfo createEntity(String entityJson,
