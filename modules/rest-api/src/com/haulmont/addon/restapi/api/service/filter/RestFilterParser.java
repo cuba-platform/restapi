@@ -17,7 +17,10 @@
 package com.haulmont.addon.restapi.api.service.filter;
 
 import com.google.common.base.Strings;
-import com.google.gson.*;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
@@ -165,7 +168,7 @@ public class RestFilterParser {
         String operator = operatorJsonElem.getAsString();
         Op op = findOperator(operator);
 
-        boolean isValueRequired = op != Op.NOT_EMPTY;
+        boolean isValueRequired = (op != Op.NOT_EMPTY && op != Op.IS_NULL);
         JsonElement valueJsonElem = conditionJsonObject.get("value");
         if (valueJsonElem == null && isValueRequired) {
             throw new RestFilterParseException("Field 'value' is not defined for filter condition");
@@ -261,6 +264,8 @@ public class RestFilterParser {
                 return Op.NOT_IN;
             case "notEmpty":
                 return Op.NOT_EMPTY;
+            case "isNull":
+                return Op.IS_NULL;
         }
         throw new RestFilterParseException("Operator is not supported: " + stringOp);
     }

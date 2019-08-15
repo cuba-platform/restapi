@@ -193,6 +193,23 @@ public class RestFilterParserTest extends CubaClientTestCase {
     }
 
     @Test
+    public void testIsNullOperator() throws Exception {
+        new Expectations() {{
+            RandomStringUtils.randomAlphabetic(anyInt); result = null;
+        }};
+
+        String data = readDataFromFile("data/restFilter8.json");
+        MetaClass metaClass = metadata.getClass("test$TestEntity");
+        RestFilterParseResult parseResult = restFilterParser.parse(data, metaClass);
+
+        String expectedJpqlWhere = "({E}.stringField is null)";
+        assertEquals(expectedJpqlWhere, parseResult.getJpqlWhere());
+
+        Map<String, Object> queryParameters = parseResult.getQueryParameters();
+        assertEquals(0, queryParameters.size());
+    }
+
+    @Test
     public void testMissingJsonFieldInCondition() throws Exception {
         String data = readDataFromFile("data/invalidRestFilter1.json");
         MetaClass metaClass = metadata.getClass("test$TestEntity");
