@@ -284,13 +284,13 @@ public class EntitiesControllerManager {
             if (column.startsWith("-")) {
                 descSortOrder = true;
                 column = column.substring(1);
-            } else if (sort.startsWith("+")) {
+            } else if (column.startsWith("+")) {
                 column = column.substring(1);
             }
             orderBy += "e." + column + (descSortOrder ? " desc, " : " asc, ");
         }
         queryString += orderBy.substring(0, orderBy.length() - 2);
-        return  queryString;
+        return queryString;
     }
 
     public CreatedEntityInfo createEntity(String entityJson,
