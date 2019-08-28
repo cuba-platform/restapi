@@ -109,10 +109,9 @@ public class EntitiesController {
     @PostMapping("/{entityName}")
     public ResponseEntity<String> createEntity(@RequestBody String entityJson,
                                                @PathVariable String entityName,
-                                               @RequestParam(required = false) String responseView,
                                                @RequestParam(required = false) String modelVersion,
                                                HttpServletRequest request) {
-        CreatedEntityInfo entityInfo = entitiesControllerManager.createEntity(entityJson, entityName, responseView, modelVersion);
+        CreatedEntityInfo entityInfo = entitiesControllerManager.createEntity(entityJson, entityName, modelVersion);
 
         UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(request.getRequestURL().toString())
                 .path("/{id}")
@@ -127,9 +126,8 @@ public class EntitiesController {
     public String updateEntity(@RequestBody String entityJson,
                                @PathVariable String entityName,
                                @PathVariable String entityId,
-                               @RequestParam(required = false) String responseView,
                                @RequestParam(required = false) String modelVersion) {
-        CreatedEntityInfo entityInfo = entitiesControllerManager.updateEntity(entityJson, entityName, entityId, responseView, modelVersion);
+        CreatedEntityInfo entityInfo = entitiesControllerManager.updateEntity(entityJson, entityName, entityId, modelVersion);
         return entityInfo.getJson();
     }
 
