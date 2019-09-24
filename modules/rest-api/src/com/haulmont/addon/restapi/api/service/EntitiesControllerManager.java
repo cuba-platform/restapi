@@ -234,8 +234,8 @@ public class EntitiesControllerManager {
                                        MetaClass metaClass,
                                        Map<String, Object> queryParameters) {
         LoadContext<Entity> ctx = new LoadContext<>(metaClass);
-        String resultQueryString = createResultQueryString(queryString, sort);
-        LoadContext.Query query = new LoadContext.Query(resultQueryString);
+        String orderedQueryString = createOrderedQueryString(queryString, sort);
+        LoadContext.Query query = new LoadContext.Query(orderedQueryString);
 
         if (limit != null) {
             query.setMaxResults(limit);
@@ -270,27 +270,25 @@ public class EntitiesControllerManager {
         return json;
     }
 
-    private String createResultQueryString(String queryString, @Nullable String sort) {
+    protected String createOrderedQueryString(String queryString, @Nullable String sort) {
         if (Strings.isNullOrEmpty(sort)) {
             return queryString;
         }
-
-        String orderBy = " order by ";
+        StringBuilder orderBy = new StringBuilder(queryString).append(" order by ");
         sort = sort.replaceAll("\\s+", "");
         String[] columns = sort.split(",");
 
         for (String column : columns) {
-            boolean descSortOrder = false;
+            String order = " asc, ";
             if (column.startsWith("-")) {
-                descSortOrder = true;
+                order = " desc, ";
                 column = column.substring(1);
             } else if (column.startsWith("+")) {
                 column = column.substring(1);
             }
-            orderBy += "e." + column + (descSortOrder ? " desc, " : " asc, ");
+            orderBy.append("e.").append(column).append(order);
         }
-        queryString += orderBy.substring(0, orderBy.length() - 2);
-        return queryString;
+        return orderBy.substring(0, orderBy.length() - 2);
     }
 
     public CreatedEntityInfo createEntity(String entityJson,
