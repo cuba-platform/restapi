@@ -159,7 +159,7 @@ public class RestControllerExceptionHandler {
                     }
                 }
                 if (serializable) {
-                    info.setInvalidValue(invalidValue);
+                    info.setInvalidValue(invalidValue.toString());
                 } else {
                     info.setInvalidValue(null);
                 }

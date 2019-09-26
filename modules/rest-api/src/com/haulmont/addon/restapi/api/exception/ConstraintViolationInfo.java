@@ -20,7 +20,7 @@ public class ConstraintViolationInfo {
     private String message;
     private String messageTemplate;
     private String path;
-    private Object invalidValue;
+    private String invalidValue;
 
     public String getMessage() {
         return message;
@@ -50,7 +50,7 @@ public class ConstraintViolationInfo {
         return invalidValue;
     }
 
-    public void setInvalidValue(Object invalidValue) {
+    public void setInvalidValue(String invalidValue) {
         this.invalidValue = invalidValue;
     }
 }
