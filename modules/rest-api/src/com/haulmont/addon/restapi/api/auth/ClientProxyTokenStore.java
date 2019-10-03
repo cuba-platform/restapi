@@ -91,8 +91,15 @@ public class ClientProxyTokenStore implements TokenStore {
 
     @Override
     public OAuth2Authentication readAuthentication(String token) {
+        OAuth2Authentication authentication = null;
         byte[] authenticationBytes = serverTokenStore.getAuthenticationByTokenValue(token);
-        OAuth2Authentication authentication = authenticationBytes != null ? deserializeAuthentication(authenticationBytes) : null;
+        if (authenticationBytes != null) {
+            try {
+                authentication = deserialize(authenticationBytes);
+            } catch (DeserializationException e) {
+                log.error("Error on OAuth2Authentication deserialization: {}", e.getMessage());
+            }
+        }
         if (authentication != null) {
             processSession(authentication, token);
         }
@@ -109,9 +116,9 @@ public class ClientProxyTokenStore implements TokenStore {
         Locale locale = restAuthUtils.extractLocaleFromRequestHeader(request);
         String refreshTokenValue = token.getRefreshToken() != null ? token.getRefreshToken().getValue() : null;
         serverTokenStore.storeAccessToken(token.getValue(),
-                serializeAccessToken(token),
+                serialize(token),
                 authenticationKey,
-                serializeAuthentication(authentication),
+                serialize(authentication),
                 token.getExpiration(),
                 userLogin,
                 locale,
@@ -133,8 +140,16 @@ public class ClientProxyTokenStore implements TokenStore {
 
     @Override
     public OAuth2AccessToken readAccessToken(String tokenValue) {
+        OAuth2AccessToken accessToken = null;
         byte[] accessTokenBytes = serverTokenStore.getAccessTokenByTokenValue(tokenValue);
-        return accessTokenBytes != null ? deserializeAccessToken(accessTokenBytes) : null;
+        if (accessTokenBytes != null) {
+            try {
+                accessToken = deserialize(accessTokenBytes);
+            } catch (DeserializationException e) {
+                log.error("Error on OAuth2AccessToken deserialization: {}", e.getMessage());
+            }
+        }
+        return accessToken;
     }
 
     @Override
@@ -144,9 +159,17 @@ public class ClientProxyTokenStore implements TokenStore {
 
     @Override
     public OAuth2AccessToken getAccessToken(OAuth2Authentication authentication) {
+        OAuth2AccessToken accessToken = null;
         String key = authenticationKeyGenerator.extractKey(authentication);
         byte[] accessTokenBytes = serverTokenStore.getAccessTokenByAuthentication(key);
-        return accessTokenBytes != null ? deserializeAccessToken(accessTokenBytes) : null;
+        if (accessTokenBytes != null) {
+            try {
+                accessToken = deserialize(accessTokenBytes);
+            } catch (DeserializationException e) {
+                log.error("Error on OAuth2AccessToken deserialization: {}", e.getMessage());
+            }
+        }
+        return accessToken;
     }
 
     /**
@@ -237,20 +260,17 @@ public class ClientProxyTokenStore implements TokenStore {
         return serverInfo;
     }
 
-    protected OAuth2AccessToken deserializeAccessToken(byte[] token) {
-        return SerializationUtils.deserialize(token);
+    protected <T> T deserialize(byte[] bytes) throws DeserializationException {
+        try {
+            return (T) SerializationUtils.deserialize(bytes);
+        } catch (Exception e) {
+            log.debug("Error on deserialization", e);
+            throw new DeserializationException(e.getMessage(), e);
+        }
     }
 
-    protected byte[] serializeAccessToken(OAuth2AccessToken token) {
-        return SerializationUtils.serialize(token);
-    }
-
-    protected byte[] serializeAuthentication(OAuth2Authentication authentication) {
-        return SerializationUtils.serialize(authentication);
-    }
-
-    protected OAuth2Authentication deserializeAuthentication(byte[] authentication) {
-        return SerializationUtils.deserialize(authentication);
+    protected <T> byte[] serialize(T object) {
+        return SerializationUtils.serialize(object);
     }
 
     @Override
@@ -260,22 +280,38 @@ public class ClientProxyTokenStore implements TokenStore {
                 null;
         String userLogin = authentication.getName();
         serverTokenStore.storeRefreshToken(refreshToken.getValue(),
-                SerializationUtils.serialize(refreshToken),
-                SerializationUtils.serialize(authentication),
+                serialize(refreshToken),
+                serialize(authentication),
                 tokenExpiry,
                 userLogin);
     }
 
     @Override
     public OAuth2RefreshToken readRefreshToken(String tokenValue) {
+        OAuth2RefreshToken refreshToken = null;
         byte[] refreshTokenBytes = serverTokenStore.getRefreshTokenByTokenValue(tokenValue);
-        return refreshTokenBytes != null ? SerializationUtils.deserialize(refreshTokenBytes) : null;
+        if (refreshTokenBytes != null) {
+            try {
+                refreshToken = deserialize(refreshTokenBytes);
+            } catch (DeserializationException e) {
+                log.error("Error on OAuth2RefreshToken deserialization: {}", e.getMessage());
+            }
+        }
+        return refreshToken;
     }
 
     @Override
     public OAuth2Authentication readAuthenticationForRefreshToken(OAuth2RefreshToken token) {
+        OAuth2Authentication authentication = null;
         byte[] authenticationBytes = serverTokenStore.getAuthenticationByRefreshTokenValue(token.getValue());
-        return authenticationBytes != null ? SerializationUtils.deserialize(authenticationBytes) : null;
+        if (authenticationBytes != null) {
+            try {
+                authentication = deserialize(authenticationBytes);
+            } catch (DeserializationException e) {
+                log.error("Error on OAuth2Authentication deserialization: {}", e.getMessage());
+            }
+        }
+        return authentication;
     }
 
     @Override
@@ -296,5 +332,15 @@ public class ClientProxyTokenStore implements TokenStore {
     @Override
     public Collection<OAuth2AccessToken> findTokensByClientId(String clientId) {
         throw new UnsupportedOperationException();
+    }
+
+    protected static class DeserializationException extends Exception {
+        public DeserializationException(Throwable throwable) {
+            super(throwable);
+        }
+
+        public DeserializationException(String s, Throwable throwable) {
+            super(s, throwable);
+        }
     }
 }
