@@ -15,8 +15,8 @@
  */
 
 buildscript {
-    ext.cubaVersion = '7.1.0'
-    ext.addonVersion = rootProject.hasProperty('buildVersion') ? rootProject['buildVersion'] : '7.1-SNAPSHOT'
+    ext.cubaVersion = '7.2-SNAPSHOT'
+    ext.addonVersion = rootProject.hasProperty('buildVersion') ? rootProject['buildVersion'] : '7.2-SNAPSHOT'
     repositories {
         mavenLocal()
 
@@ -103,7 +103,7 @@ dependencies {
     appComponent("com.haulmont.cuba:cuba-global:$cubaVersion")
 }
 
-def hsql = 'org.hsqldb:hsqldb:2.4.1'
+def hsql = 'org.hsqldb:hsqldb:2.5.0'
 
 configure([globalModule, coreModule, webModule, restApiModule, portalModule]) {
     apply(plugin: 'java')
