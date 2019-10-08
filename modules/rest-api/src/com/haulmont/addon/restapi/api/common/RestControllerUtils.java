@@ -23,7 +23,6 @@ import com.haulmont.addon.restapi.api.transform.JsonTransformationDirection;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.BaseEntityInternalAccess;
-import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.SecurityState;
 import com.haulmont.cuba.core.global.*;
@@ -110,7 +109,7 @@ public class RestControllerUtils {
         public void visit(Entity entity, MetaProperty property) {
             MetaClass metaClass = metadata.getClassNN(entity.getClass());
             if (!security.isEntityAttrReadPermitted(metaClass, property.getName())) {
-                addInaccessibleAttribute((BaseGenericIdEntity) entity, property.getName());
+                addInaccessibleAttribute(entity, property.getName());
                 if (!metadataTools.isSystem(property) && !property.isReadOnly()) {
                     // Using reflective access to field because the attribute can be unfetched if loading not partial entities,
                     // which is the case when in-memory constraints exist
@@ -128,7 +127,7 @@ public class RestControllerUtils {
         }
     }
 
-    private void addInaccessibleAttribute(BaseGenericIdEntity entity, String property) {
+    private void addInaccessibleAttribute(Entity entity, String property) {
         SecurityState securityState = BaseEntityInternalAccess.getOrCreateSecurityState(entity);
         String[] attributes = BaseEntityInternalAccess.getInaccessibleAttributes(securityState);
         attributes = attributes == null ? new String[1] : Arrays.copyOf(attributes, attributes.length + 1);
