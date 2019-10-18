@@ -16,6 +16,7 @@
 
 package com.haulmont.addon.restapi.api.service;
 
+import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -241,17 +242,9 @@ public class EntitiesControllerManager {
                                        MetaClass metaClass,
                                        Map<String, Object> queryParameters) {
         LoadContext<Entity> ctx = new LoadContext<>(metaClass);
-        if (!Strings.isNullOrEmpty(sort)) {
-            boolean descSortOrder = false;
-            if (sort.startsWith("-")) {
-                descSortOrder = true;
-                sort = sort.substring(1);
-            } else if (sort.startsWith("+")) {
-                sort = sort.substring(1);
-            }
-            queryString += " order by e." + sort + (descSortOrder ? " desc" : "");
-        }
-        LoadContext.Query query = new LoadContext.Query(queryString);
+        String orderedQueryString = addOrderBy(queryString, sort);
+        LoadContext.Query query = new LoadContext.Query(orderedQueryString);
+
         if (limit != null) {
             query.setMaxResults(limit);
         } else {
@@ -283,6 +276,25 @@ public class EntitiesControllerManager {
         String json = entitySerializationAPI.toJson(entities, view, serializationOptions.toArray(new EntitySerializationOption[0]));
         json = restControllerUtils.transformJsonIfRequired(metaClass.getName(), modelVersion, JsonTransformationDirection.TO_VERSION, json);
         return json;
+    }
+
+    protected String addOrderBy(String queryString, @Nullable String sort) {
+        if (Strings.isNullOrEmpty(sort)) {
+            return queryString;
+        }
+        StringBuilder orderBy = new StringBuilder(queryString).append(" order by ");
+        Iterable<String> iterableColumns = Splitter.on(",").trimResults().omitEmptyStrings().split(sort);
+        for (String column : iterableColumns) {
+            String order = " asc, ";
+            if (column.startsWith("-")) {
+                order = " desc, ";
+                column = column.substring(1);
+            } else if (column.startsWith("+")) {
+                column = column.substring(1);
+            }
+            orderBy.append("e.").append(column).append(order);
+        }
+        return orderBy.substring(0, orderBy.length() - 2);
     }
 
     public ResponseInfo createEntity(String entityJson,
