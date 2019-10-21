@@ -160,6 +160,7 @@ public class RestQueriesConfiguration {
             String entityName = queryElem.attributeValue("entity");
             String viewName = queryElem.attributeValue("view");
             String cacheable = queryElem.attributeValue("cacheable");
+            String anonymousAllowed = queryElem.attributeValue("anonymousAllowed");
             String jpql = queryElem.elementText("jpql");
 
             if (Strings.isNullOrEmpty(queryName)) {
@@ -185,6 +186,7 @@ public class RestQueriesConfiguration {
             queryInfo.setViewName(viewName);
             queryInfo.setJpql(jpql);
             queryInfo.setCacheable("true".equals(cacheable));
+            queryInfo.setAnonymousAllowed("true".equals(anonymousAllowed));
 
             Element paramsEl = queryElem.element("params");
             if (paramsEl != null) {
@@ -219,6 +221,7 @@ public class RestQueriesConfiguration {
         protected String entityName;
         protected String viewName;
         protected boolean cacheable;
+        protected boolean anonymousAllowed;
         protected List<QueryParamInfo> params = new ArrayList<>();
 
         public String getName() {
@@ -259,6 +262,14 @@ public class RestQueriesConfiguration {
 
         public void setCacheable(boolean cacheable) {
             this.cacheable = cacheable;
+        }
+
+        public boolean isAnonymousAllowed() {
+            return anonymousAllowed;
+        }
+
+        public void setAnonymousAllowed(boolean anonymousAllowed) {
+            this.anonymousAllowed = anonymousAllowed;
         }
 
         public List<QueryParamInfo> getParams() {

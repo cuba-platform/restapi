@@ -16,28 +16,29 @@
   -->
 
 <xs:schema targetNamespace="http://schemas.haulmont.com/cuba/rest-queries.xsd"
-        xmlns:xs="http://www.w3.org/2001/XMLSchema"
-        xmlns="http://schemas.haulmont.com/cuba/rest-queries.xsd"
-        elementFormDefault="qualified"
-        attributeFormDefault="unqualified">
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns="http://schemas.haulmont.com/cuba/rest-queries.xsd"
+           elementFormDefault="qualified"
+           attributeFormDefault="unqualified">
 
     <xs:element name="queries" type="queriesType"/>
 
     <xs:complexType name="queriesType">
         <xs:sequence>
-            <xs:element name="query" type="queryType"  maxOccurs="unbounded" minOccurs="0"/>
+            <xs:element name="query" type="queryType" maxOccurs="unbounded" minOccurs="0"/>
         </xs:sequence>
     </xs:complexType>
 
     <xs:complexType name="queryType">
         <xs:sequence>
             <xs:element name="jpql" type="xs:string" minOccurs="1" maxOccurs="1"/>
-            <xs:element name="params" type="paramsType"  maxOccurs="unbounded" minOccurs="0"/>
+            <xs:element name="params" type="paramsType" maxOccurs="unbounded" minOccurs="0"/>
         </xs:sequence>
         <xs:attribute name="name" type="xs:string" use="required"/>
         <xs:attribute name="entity" type="xs:string" use="required"/>
         <xs:attribute name="view" type="xs:string" use="required"/>
         <xs:attribute name="cacheable" type="xs:boolean"/>
+        <xs:attribute name="anonymousAllowed" type="xs:boolean"/>
     </xs:complexType>
 
     <xs:complexType name="paramsType">

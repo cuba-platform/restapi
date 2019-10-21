@@ -18,6 +18,7 @@ package com.haulmont.addon.restapi.api.auth;
 
 import com.haulmont.addon.restapi.api.common.RestParseUtils;
 import com.haulmont.addon.restapi.api.config.RestApiConfig;
+import com.haulmont.addon.restapi.api.config.RestQueriesConfiguration;
 import com.haulmont.addon.restapi.api.config.RestServicesConfiguration;
 import com.haulmont.addon.restapi.api.sys.CachingHttpServletRequestWrapper;
 import com.haulmont.cuba.core.sys.AppContext;
@@ -39,6 +40,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * This filter is used for anonymous access to CUBA REST API. If no Authorization header presents in the request and if
@@ -50,11 +53,24 @@ public class CubaAnonymousAuthenticationFilter implements Filter {
 
     private static final Logger log = LoggerFactory.getLogger(CubaAnonymousAuthenticationFilter.class);
 
+    protected static final String GET = "GET";
+    protected static final String POST = "POST";
+
+    protected static final String QUERIES = "queries";
+    protected static final String SERVICES = "services";
+
+    protected static final String SERVICE_URL_REGEX = "/v2/(services)/([a-zA-Z_][a-zA-Z\\d_$]*)/([a-zA-Z_][a-zA-Z\\d_]*)";
+    protected static final String QUERY_URL_REGEX = "/v2/(queries)/([a-zA-Z_][a-zA-Z\\d_$]*)/([a-zA-Z_][a-zA-Z\\d_]*)(/count)?";
+    protected static final Pattern REGEX_PATTERN = Pattern.compile("^" + SERVICE_URL_REGEX + "|" + QUERY_URL_REGEX + "$");
+
     @Inject
     protected RestApiConfig restApiConfig;
 
     @Inject
     protected RestServicesConfiguration restServicesConfiguration;
+
+    @Inject
+    protected RestQueriesConfiguration restQueriesConfiguration;
 
     @Inject
     protected TrustedClientService trustedClientService;
@@ -75,17 +91,18 @@ public class CubaAnonymousAuthenticationFilter implements Filter {
             if (restApiConfig.getRestAnonymousEnabled()) {
                 populateSecurityContextWithAnonymousSession();
             } else {
-                //anonymous service method may be invoked
+                //anonymous service method or query may be invoked
                 String pathInfo = ((HttpServletRequest) request).getPathInfo();
-                if (pathInfo != null && pathInfo.startsWith("/v2/services/")) {
-                    String[] parts = pathInfo.split("/");
-                    if (parts.length == 5) {
-                        String serviceName = parts[3];
-                        String methodName = parts[4];
+                String methodType = ((HttpServletRequest) request).getMethod();
+                Matcher matcher = REGEX_PATTERN.matcher(pathInfo);
+                if (matcher.matches()) {
+                    if (SERVICES.equals(matcher.group(1))) {
                         List<String> methodParamNames;
-                        if ("GET".equals(((HttpServletRequest) request).getMethod())) {
+                        String serviceName = matcher.group(2);
+                        String methodName = matcher.group(3);
+                        if (GET.equals(methodType)) {
                             methodParamNames = Collections.list(request.getParameterNames());
-                        } else if ("POST".equals(((HttpServletRequest) request).getMethod())) {
+                        } else if (POST.equals(methodType)) {
                             //wrap the request using content caching request wrapper because we need to access the
                             //request body
                             nextRequest = new CachingHttpServletRequestWrapper((HttpServletRequest) request);
@@ -105,6 +122,15 @@ public class CubaAnonymousAuthenticationFilter implements Filter {
                                 .getRestMethodInfo(serviceName, methodName, methodParamNames);
                         if (restMethodInfo != null && restMethodInfo.isAnonymousAllowed()) {
                             populateSecurityContextWithAnonymousSession();
+                        }
+                    } else if (QUERIES.equals(matcher.group(4))) {
+                        String entityName = matcher.group(5);
+                        String queryName = matcher.group(6);
+                        if (GET.equals(methodType) || POST.equals(methodType)) {
+                            RestQueriesConfiguration.QueryInfo restQueryInfo = restQueriesConfiguration.getQuery(entityName, queryName);
+                            if (restQueryInfo != null && restQueryInfo.isAnonymousAllowed()) {
+                                populateSecurityContextWithAnonymousSession();
+                            }
                         }
                     }
                 }
