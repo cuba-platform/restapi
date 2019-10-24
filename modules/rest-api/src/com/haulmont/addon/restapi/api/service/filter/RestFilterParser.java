@@ -17,15 +17,16 @@
 package com.haulmont.addon.restapi.api.service.filter;
 
 import com.google.common.base.Strings;
-import com.google.gson.*;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.QueryUtils;
-import com.haulmont.cuba.core.global.filter.Op;
-import com.haulmont.cuba.core.global.filter.OpManager;
 import com.haulmont.cuba.core.global.filter.ParametersHelper;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.stereotype.Component;
@@ -46,7 +47,7 @@ public class RestFilterParser {
     protected Metadata metadata;
 
     @Inject
-    protected OpManager opManager;
+    protected RestFilterOpManager restFilterOpManager;
 
     /**
      * Parses the JSON with entities filter and returns an object with JPQL query string and query parameters. The
@@ -163,9 +164,9 @@ public class RestFilterParser {
             throw new RestFilterParseException("Field 'operator' is not defined for filter condition");
         }
         String operator = operatorJsonElem.getAsString();
-        Op op = findOperator(operator);
+        RestFilterOp op = findOperator(operator);
 
-        boolean isValueRequired = op != Op.NOT_EMPTY;
+        boolean isValueRequired = (op != RestFilterOp.NOT_EMPTY && op != RestFilterOp.IS_NULL);
         JsonElement valueJsonElem = conditionJsonObject.get("value");
         if (valueJsonElem == null && isValueRequired) {
             throw new RestFilterParseException("Field 'value' is not defined for filter condition");
@@ -177,7 +178,7 @@ public class RestFilterParser {
         }
         MetaProperty metaProperty = propertyPath.getMetaProperty();
 
-        EnumSet<Op> opsAvailableForJavaType = opManager.availableOps(metaProperty.getJavaType());
+        EnumSet<RestFilterOp> opsAvailableForJavaType = restFilterOpManager.availableOps(metaProperty.getJavaType());
         if (!opsAvailableForJavaType.contains(op)) {
             throw new RestFilterParseException("Operator " + operator + " is not available for java type " +
                     metaProperty.getJavaType().getCanonicalName());
@@ -199,7 +200,7 @@ public class RestFilterParser {
 
         if (isValueRequired) {
             Object value = null;
-            if (op == Op.IN || op == Op.NOT_IN) {
+            if (op == RestFilterOp.IN || op == RestFilterOp.NOT_IN) {
                 if (!valueJsonElem.isJsonArray()) {
                     throw new RestFilterParseException("JSON array was expected as a value for condition with operator " + operator);
                 }
@@ -238,7 +239,7 @@ public class RestFilterParser {
         throw new RestFilterParseException("Cannot parse the condition value: " + stringValue);
     }
 
-    protected Op findOperator(String stringOp) throws RestFilterParseException {
+    protected RestFilterOp findOperator(String stringOp) throws RestFilterParseException {
         switch (stringOp) {
             case "=":
             case ">":
@@ -246,26 +247,28 @@ public class RestFilterParser {
             case "<":
             case "<=":
             case "<>":
-                return Op.fromJpqlString(stringOp);
+                return RestFilterOp.fromJpqlString(stringOp);
             case "startsWith":
-                return Op.STARTS_WITH;
+                return RestFilterOp.STARTS_WITH;
             case "endsWith":
-                return Op.ENDS_WITH;
+                return RestFilterOp.ENDS_WITH;
             case "contains":
-                return Op.CONTAINS;
+                return RestFilterOp.CONTAINS;
             case "doesNotContain":
-                return Op.DOES_NOT_CONTAIN;
+                return RestFilterOp.DOES_NOT_CONTAIN;
             case "in":
-                return Op.IN;
+                return RestFilterOp.IN;
             case "notIn":
-                return Op.NOT_IN;
+                return RestFilterOp.NOT_IN;
             case "notEmpty":
-                return Op.NOT_EMPTY;
+                return RestFilterOp.NOT_EMPTY;
+            case "isNull":
+                return RestFilterOp.IS_NULL;
         }
         throw new RestFilterParseException("Operator is not supported: " + stringOp);
     }
 
-    protected Object transformValue(Object value, Op operator) {
+    protected Object transformValue(Object value, RestFilterOp operator) {
         switch (operator) {
             case CONTAINS:
             case DOES_NOT_CONTAIN:

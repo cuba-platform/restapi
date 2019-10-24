@@ -19,7 +19,6 @@ package com.haulmont.addon.restapi.api.service.filter;
 import com.haulmont.addon.restapi.api.service.filter.testmodel.TestEnum;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.client.testsupport.CubaClientTestCase;
-import com.haulmont.cuba.core.global.filter.OpManagerImpl;
 import mockit.Expectations;
 import mockit.Mocked;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -59,7 +58,7 @@ public class RestFilterParserTest extends CubaClientTestCase {
 
         restFilterParser = new RestFilterParser();
         restFilterParser.metadata = this.metadata;
-        restFilterParser.opManager = new OpManagerImpl();
+        restFilterParser.restFilterOpManager = new RestFilterOpManagerImpl();
     }
 
     @Test
@@ -186,6 +185,19 @@ public class RestFilterParserTest extends CubaClientTestCase {
         RestFilterParseResult parseResult = restFilterParser.parse(data, metaClass);
 
         String expectedJpqlWhere = "({E}.stringField is not null)";
+        assertEquals(expectedJpqlWhere, parseResult.getJpqlWhere());
+
+        Map<String, Object> queryParameters = parseResult.getQueryParameters();
+        assertEquals(0, queryParameters.size());
+    }
+
+    @Test
+    public void testIsNullOperator() throws Exception {
+        String data = readDataFromFile("data/restFilter8.json");
+        MetaClass metaClass = metadata.getClass("test$TestEntity");
+        RestFilterParseResult parseResult = restFilterParser.parse(data, metaClass);
+
+        String expectedJpqlWhere = "({E}.stringField is null)";
         assertEquals(expectedJpqlWhere, parseResult.getJpqlWhere());
 
         Map<String, Object> queryParameters = parseResult.getQueryParameters();
