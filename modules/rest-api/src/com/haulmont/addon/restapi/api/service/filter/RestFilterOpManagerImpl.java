@@ -37,19 +37,19 @@ public class RestFilterOpManagerImpl implements RestFilterOpManager {
     @Inject
     protected Metadata metadata;
 
-    protected static final List<Class> dateTimeClasses = ImmutableList.of(Date.class, LocalDate.class, LocalDateTime.class,
+    protected static final List<Class> DATE_TIME_CLASSES = ImmutableList.of(Date.class, LocalDate.class, LocalDateTime.class,
             OffsetDateTime.class);
-    protected static final List<Class> timeClasses = ImmutableList.of(LocalTime.class, OffsetTime.class);
+    protected static final List<Class> TIME_CLASSES = ImmutableList.of(LocalTime.class, OffsetTime.class);
 
     @Override
     public EnumSet<RestFilterOp> availableOps(Class javaClass) {
         if (String.class.equals(javaClass))
             return EnumSet.of(EQUAL, IN, NOT_IN, NOT_EQUAL, CONTAINS, DOES_NOT_CONTAIN, NOT_EMPTY, STARTS_WITH, ENDS_WITH, IS_NULL);
 
-        else if (dateTimeClasses.contains(javaClass))
+        else if (DATE_TIME_CLASSES.contains(javaClass))
             return EnumSet.of(EQUAL, IN, NOT_IN, NOT_EQUAL, GREATER, GREATER_OR_EQUAL, LESSER, LESSER_OR_EQUAL, NOT_EMPTY, DATE_INTERVAL, IS_NULL);
 
-        else if (timeClasses.contains(javaClass))
+        else if (TIME_CLASSES.contains(javaClass))
             return EnumSet.of(EQUAL, NOT_EQUAL, GREATER, GREATER_OR_EQUAL, LESSER, LESSER_OR_EQUAL, NOT_EMPTY, DATE_INTERVAL, IS_NULL);
 
         else if (Number.class.isAssignableFrom(javaClass))
