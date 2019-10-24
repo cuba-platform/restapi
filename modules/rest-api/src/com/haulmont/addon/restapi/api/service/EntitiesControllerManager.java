@@ -204,6 +204,31 @@ public class EntitiesControllerManager {
         return new EntitiesSearchResult(json, count);
     }
 
+    public Long countSearchEntities(String entityName,
+                                    String filterJson,
+                                    @Nullable String modelVersion) {
+        if (filterJson == null) {
+            throw new RestAPIException("Cannot parse entities filter", "Entities filter cannot be null", HttpStatus.BAD_REQUEST);
+        }
+
+        entityName = restControllerUtils.transformEntityNameIfRequired(entityName, modelVersion, JsonTransformationDirection.FROM_VERSION);
+        MetaClass metaClass = restControllerUtils.getMetaClass(entityName);
+        checkCanReadEntity(metaClass);
+
+        RestFilterParseResult filterParseResult;
+        try {
+            filterParseResult = restFilterParser.parse(filterJson, metaClass);
+        } catch (RestFilterParseException e) {
+            throw new RestAPIException("Cannot parse entities filter", e.getMessage(), HttpStatus.BAD_REQUEST, e);
+        }
+
+        String jpqlWhere = filterParseResult.getJpqlWhere().replace("{E}", "e");
+        Map<String, Object> queryParameters = filterParseResult.getQueryParameters();
+
+        String queryString = "select count(e) from " + entityName + " e where " + jpqlWhere;
+        return dataManager.loadValue(queryString, Long.class).setParameters(queryParameters).one();
+    }
+
     public EntitiesSearchResult searchEntities(String entityName, String searchRequestBody) {
         SearchEntitiesRequestDTO searchEntitiesRequest = new Gson()
                 .fromJson(searchRequestBody, SearchEntitiesRequestDTO.class);
@@ -229,6 +254,16 @@ public class EntitiesControllerManager {
                 searchEntitiesRequest.getDynamicAttributes(),
                 searchEntitiesRequest.getModelVersion()
         );
+    }
+
+    public Long countSearchEntities(String entityName, String searchRequestBody) {
+        SearchEntitiesRequestDTO searchEntitiesRequest = new Gson()
+                .fromJson(searchRequestBody, SearchEntitiesRequestDTO.class);
+
+        if (searchEntitiesRequest.getFilter() == null) {
+            throw new RestAPIException("Cannot parse entities filter", "Entities filter cannot be null", HttpStatus.BAD_REQUEST);
+        }
+        return countSearchEntities(entityName, searchEntitiesRequest.getFilter().toString(), searchEntitiesRequest.getModelVersion());
     }
 
     protected String _loadEntitiesList(String queryString,

@@ -91,6 +91,13 @@ public class EntitiesController {
         return responseBuilder.body(entitiesSearchResult.getJson());
     }
 
+    @GetMapping("/{entityName}/search/count")
+    public String countSearchEntitiesListGet(@PathVariable String entityName,
+                                             @RequestParam String filter,
+                                             @RequestParam(required = false) String modelVersion) {
+        return entitiesControllerManager.countSearchEntities(entityName, filter, modelVersion).toString();
+    }
+
     @PostMapping("/{entityName}/search")
     public ResponseEntity<String> searchEntitiesListPost(@PathVariable String entityName,
                                                          @RequestBody String requestBodyJson) {
@@ -102,6 +109,12 @@ public class EntitiesController {
             responseBuilder.header("X-Total-Count", entitiesSearchResult.getCount().toString());
         }
         return responseBuilder.body(entitiesSearchResult.getJson());
+    }
+
+    @PostMapping("/{entityName}/search/count")
+    public String countSearchEntitiesListPost(@PathVariable String entityName,
+                                              @RequestBody String requestBodyJson) {
+        return entitiesControllerManager.countSearchEntities(entityName, requestBodyJson).toString();
     }
 
     @PostMapping("/{entityName}")
