@@ -15,7 +15,7 @@
  */
 
 buildscript {
-    ext.cubaVersion = '7.1-SNAPSHOT'
+    ext.cubaVersion = '7.1.2'
     ext.addonVersion = rootProject.hasProperty('buildVersion') ? rootProject['buildVersion'] : '7.1-SNAPSHOT'
     repositories {
         mavenLocal()
