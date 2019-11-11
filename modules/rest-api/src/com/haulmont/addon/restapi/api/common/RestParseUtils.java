@@ -101,7 +101,7 @@ public class RestParseUtils {
             //if type argument for the collection is defined and is not entity, then do the basic deserialization
             if (argumentTypeClass != null) {
                 if (!Entity.class.isAssignableFrom(argumentTypeClass)) {
-                    return deserialize(value, clazz);
+                    return deserialize(value, type);
                 }
             }
             //if type argument for the collection is defined and is entity or if there is no type argument then try to
@@ -118,8 +118,8 @@ public class RestParseUtils {
         return deserialize(value, clazz);
     }
 
-    public Object deserialize(String json, Class clazz) {
-        return entitySerializationAPI.objectFromJson(json, clazz);
+    public Object deserialize(String json, Type type) {
+        return entitySerializationAPI.objectFromJson(json, type);
     }
 
     public String serialize(Object instance) {
