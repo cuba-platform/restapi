@@ -29,7 +29,12 @@
     <!-- Override web implementation bean in main context -->
     <bean id="cuba_Events" class="com.haulmont.cuba.core.sys.EventsImpl"/>
 
-    <mvc:annotation-driven/>
+    <bean id="contentNegotiationManager"
+          class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
+        <property name="defaultContentType" value="application/json"/>
+    </bean>
+
+    <mvc:annotation-driven content-negotiation-manager="contentNegotiationManager"/>
 
     <mvc:interceptors>
         <mvc:interceptor>
