@@ -19,8 +19,11 @@ package com.haulmont.addon.restapi.api.service;
 import com.haulmont.addon.restapi.api.controllers.PermissionsController;
 import com.haulmont.addon.restapi.api.exception.RestAPIException;
 import com.haulmont.addon.restapi.api.service.filter.data.PermissionInfo;
+import com.haulmont.addon.restapi.api.service.filter.data.RoleInfo;
+import com.haulmont.addon.restapi.api.service.filter.data.RolesInfo;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.security.entity.PermissionType;
+import com.haulmont.cuba.security.entity.User;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
@@ -82,5 +85,24 @@ public class PermissionsControllerManager {
                 }
         }
         throw new RestAPIException("Cannot evaluate permission value", "", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    public RolesInfo getRolesInfo() {
+
+        RolesInfo rolesInfo = new RolesInfo();
+        rolesInfo.roles = new ArrayList<>();
+        User user = userSessionSource.getUserSession().getCurrentOrSubstitutedUser();
+
+        if (user == null || user.getUserRoles() == null) return rolesInfo;
+
+        rolesInfo.permissions = getPermissionInfos();
+
+        user.getUserRoles().forEach(userRole -> {
+            RoleInfo roleInfo = new RoleInfo();
+            roleInfo.roleType = userRole == null || userRole.getRole() == null ? null : userRole.getRole().getType();
+            rolesInfo.roles.add(roleInfo);
+        });
+
+        return rolesInfo;
     }
 }
