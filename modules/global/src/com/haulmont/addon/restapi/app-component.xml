@@ -35,13 +35,16 @@
                   value="+com/haulmont/addon/restapi/remoting-spring.xml"/>
     </module>
 
-    <module name="web" dependsOn="global" blocks="web">
-        <artifact name="restapi-web" appJar="true"/>
+    <module name="rest-api" dependsOn="global" blocks="web,portal">
         <artifact name="restapi-rest-api" appJar="true"/>
-        <artifact name="restapi-web" classifier="web" ext="zip" configuration="webcontent"/>
-
         <property name="cuba.restSpringContextConfig"
                   value="+com/haulmont/addon/restapi/rest-dispatcher-spring.xml"/>
+    </module>
+
+    <module name="web" dependsOn="rest-api" blocks="web">
+        <artifact name="restapi-web" appJar="true"/>
+        <artifact name="restapi-web" classifier="web" ext="zip" configuration="webcontent"/>
+
         <property name="cuba.springContextConfig"
                   value="+com/haulmont/addon/restapi/web-spring.xml"/>
         <property name="cuba.permissionConfig"
@@ -61,12 +64,9 @@
         <property name="cuba.rest.responseViewEnabled" value="true"/>
     </module>
 
-    <module name="portal" dependsOn="global" blocks="portal">
+    <module name="portal" dependsOn="rest-api" blocks="portal">
         <artifact name="restapi-portal" appJar="true"/>
-        <artifact name="restapi-rest-api" appJar="true"/>
 
-        <property name="cuba.restSpringContextConfig"
-                  value="+com/haulmont/addon/restapi/rest-dispatcher-spring.xml"/>
         <property name="cuba.springContextConfig"
                   value="+com/haulmont/addon/restapi/portal-spring.xml"/>
 
