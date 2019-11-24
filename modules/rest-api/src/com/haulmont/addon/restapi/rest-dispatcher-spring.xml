@@ -155,6 +155,7 @@
         <intercept-url pattern="/rest/v2/queries/**" access="isAuthenticated()"/>
         <intercept-url pattern="/rest/v2/services/**" access="isAuthenticated()"/>
         <intercept-url pattern="/rest/v2/permissions" access="isAuthenticated()"/>
+        <intercept-url pattern="/rest/v2/roles" access="isAuthenticated()"/>
         <intercept-url pattern="/rest/v2/metadata/**" access="isAuthenticated()"/>
         <intercept-url pattern="/rest/v2/userInfo" access="isAuthenticated()"/>
         <intercept-url pattern="/rest/v2/files/**" access="isAuthenticated()"/>
