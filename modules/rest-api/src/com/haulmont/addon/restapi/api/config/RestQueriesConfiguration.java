@@ -22,6 +22,7 @@ import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.sys.AppContext;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringTokenizer;
 import org.dom4j.Element;
 import org.slf4j.Logger;
@@ -162,6 +163,8 @@ public class RestQueriesConfiguration {
             String cacheable = queryElem.attributeValue("cacheable");
             String anonymousAllowed = queryElem.attributeValue("anonymousAllowed");
             String jpql = queryElem.elementText("jpql");
+            String limit = queryElem.attributeValue("limit");
+            String offset = queryElem.attributeValue("offset");
 
             if (Strings.isNullOrEmpty(queryName)) {
                 log.error("queryName attribute is not defined");
@@ -187,6 +190,12 @@ public class RestQueriesConfiguration {
             queryInfo.setJpql(jpql);
             queryInfo.setCacheable("true".equals(cacheable));
             queryInfo.setAnonymousAllowed("true".equals(anonymousAllowed));
+            if (StringUtils.isNotEmpty(offset)) {
+                queryInfo.setOffset(Integer.valueOf(offset));
+            }
+            if (StringUtils.isNotEmpty(limit)) {
+                queryInfo.setLimit(Integer.valueOf(limit));
+            }
 
             Element paramsEl = queryElem.element("params");
             if (paramsEl != null) {
@@ -220,9 +229,27 @@ public class RestQueriesConfiguration {
         protected String jpql;
         protected String entityName;
         protected String viewName;
+        protected Integer limit;
+        protected Integer offset;
         protected boolean cacheable;
         protected boolean anonymousAllowed;
         protected List<QueryParamInfo> params = new ArrayList<>();
+
+        public Integer getLimit() {
+            return limit;
+        }
+
+        public void setLimit(Integer limit) {
+            this.limit = limit;
+        }
+
+        public Integer getOffset() {
+            return offset;
+        }
+
+        public void setOffset(Integer offset) {
+            this.offset = offset;
+        }
 
         public String getName() {
             return name;

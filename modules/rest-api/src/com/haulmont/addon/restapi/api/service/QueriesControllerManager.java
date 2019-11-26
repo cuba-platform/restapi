@@ -88,14 +88,14 @@ public class QueriesControllerManager {
     }
 
     public String executeQueryPost(String entityName,
-                                  String queryName,
-                                  @Nullable Integer limit,
-                                  @Nullable Integer offset,
-                                  @Nullable String viewName,
-                                  @Nullable Boolean returnNulls,
-                                  @Nullable Boolean dynamicAttributes,
-                                  @Nullable String version,
-                                  String paramsJson) {
+                                   String queryName,
+                                   @Nullable Integer limit,
+                                   @Nullable Integer offset,
+                                   @Nullable String viewName,
+                                   @Nullable Boolean returnNulls,
+                                   @Nullable Boolean dynamicAttributes,
+                                   @Nullable String version,
+                                   String paramsJson) {
         Map<String, String> paramsMap = restParseUtils.parseParamsJson(paramsJson);
         return _executeQuery(entityName, queryName, limit, offset, viewName, returnNulls, dynamicAttributes, version, paramsMap);
     }
@@ -144,9 +144,9 @@ public class QueriesControllerManager {
     }
 
     public String getCountPost(String entityName,
-                              String queryName,
-                              String version,
-                              String paramsJson) {
+                               String queryName,
+                               String version,
+                               String paramsJson) {
         Map<String, String> paramsMap = restParseUtils.parseParamsJson(paramsJson);
         return _getCount(entityName, queryName, version, paramsMap);
     }
@@ -189,11 +189,16 @@ public class QueriesControllerManager {
 
         if (limit != null) {
             query.setMaxResults(limit);
+        } else if (queryInfo.getLimit() != null) {
+            query.setMaxResults(queryInfo.getLimit());
         } else {
             query.setMaxResults(persistenceManagerClient.getMaxFetchUI(entityName));
         }
+
         if (offset != null) {
             query.setFirstResult(offset);
+        } else if (queryInfo.getOffset() != null) {
+            query.setFirstResult(queryInfo.getOffset());
         }
 
         for (RestQueriesConfiguration.QueryParamInfo paramInfo : queryInfo.getParams()) {
