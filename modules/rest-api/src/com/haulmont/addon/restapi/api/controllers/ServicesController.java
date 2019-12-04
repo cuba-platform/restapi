@@ -40,7 +40,7 @@ public class ServicesController {
     public ResponseEntity<String> invokeServiceMethodPost(@PathVariable String serviceName,
                                                           @PathVariable String methodName,
                                                           @RequestParam(required = false) String modelVersion,
-                                                          @RequestBody(required = false) String paramsJson) {
+                                                          @RequestBody(required = false) String paramsJson) throws Throwable {
         ServicesControllerManager.ServiceCallResult result = servicesControllerManager.invokeServiceMethodPost(serviceName,
                 methodName, paramsJson, modelVersion);
         HttpStatus status;
@@ -58,7 +58,7 @@ public class ServicesController {
     public ResponseEntity<String> invokeServiceMethodGet(@PathVariable String serviceName,
                                                          @PathVariable String methodName,
                                                          @RequestParam(required = false) String modelVersion,
-                                                         @RequestParam Map<String, String> paramsMap) {
+                                                         @RequestParam Map<String, String> paramsMap) throws Throwable {
         ServicesControllerManager.ServiceCallResult result = servicesControllerManager.invokeServiceMethodGet(serviceName,
                 methodName, paramsMap, modelVersion);
         HttpStatus status;

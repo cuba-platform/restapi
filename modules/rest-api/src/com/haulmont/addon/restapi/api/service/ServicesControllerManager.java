@@ -37,12 +37,14 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import javax.validation.ValidationException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -71,7 +73,10 @@ public class ServicesControllerManager {
     private static final Logger log = LoggerFactory.getLogger(ServicesControllerManager.class);
 
     @Nullable
-    public ServiceCallResult invokeServiceMethodGet(String serviceName, String methodName, Map<String, String> paramsMap, String modelVersion) {
+    public ServiceCallResult invokeServiceMethodGet(String serviceName,
+                                                    String methodName,
+                                                    Map<String, String> paramsMap,
+                                                    String modelVersion) throws Throwable {
         paramsMap.remove("modelVersion");
         List<String> paramNames = new ArrayList<>(paramsMap.keySet());
         List<String> paramValuesStr = new ArrayList<>(paramsMap.values());
@@ -79,7 +84,10 @@ public class ServicesControllerManager {
     }
 
     @Nullable
-    public ServiceCallResult invokeServiceMethodPost(String serviceName, String methodName, String paramsJson, String modelVersion) {
+    public ServiceCallResult invokeServiceMethodPost(String serviceName,
+                                                     String methodName,
+                                                     String paramsJson,
+                                                     String modelVersion) throws Throwable {
         Map<String, String> paramsMap = restParseUtils.parseParamsJson(paramsJson);
         List<String> paramNames = new ArrayList<>(paramsMap.keySet());
         List<String> paramValuesStr = new ArrayList<>(paramsMap.values());
@@ -101,8 +109,11 @@ public class ServicesControllerManager {
     }
 
     @Nullable
-    protected ServiceCallResult _invokeServiceMethod(String serviceName, String methodName, List<String> paramNames,
-                                                     List<String> paramValuesStr, String modelVersion) {
+    protected ServiceCallResult _invokeServiceMethod(String serviceName,
+                                                     String methodName,
+                                                     List<String> paramNames,
+                                                     List<String> paramValuesStr,
+                                                     String modelVersion) throws Throwable {
         Object service = AppBeans.get(serviceName);
         RestServicesConfiguration.RestMethodInfo restMethodInfo = restServicesConfiguration.getRestMethodInfo(serviceName, methodName, paramNames);
         if (restMethodInfo == null) {
@@ -131,14 +142,7 @@ public class ServicesControllerManager {
         try {
             methodResult = serviceMethod.invoke(service, paramValues.toArray());
         } catch (InvocationTargetException | IllegalAccessException ex) {
-            if (ex.getCause() instanceof ValidationException) {
-                throw (ValidationException) ex.getCause();
-            } else {
-                throw new RestAPIException("Error on service method invocation",
-                        ex.getCause() != null ? ex.getCause().getMessage() : ex.getMessage(),
-                        HttpStatus.INTERNAL_SERVER_ERROR,
-                        ex.getCause());
-            }
+            throw ex.getCause();
         }
 
         if (methodResult == null) {
