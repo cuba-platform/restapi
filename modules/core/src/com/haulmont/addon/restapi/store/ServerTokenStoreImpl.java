@@ -18,10 +18,10 @@ package com.haulmont.addon.restapi.store;
 
 import com.google.common.base.Strings;
 import com.haulmont.addon.restapi.config.RestConfig;
-import com.haulmont.addon.restapi.rest.RestUserSessionInfo;
-import com.haulmont.addon.restapi.rest.ServerTokenStore;
 import com.haulmont.addon.restapi.entity.AccessToken;
 import com.haulmont.addon.restapi.entity.RefreshToken;
+import com.haulmont.addon.restapi.rest.RestUserSessionInfo;
+import com.haulmont.addon.restapi.rest.ServerTokenStore;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Transaction;
@@ -313,8 +313,13 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
                 tx.commit();
             }
         }
-        clusterManagerAPI.send(new TokenStoreAddAccessTokenMsg(tokenValue, accessTokenBytes, authenticationKey,
-                authenticationBytes, tokenExpiry, userLogin, refreshTokenValue));
+        if (restConfig.getSyncTokenReplication()) {
+            clusterManagerAPI.sendSync(new TokenStoreAddAccessTokenMsg(tokenValue, accessTokenBytes, authenticationKey,
+                    authenticationBytes, tokenExpiry, userLogin, refreshTokenValue));
+        } else {
+            clusterManagerAPI.send(new TokenStoreAddAccessTokenMsg(tokenValue, accessTokenBytes, authenticationKey,
+                    authenticationBytes, tokenExpiry, userLogin, refreshTokenValue));
+        }
     }
 
     protected void storeAccessTokenToMemory(String accessTokenValue,
@@ -559,7 +564,11 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
     @Override
     public RestUserSessionInfo putSessionInfo(String tokenValue, RestUserSessionInfo sessionInfo) {
         RestUserSessionInfo info = _putSessionInfo(tokenValue, sessionInfo);
-        clusterManagerAPI.send(new TokenStorePutSessionInfoMsg(tokenValue, sessionInfo));
+        if (restConfig.getSyncTokenReplication()) {
+            clusterManagerAPI.sendSync(new TokenStorePutSessionInfoMsg(tokenValue, sessionInfo));
+        } else {
+            clusterManagerAPI.send(new TokenStorePutSessionInfoMsg(tokenValue, sessionInfo));
+        }
         return info;
     }
 
@@ -578,7 +587,11 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
         if (restConfig.getRestStoreTokensInDb()) {
             removeAccessTokenFromDatabase(tokenValue);
         }
-        clusterManagerAPI.send(new TokenStoreRemoveAccessTokenMsg(tokenValue));
+        if (restConfig.getSyncTokenReplication()) {
+            clusterManagerAPI.sendSync(new TokenStoreRemoveAccessTokenMsg(tokenValue));
+        } else {
+            clusterManagerAPI.send(new TokenStoreRemoveAccessTokenMsg(tokenValue));
+        }
     }
 
     protected void removeAccessTokenFromMemory(String tokenValue) {

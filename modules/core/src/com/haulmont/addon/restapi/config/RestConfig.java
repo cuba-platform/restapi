@@ -31,4 +31,12 @@ public interface RestConfig extends Config {
     @Source(type = SourceType.DATABASE)
     @DefaultBoolean(false)
     boolean getRestStoreTokensInDb();
+
+    /**
+     * @return whether newly created tokens should be sent to the cluster synchronously
+     */
+    @Property("cuba.rest.syncTokenReplication")
+    @Source(type = SourceType.APP)
+    @DefaultBoolean(false)
+    boolean getSyncTokenReplication();
 }
