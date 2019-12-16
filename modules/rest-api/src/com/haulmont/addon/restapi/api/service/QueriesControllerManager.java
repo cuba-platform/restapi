@@ -26,6 +26,7 @@ import com.haulmont.addon.restapi.api.config.RestQueriesConfiguration;
 import com.haulmont.addon.restapi.api.exception.RestAPIException;
 import com.haulmont.addon.restapi.api.transform.JsonTransformationDirection;
 import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.client.sys.PersistenceManagerClient;
 import com.haulmont.cuba.core.app.serialization.EntitySerializationAPI;
@@ -250,6 +251,10 @@ public class QueriesControllerManager {
                 result.add(arrayElementValue);
             }
             return result;
+        }
+        if (EnumClass.class.isAssignableFrom(clazz)) {
+            //noinspection unchecked
+            return Enum.valueOf((Class<Enum>) clazz, value);
         }
         if (String.class == clazz) return value;
         if (Integer.class == clazz || Integer.TYPE == clazz
