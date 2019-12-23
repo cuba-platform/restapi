@@ -16,6 +16,8 @@ import groovy.sql.Sql
 
 class DataUtils {
 
+    public static final UUID COMPANY_GROUP_ID = UUID.fromString("0fa2b1a5-1d68-4d69-9fbd-dff348347f93")
+
     private static EncryptionModule encryption = new BCryptEncryptionModule()
 
     static UUID createGroup(DataSet dataSet, Sql sql, String groupName) {
