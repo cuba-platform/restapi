@@ -1,0 +1,13 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:context="http://www.springframework.org/schema/context">
+
+    <mvc:annotation-driven/>
+
+    <context:annotation-config/>
+
+    <context:component-scan base-package="com.haulmont.rest.demo.web.controllers"/>
+    <context:component-scan base-package="com.haulmont.addon.restapi.rest"/>
+    <context:component-scan base-package="com.haulmont.rest.demo.web.exception"/>
+
+</beans>

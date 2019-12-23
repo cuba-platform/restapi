@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<entity-mappings xmlns="http://xmlns.jcp.org/xml/ns/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence/orm http://xmlns.jcp.org/xml/ns/persistence/orm_2_1.xsd" version="2.1">
+  <entity class="com.haulmont.rest.demo.core.entity.Plant" name="ref$Plant">
+    <attributes>
+      <many-to-many name="models" target-entity="com.haulmont.rest.demo.core.entity.ExtModel" fetch="LAZY">
+        <join-table name="REF_PLANT_MODEL_LINK">
+          <join-column name="PLANT_ID"/>
+          <inverse-join-column name="MODEL_ID"/>
+        </join-table>
+      </many-to-many>
+    </attributes>
+  </entity>
+  <entity class="com.haulmont.rest.demo.core.entity.DriverCallsign" name="ref$DriverCallsign">
+    <attributes>
+      <one-to-one name="driver" target-entity="com.haulmont.rest.demo.core.entity.ExtDriver" fetch="LAZY" mapped-by="callsign"/>
+    </attributes>
+  </entity>
+  <entity class="com.haulmont.rest.demo.core.entity.DriverGroup" name="ref$DriverGroup">
+    <attributes>
+      <one-to-many name="drivers" target-entity="com.haulmont.rest.demo.core.entity.ExtDriver" fetch="LAZY" mapped-by="driverGroup">
+        <order-by>name</order-by>
+      </one-to-many>
+    </attributes>
+  </entity>
+  <entity class="com.haulmont.rest.demo.core.entity.Car" name="ref_Car">
+    <attributes>
+      <many-to-one name="model" target-entity="com.haulmont.rest.demo.core.entity.ExtModel" fetch="LAZY">
+        <join-column name="MODEL_ID"/>
+      </many-to-one>
+    </attributes>
+  </entity>
+  <entity class="com.haulmont.rest.demo.core.entity.DriverAllocation" name="ref$DriverAllocation">
+    <attributes>
+      <many-to-one name="driver" target-entity="com.haulmont.rest.demo.core.entity.ExtDriver" fetch="EAGER">
+        <join-column name="DRIVER_ID"/>
+      </many-to-one>
+    </attributes>
+  </entity>
+  <entity class="com.haulmont.rest.demo.core.entity.DriverLicense" name="ref$DriverLicense">
+    <attributes>
+      <many-to-one name="driver" target-entity="com.haulmont.rest.demo.core.entity.ExtDriver" fetch="EAGER">
+        <join-column name="DRIVER_ID"/>
+      </many-to-one>
+    </attributes>
+  </entity>
+  <entity class="com.haulmont.rest.demo.core.entity.AllocatedCar" name="ref$AllocatedCar">
+    <attributes>
+      <many-to-one name="model" target-entity="com.haulmont.rest.demo.core.entity.ExtModel" fetch="LAZY">
+        <join-column name="MODEL_ID"/>
+      </many-to-one>
+    </attributes>
+  </entity>
+</entity-mappings>

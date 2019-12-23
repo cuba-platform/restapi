@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2008-2016 Haulmont. All rights reserved.
+  ~ Use is subject to license terms, see http://www.cuba-platform.com/commercial-software-license for details.
+  -->
+
+<services xmlns="http://schemas.haulmont.com/cuba/rest-services.xsd">
+    <service name="cuba_DynamicAttributesCacheService">
+        <method name="loadCache"/>
+    </service>
+
+    <service name="restdemo_PortalTestService">
+        <method name="sum"/>
+
+        <method name="emptyMethod"/>
+
+        <method name="overloadedMethod"/>
+
+        <method name="nonExistingMethod"/>
+
+        <method name="findCar"/>
+
+        <method name="findAllCars"/>
+
+        <method name="updateCarVin"/>
+
+        <method name="updateCarVins"/>
+
+        <method name="testDateParam"/>
+
+        <method name="testBigDecimalParam"/>
+
+        <method name="notPersistedEntity"/>
+    </service>
+</services>

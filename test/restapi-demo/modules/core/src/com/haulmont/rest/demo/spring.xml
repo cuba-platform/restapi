@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context">
+
+
+    <!-- db1 additional database -->
+    <bean id="cubaDataSource_db1" class="com.haulmont.cuba.core.sys.CubaJndiObjectFactoryBean">
+        <property name="jndiNameAppProperty" value="cuba.dataSourceJndiName_db1"/>
+        <property name="resourceRef" value="true"/>
+    </bean>
+
+    <bean id="entityManagerFactory_db1" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"
+          lazy-init="false">
+        <property name="persistenceXmlLocation" value="file:${cuba.dataDir}/db1-persistence.xml"/>
+        <property name="dataSource" ref="cubaDataSource_db1"/>
+        <property name="jpaVendorAdapter" ref="jpaVendorAdapter"/>
+    </bean>
+
+    <bean id="transactionManager_db1" class="org.springframework.orm.jpa.JpaTransactionManager">
+        <property name="entityManagerFactory" ref="entityManagerFactory_db1"/>
+        <property name="dataSource" ref="cubaDataSource_db1"/>
+        <qualifier type="org.springframework.beans.factory.annotation.Qualifier" value="db1"/>
+    </bean>
+    <!---->
+
+    <!-- Annotation-based beans -->
+    <context:component-scan base-package="com.haulmont.rest.demo"/>
+
+    <!-- MBeans registration -->
+    <bean id="refapp_MBeanExporter" class="com.haulmont.cuba.core.sys.jmx.MBeanExporter" lazy-init="false">
+        <property name="beans">
+            <map>
+                <entry key="${cuba.webContextName}.refapp:type=Sample" value-ref="refapp_Sample"/>
+
+                <entry key="${cuba.webContextName}.refapp:type=UserSessionsSupport"
+                       value-ref="refapp_UserSessionsSupport"/>
+
+                <entry key="${cuba.webContextName}.refapp:type=UserSessionLogSupport"
+                       value-ref="refapp_UserSessionLogSupport"/>
+
+                <entry key="${cuba.webContextName}.refapp:type=WorkLoadGenerator"
+                       value-ref="refapp_WorkLoadGeneratorMBean"/>
+            </map>
+        </property>
+    </bean>
+
+
+</beans>

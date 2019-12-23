@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<persistence xmlns="http://java.sun.com/xml/ns/persistence" version="2.0">
+    <persistence-unit name="rest-addon-demo" transaction-type="RESOURCE_LOCAL">
+        <class>com.haulmont.rest.demo.core.entity.Address</class>
+        <class>com.haulmont.rest.demo.core.entity.Colour</class>
+        <class>com.haulmont.rest.demo.core.entity.Model</class>
+        <class>com.haulmont.rest.demo.core.entity.ExtModel</class>
+        <class>com.haulmont.rest.demo.core.entity.Plant</class>
+        <class>com.haulmont.rest.demo.core.entity.Driver</class>
+        <class>com.haulmont.rest.demo.core.entity.ExtDriver</class>
+        <class>com.haulmont.rest.demo.core.entity.DriverCallsign</class>
+        <class>com.haulmont.rest.demo.core.entity.DriverGroup</class>
+        <class>com.haulmont.rest.demo.core.entity.CarToken</class>
+        <class>com.haulmont.rest.demo.core.entity.Car</class>
+        <class>com.haulmont.rest.demo.core.entity.CarGarageToken</class>
+        <class>com.haulmont.rest.demo.core.entity.CarDetails</class>
+        <class>com.haulmont.rest.demo.core.entity.CarDocumentation</class>
+        <class>com.haulmont.rest.demo.core.entity.CarDetailsItem</class>
+        <class>com.haulmont.rest.demo.core.entity.DriverAllocation</class>
+        <class>com.haulmont.rest.demo.core.entity.Repair</class>
+        <class>com.haulmont.rest.demo.core.entity.InsuranceCase</class>
+        <class>com.haulmont.rest.demo.core.entity.Doc</class>
+        <class>com.haulmont.rest.demo.core.entity.DriverLicense</class>
+        <class>com.haulmont.rest.demo.core.entity.Place</class>
+        <class>com.haulmont.rest.demo.core.entity.Seller</class>
+        <class>com.haulmont.rest.demo.core.entity.Currency</class>
+        <class>com.haulmont.rest.demo.core.entity.PricingRegion</class>
+        <class>com.haulmont.rest.demo.core.entity.AllocatedCar</class>
+        <class>com.haulmont.rest.demo.core.entity.Card</class>
+        <class>com.haulmont.rest.demo.core.entity.SamplePlatformEntity</class>
+        <class>com.haulmont.rest.demo.core.entity.Debtor</class>
+        <class>com.haulmont.rest.demo.core.entity.Case</class>
+        <class>com.haulmont.rest.demo.core.entity.identity.IdentityCustomer</class>
+        <class>com.haulmont.rest.demo.core.entity.identity.IdentityOrder</class>
+        <class>com.haulmont.rest.demo.core.entity.identity.IdentityOrderLine</class>
+        <class>com.haulmont.rest.demo.core.entity.identity.IdentityOrderLineTag</class>
+    </persistence-unit>
+</persistence>

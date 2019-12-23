@@ -1,0 +1,351 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2008-2016 Haulmont. All rights reserved.
+  ~ Use is subject to license terms, see http://www.cuba-platform.com/commercial-software-license for details.
+  -->
+
+<views xmlns="http://schemas.haulmont.com/cuba/view.xsd">
+    <view class="com.haulmont.rest.demo.core.entity.Car"
+          extends="_local"
+          name="carBrowse">
+        <property name="model"
+                  view="_local"/>
+        <property name="colour"
+                  view="_local"/>
+        <property name="seller"
+                  view="_minimal"/>
+        <property name="currency"
+                  view="_minimal"/>
+    </view>
+
+    <view class="com.haulmont.rest.demo.core.entity.Car"
+          extends="_minimal"
+          name="car-with-colour">
+        <property name="colour"
+                  view="_local"/>
+    </view>
+
+    <view class="com.haulmont.rest.demo.core.entity.Car"
+          name="car-without-vin">
+        <property name="colour"/>
+    </view>
+
+    <view class="com.haulmont.rest.demo.core.entity.AllocatedCar"
+          extends="_local"
+          name="allocatedCarBrowse">
+        <property name="model"
+                  view="_minimal"/>
+    </view>
+
+    <view class="com.haulmont.rest.demo.core.entity.Driver"
+          extends="_local"
+          name="driverBrowse"
+          systemProperties="true">
+        <property name="callsign"
+                  view="_minimal"/>
+        <property name="driverGroup"
+                  view="_local"/>
+    </view>
+
+    <view class="com.haulmont.rest.demo.core.entity.Driver"
+          extends="_local"
+          name="driverEdit">
+        <property name="callsign"
+                  view="_minimal"/>
+        <property name="driverGroup"
+                  view="_minimal"/>
+        <property name="address"
+                  view="_local"/>
+    </view>
+
+    <view class="com.haulmont.rest.demo.core.entity.Driver"
+          name="driverWithVersionAndCreateTs">
+        <property name="version"/>
+        <property name="createTs"/>
+    </view>
+
+    <view class="com.haulmont.rest.demo.core.entity.Driver"
+          extends="_local"
+          name="driverWithAllocations">
+        <property name="callsign"
+                  view="_minimal"/>
+        <property name="driverGroup"
+                  view="_local"/>
+        <property name="address"
+                  view="_local"/>
+        <property name="allocations">
+            <property name="car" view="_minimal"/>
+        </property>
+    </view>
+
+    <view class="com.haulmont.rest.demo.core.entity.Driver"
+          name="driverWithStatusAndName">
+        <property name="status"/>
+        <property name="name"/>
+    </view>
+
+    <view class="com.haulmont.rest.demo.core.entity.DriverCallsign"
+          name="browse">
+        <property name="driver"
+                  view="_minimal"/>
+        <property name="callsign"/>
+    </view>
+
+    <view class="com.haulmont.rest.demo.core.entity.CarToken" name="carTokenEdit" extends="_local">
+        <property name="garageToken" view="_local"/>
+    </view>
+
+    <view class="com.haulmont.rest.demo.core.entity.Repair"
+          name="repairEdit"
+          extends="_local">
+        <property name="car" view="_minimal"/>
+        <property name="carTokens" view="carTokenEdit"/>
+        <!--<property name="db1Customer"/>-->
+    </view>
+
+    <view class="com.haulmont.rest.demo.core.entity.Car"
+          extends="_local"
+          name="carEdit_test">
+        <property name="model"
+                  view="_local"/>
+        <property name="colour"
+                  view="_minimal"/>
+        <property name="driverAllocations"
+                  view="carEdit"/>
+        <property name="repairs"
+                  view="repairEdit"/>
+        <property name="seller"
+                  view="_minimal"/>
+        <property name="currency"
+                  view="_minimal"/>
+        <property name="category"
+                  view="_minimal"/>
+    </view>
+
+    <view class="com.haulmont.rest.demo.core.entity.Car"
+          extends="_local"
+          name="carEdit">
+        <property name="model"
+                  view="_local"/>
+        <property name="colour"
+                  view="_minimal"/>
+        <property name="driverAllocations"
+                  view="carEdit"/>
+        <property name="repairs"
+                  view="repairEdit"/>
+        <property name="seller"
+                  view="_minimal"/>
+        <property name="currency"
+                  view="_minimal"/>
+        <property name="category"
+                  view="_minimal"/>
+        <property name="details"
+                  view="carDetailsEdit"/>
+        <property name="carDocumentation"
+                  view="_minimal"/>
+    </view>
+
+    <view entity="ref$CarDetails" name="carDetailsEdit" extends="_local">
+        <property name="car"/>
+        <property name="items"
+                  view="_local"/>
+    </view>
+
+    <view class="com.haulmont.rest.demo.core.entity.Car"
+          extends="_local"
+          name="carWithInsuranceCases">
+        <property name="insuranceCases"
+                  view="_local"/>
+    </view>
+
+    <view class="com.haulmont.rest.demo.core.entity.Car"
+          name="carWithTwoLevelComposition">
+        <property name="createTs"/>
+        <property name="repairs"
+                  view="_local"/>
+        <property name="version"/>
+    </view>
+
+    <view class="com.haulmont.rest.demo.core.entity.Car"
+          name="carWithModel">
+        <property name="updateTs"/>
+        <property name="model"
+                  view="_local"/>
+        <property name="version"/>
+    </view>
+
+    <view class="com.haulmont.rest.demo.core.entity.Car"
+          name="carWithTransform">
+        <property name="version"/>
+        <property name="model"
+                  view="_local"/>
+        <property name="updateTs"/>
+        <property name="repairs"/>
+        <property name="createTs"/>
+        <property name="vin"/>
+    </view>
+
+    <view class="com.haulmont.rest.demo.core.entity.Plant"
+          extends="_local"
+          name="plantWithModels">
+        <property name="models" view="_local"/>
+    </view>
+
+    <view class="com.haulmont.rest.demo.core.entity.Address"
+          extends="_local"
+          name="addressEdit">
+    </view>
+
+    <view class="com.haulmont.rest.demo.core.entity.DriverGroup"
+          extends="_local"
+          name="driverGroupEdit">
+        <property name="drivers"
+                  view="_local"/>
+    </view>
+
+    <view class="com.haulmont.rest.demo.core.entity.DriverAllocation"
+          name="carEdit">
+        <property name="driver"
+                  view="_minimal"/>
+    </view>
+
+    <view class="com.haulmont.rest.demo.core.entity.Doc"
+          extends="_local"
+          name="browse">
+    </view>
+
+    <view class="com.haulmont.rest.demo.core.entity.Doc"
+          extends="_local"
+          name="edit">
+        <property name="category"
+                  view="_minimal"/>
+    </view>
+    <!--  Needed for integration tests  -->
+    <view class="com.haulmont.rest.demo.core.entity.ExtDriver"
+          extends="_local"
+          name="test1"
+          systemProperties="true">
+        <property name="callsign"
+                  view="_minimal"/>
+    </view>
+
+    <view class="com.haulmont.rest.demo.core.entity.ExtDriver"
+          extends="_local"
+          name="test2">
+        <property name="callsign"
+                  view="_minimal"/>
+    </view>
+
+    <view class="com.haulmont.rest.demo.core.entity.ExtDriver"
+          extends="driverEdit"
+          name="testEdit">
+        <property name="info"/>
+    </view>
+
+    <view class="com.haulmont.rest.demo.core.entity.ExtDriver"
+          extends="driverEdit"
+          name="driverEdit">
+        <property name="info"/>
+    </view>
+
+    <view class="com.haulmont.rest.demo.core.entity.DriverGroup" extends="_local" name="test3">
+        <property name="drivers" view="_local"/>
+    </view>
+
+    <view class="com.haulmont.rest.demo.core.entity.ExtDriver" extends="_local" name="test3">
+        <property name="driverGroup" view="_minimal"/>
+    </view>
+
+    <view class="com.haulmont.rest.demo.core.entity.SamplePlatformEntity" name="test1">
+        <property name="name"/>
+    </view>
+
+    <view class="com.haulmont.rest.demo.core.entity.Colour" name="testColour">
+        <property name="description"/>
+    </view>
+
+    <view class="com.haulmont.rest.demo.core.entity.DriverCallsign"
+          name="testAutomaticExtensionOfLocalView">
+        <property name="driver"
+                  view="_local"/>
+        <property name="callsign"/>
+    </view>
+
+    <view class="com.haulmont.rest.demo.core.entity.PricingRegion"
+          name="edit">
+        <property name="name"/>
+        <property name="parent" view="_minimal"/>
+    </view>
+
+    <view class="com.haulmont.rest.demo.core.entity.Case" name="load-non-persistent">
+        <property name="nonPersistent1"/>
+        <property name="nonPersistent2"/>
+        <property name="nonPersistent3"/>
+    </view>
+
+    <view class="com.haulmont.rest.demo.core.entity.Case"
+          name="load-non-persistent-rest"
+          extends="load-non-persistent">
+        <property name="debtorFake" view="_local"/>
+        <property name="doubleDebtor" view="_local"/>
+    </view>
+
+    <view class="com.haulmont.rest.demo.core.entity.Case" name="case-browse" extends="_local">
+        <property name="debtor" view="_minimal"/>
+    </view>
+
+    <view class="com.haulmont.rest.demo.core.entity.Case"
+          name="caseWithTransientProperty">
+        <property name="nonPersistent1"/>
+        <property name="test1"/>
+    </view>
+
+    <view entity="ref$IdentityOrder" name="order-browse" extends="_local">
+        <property name="customer" view="_minimal"/>
+    </view>
+
+    <view entity="ref$IdentityOrder" name="order-edit" extends="_local">
+        <property name="customer" view="_minimal"/>
+        <property name="orderLines" view="order-line-edit"/>
+    </view>
+
+    <view entity="ref$IdentityOrderLine" name="order-line-edit" extends="_local">
+        <property name="orderLineTags" view="_local"/>
+    </view>
+
+    <view entity="ref$Db1Order" name="order-browse" extends="_local">
+        <property name="customer" view="_minimal"/>
+    </view>
+
+    <view class="com.haulmont.cuba.security.entity.Group" name="group-edit-test"
+          systemProperties="true" extends="_local">
+        <property name="parent"/>
+    </view>
+
+    <view class="com.haulmont.rest.demo.core.entity.Currency"
+          name="currencyWithName">
+        <property name="name"/>
+    </view>
+
+    <view class="com.haulmont.rest.demo.core.entity.Currency"
+          name="currencyWithCodeAndName">
+        <property name="name"/>
+        <property name="code"/>
+    </view>
+
+    <view class="com.haulmont.rest.demo.core.entity.multidb.Mem1Customer"
+          name="mem1CustomerWithName">
+        <property name="name"/>
+    </view>
+
+    <view class="com.haulmont.rest.demo.core.entity.Repair"
+          name="repairWithDescription">
+        <property name="description"/>
+        <property name="date"/>
+    </view>
+
+    <view class="com.haulmont.rest.demo.core.entity.identity.IdentityCustomer"
+          name="identityCustomerWithName">
+        <property name="name"/>
+    </view>
+</views>

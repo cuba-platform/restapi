@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<metadata xmlns="http://schemas.haulmont.com/cuba/metadata.xsd">
+    <datatypes>
+        <datatype id="geocoordinate" class="com.haulmont.rest.demo.core.entity.GeoCoordinateDatatype"
+                  format="#0.000000" decimalSeparator="." groupingSeparator=""/>
+
+        <!-- override default datatype for Double to provide format with 4 digits -->
+        <datatype id="double" class="com.haulmont.chile.core.datatypes.impl.DoubleDatatype"
+                  default="true"
+                  format="0.####" decimalSeparator="." groupingSeparator=""/>
+    </datatypes>
+
+    <!--<metadata-model root-package="com.haulmont.rest.demo" namespace="demo"/>-->
+
+    <metadata-model namespace="ref"
+                    root-package="com.haulmont.rest.demo">
+        <class>com.haulmont.rest.demo.core.entity.TransientDriver</class>
+        <class>com.haulmont.rest.demo.core.entity.RefappNotPersistentStringIdEntity</class>
+        <class store="mem1">com.haulmont.rest.demo.core.entity.multidb.Mem1Customer</class>
+        <class store="mem1">com.haulmont.rest.demo.core.entity.multidb.Mem1LongIdEntity</class>
+    </metadata-model>
+
+</metadata>

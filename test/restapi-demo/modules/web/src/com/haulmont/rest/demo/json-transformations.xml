@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<transformations xmlns="http://schemas.haulmont.com/cuba/rest-json-transformations.xsd">
+
+    <transformation modelVersion="1.0" oldEntityName="ref$OldCar" currentEntityName="ref_Car">
+        <renameAttribute oldName="oldVin" currentName="vin"/>
+        <toVersion>
+            <removeAttribute name="colour"/>
+        </toVersion>
+    </transformation>
+
+    <transformation modelVersion="1.0" oldEntityName="ref$OldModel" currentEntityName="ref$ExtModel">
+        <renameAttribute oldName="oldName" currentName="name"/>
+    </transformation>
+
+    <transformation modelVersion="0.9" oldEntityName="ref$OldCar" currentEntityName="ref_Car">
+        <renameAttribute oldName="oldVin09" currentName="vin"/>
+    </transformation>
+
+    <transformation modelVersion="0.8" currentEntityName="ref$ExtModel" oldEntityName="ref$OldModel">
+        <custom>
+            <fromVersion transformerBeanRef="refapp_ModelJsonTransformerFromVersion"/>
+            <toVersion transformerBeanRef="refapp_ModelJsonTransformerToVersion"/>
+        </custom>
+    </transformation>
+
+    <transformation modelVersion="1.0" currentEntityName="ref$Repair" oldEntityName="ref$OldRepair">
+        <custom>
+            <fromVersion transformerBeanRef="refapp_RepairJsonTransformerFromVersion"/>
+            <toVersion transformerBeanRef="refapp_RepairJsonTransformerToVersion"/>
+        </custom>
+    </transformation>
+
+</transformations>

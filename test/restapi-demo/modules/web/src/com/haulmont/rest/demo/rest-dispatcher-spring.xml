@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans">
+
+    <bean name="refapp_RepairJsonTransformerToVersion" class="com.haulmont.rest.demo.web.rest.transformer.RepairJsonTransformerToVersion"/>
+    <bean name="refapp_RepairJsonTransformerFromVersion" class="com.haulmont.rest.demo.web.rest.transformer.RepairJsonTransformerFromVersion"/>
+
+</beans>

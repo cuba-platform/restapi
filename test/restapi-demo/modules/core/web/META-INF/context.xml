@@ -1,0 +1,28 @@
+<Context>
+
+    <!-- Switch off session serialization -->
+    <Manager pathname=""/>
+
+    <Resource
+            name="jdbc/CubaDS"
+            type="javax.sql.DataSource"
+            maxTotal="20"
+            maxIdle="2"
+            maxWaitMillis="5000"
+            driverClassName="org.hsqldb.jdbc.JDBCDriver"
+            username="sa"
+            password=""
+            url="jdbc:hsqldb:hsql://localhost:9010/rest_demo"/>
+
+    <Resource
+            name="jdbc/db1"
+            type="javax.sql.DataSource"
+            maxTotal="20"
+            maxIdle="2"
+            maxWaitMillis="5000"
+            driverClassName="org.hsqldb.jdbc.JDBCDriver"
+            username="sa"
+            password=""
+            url="jdbc:hsqldb:mem:db1"/>
+
+</Context>
