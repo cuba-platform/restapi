@@ -126,6 +126,15 @@
 
     <oauth2:resource-server id="resourceFilter" token-services-ref="tokenServices"/>
 
+    <!-- Health check endpoint should be allowed for anyone and support cross-domain requests -->
+    <security:http pattern="/rest/health/**"
+                   create-session="stateless"
+                   entry-point-ref="oauthAuthenticationEntryPoint"
+                   xmlns="http://www.springframework.org/schema/security">
+        <csrf disabled="true"/>
+        <cors configuration-source-ref="cuba_RestCorsSource"/>
+    </security:http>
+
     <!-- Documentation endpoint should be allowed for anyone and support cross-domain requests -->
     <security:http pattern="/rest/v2/docs/**"
                    create-session="stateless"
@@ -184,7 +193,8 @@
 
     <bean id="cuba_RestExceptionLoggingFilter" class="com.haulmont.addon.restapi.api.sys.RestExceptionLoggingFilter"/>
 
-    <bean id="cuba_AnonymousAuthenticationFilter" class="com.haulmont.addon.restapi.api.auth.CubaAnonymousAuthenticationFilter"/>
+    <bean id="cuba_AnonymousAuthenticationFilter"
+          class="com.haulmont.addon.restapi.api.auth.CubaAnonymousAuthenticationFilter"/>
 
     <bean id="cuba_RestLastSecurityFilter" class="com.haulmont.addon.restapi.api.auth.CubaRestLastSecurityFilter"/>
 
