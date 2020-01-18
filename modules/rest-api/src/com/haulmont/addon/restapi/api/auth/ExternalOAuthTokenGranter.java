@@ -63,6 +63,8 @@ public class ExternalOAuthTokenGranter extends AbstractTokenGranter implements O
     protected Configuration configuration;
     @Inject
     protected AuthenticationService authenticationService;
+    @Inject
+    protected RestApiConfig restApiConfig;
 
     protected ExternalOAuthTokenGranter(AuthorizationServerTokenServices tokenServices,
                                         ClientDetailsService clientDetailsService,
@@ -99,6 +101,7 @@ public class ExternalOAuthTokenGranter extends AbstractTokenGranter implements O
             } else {
                 credentials.setClientInfo(makeClientInfo(""));
             }
+            credentials.setSecurityScope(restApiConfig.getSecurityScope());
             credentials.setParams(tokenRequest.getLoginParams());
 
             session = authenticationService.login(credentials).getSession();

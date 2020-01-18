@@ -111,6 +111,7 @@ public class CubaUserAuthenticationProvider implements AuthenticationProvider {
                 credentials.setIpAddress(ipAddress);
                 credentials.setClientType(ClientType.REST_API);
                 credentials.setClientInfo(makeClientInfo(request.getHeader(HttpHeaders.USER_AGENT)));
+                credentials.setSecurityScope(restApiConfig.getSecurityScope());
 
                 //if the locale value is explicitly passed in the Accept-Language header then set its value to the
                 //credentials. Otherwise, the locale of the user should be used
@@ -196,6 +197,7 @@ public class CubaUserAuthenticationProvider implements AuthenticationProvider {
         tcCredentials.setOverrideLocale(credentials.isOverrideLocale());
         tcCredentials.setSyncNewUserSessionReplication(credentials.isSyncNewUserSessionReplication());
         tcCredentials.setSessionAttributes(credentials.getSessionAttributes());
+        tcCredentials.setSecurityScope(restApiConfig.getSecurityScope());
 
         return tcCredentials;
     }

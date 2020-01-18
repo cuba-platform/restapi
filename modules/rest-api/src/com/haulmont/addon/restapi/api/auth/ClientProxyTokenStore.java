@@ -242,6 +242,7 @@ public class ClientProxyTokenStore implements TokenStore {
             credentials.setClientInfo(makeClientInfo(""));
         }
 
+        credentials.setSecurityScope(restApiConfig.getSecurityScope());
         //if locale was not determined then use the user locale
         if (locale == null) {
             credentials.setOverrideLocale(false);

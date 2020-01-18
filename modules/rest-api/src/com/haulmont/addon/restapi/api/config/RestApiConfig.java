@@ -21,6 +21,7 @@ import com.haulmont.cuba.core.config.Property;
 import com.haulmont.cuba.core.config.Source;
 import com.haulmont.cuba.core.config.SourceType;
 import com.haulmont.cuba.core.config.defaults.DefaultBoolean;
+import com.haulmont.cuba.core.config.defaults.DefaultString;
 import com.haulmont.cuba.core.config.type.CommaSeparatedStringListTypeFactory;
 import com.haulmont.cuba.core.config.type.Factory;
 import org.springframework.security.web.util.matcher.RequestMatcher;
@@ -105,4 +106,12 @@ public interface RestApiConfig extends Config {
     @Property("cuba.rest.responseViewEnabled")
     @DefaultBoolean(true)
     boolean getRestResponseViewEnabled();
+
+    /**
+     * Active security scope for a REST client.
+     * Security scope specifies which roles will be loaded for user session
+     */
+    @Property("cuba.rest.securityScope")
+    @DefaultString("REST")
+    String getSecurityScope();
 }
