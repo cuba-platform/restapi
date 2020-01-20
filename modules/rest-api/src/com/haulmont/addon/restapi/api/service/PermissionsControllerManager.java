@@ -18,19 +18,21 @@ package com.haulmont.addon.restapi.api.service;
 
 import com.haulmont.addon.restapi.api.controllers.PermissionsController;
 import com.haulmont.addon.restapi.api.exception.RestAPIException;
+import com.haulmont.addon.restapi.api.service.filter.data.CompactPermissionInfo;
 import com.haulmont.addon.restapi.api.service.filter.data.PermissionInfo;
 import com.haulmont.addon.restapi.api.service.filter.data.RoleInfo;
 import com.haulmont.addon.restapi.api.service.filter.data.RolesInfo;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.security.entity.User;
+import com.haulmont.cuba.security.role.EffectivePermissionsService;
+import com.haulmont.cuba.security.role.EntityAttributePermissionsContainer;
+import com.haulmont.cuba.security.role.EntityPermissionsContainer;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Class is used for getting current user permissions for the REST API. It contains a business logic required by the
@@ -41,6 +43,9 @@ public class PermissionsControllerManager {
 
     @Inject
     protected UserSessionSource userSessionSource;
+
+    @Inject
+    protected EffectivePermissionsService effectivePermissionsService;
 
     public Collection<PermissionInfo> getPermissionInfos() {
         Collection<PermissionInfo> result = new ArrayList<>();
@@ -56,6 +61,35 @@ public class PermissionsControllerManager {
                 result.add(permissionInfo);
             }
         }
+        return result;
+    }
+
+    public List<CompactPermissionInfo> getFullEntityPermissions() {
+        List<CompactPermissionInfo> result = new ArrayList<>();
+        User user = userSessionSource.getUserSession().getCurrentOrSubstitutedUser();
+        EntityPermissionsContainer entityPermissions = effectivePermissionsService.getEffectiveEntityPermissions(user);
+        for (Map.Entry<String, Integer> entry : entityPermissions.getExplicitPermissions().entrySet()) {
+            CompactPermissionInfo permissionInfo = new CompactPermissionInfo(
+                    entry.getKey(),
+                    entry.getValue());
+            result.add(permissionInfo);
+        }
+        result.sort(Comparator.comparing(CompactPermissionInfo::getT));
+        return result;
+    }
+
+    public List<CompactPermissionInfo> getFullEntityAttributePermissions() {
+        List<CompactPermissionInfo> result = new ArrayList<>();
+        User user = userSessionSource.getUserSession().getCurrentOrSubstitutedUser();
+        EntityAttributePermissionsContainer entityAttrPermissions =
+                effectivePermissionsService.getEffectiveEntityAttributePermissions(user);
+        for (Map.Entry<String, Integer> entry : entityAttrPermissions.getExplicitPermissions().entrySet()) {
+            CompactPermissionInfo permissionInfo = new CompactPermissionInfo(
+                    entry.getKey(),
+                    entry.getValue());
+            result.add(permissionInfo);
+        }
+        result.sort(Comparator.comparing(CompactPermissionInfo::getT));
         return result;
     }
 

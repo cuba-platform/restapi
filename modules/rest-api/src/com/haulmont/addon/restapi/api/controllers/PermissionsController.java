@@ -16,6 +16,7 @@
 
 package com.haulmont.addon.restapi.api.controllers;
 
+import com.haulmont.addon.restapi.api.service.filter.data.CompactPermissionInfo;
 import com.haulmont.addon.restapi.api.service.filter.data.PermissionInfo;
 import com.haulmont.addon.restapi.api.service.PermissionsControllerManager;
 import com.haulmont.addon.restapi.api.service.filter.data.RolesInfo;
@@ -45,5 +46,15 @@ public class PermissionsController {
     @GetMapping("/v2/roles")
     public RolesInfo getRoles() {
         return permissionsControllerManager.getRolesInfo();
+    }
+
+    @GetMapping("/v2/permissions/entities")
+    public Collection<CompactPermissionInfo> getFullEntityPermissions() {
+        return permissionsControllerManager.getFullEntityPermissions();
+    }
+
+    @GetMapping("/v2/permissions/entityAttributes")
+    public Collection<CompactPermissionInfo> getFullEntityAttributePermissions() {
+        return permissionsControllerManager.getFullEntityAttributePermissions();
     }
 }
