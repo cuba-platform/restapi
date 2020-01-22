@@ -145,7 +145,8 @@ public class CubaAnonymousAuthenticationFilter implements Filter {
     protected void populateSecurityContextWithAnonymousSession() {
         UserSession anonymousSession;
         try {
-            anonymousSession = trustedClientService.getAnonymousSession(restApiConfig.getTrustedClientPassword());
+            anonymousSession = trustedClientService.getAnonymousSession(restApiConfig.getTrustedClientPassword(),
+                    restApiConfig.getSecurityScope());
         } catch (LoginException e) {
             throw new RuntimeException("Unable to obtain anonymous session for REST", e);
         }
