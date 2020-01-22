@@ -7,6 +7,7 @@ package com.haulmont.rest.demo.http.rest;
 
 import com.haulmont.cuba.core.sys.encryption.BCryptEncryptionModule;
 import com.haulmont.cuba.core.sys.encryption.EncryptionModule;
+import com.haulmont.cuba.security.entity.Access;
 import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.security.entity.RoleType;
 import com.haulmont.rest.demo.core.app.PortalTestService;
@@ -22,10 +23,8 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import java.sql.*;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Stream;
 
 import static com.haulmont.rest.demo.http.rest.RestTestUtils.*;
 import static org.junit.Assert.*;
@@ -273,6 +272,20 @@ public class EntitiesControllerSecurityFT {
     private void createDbPermissions() throws SQLException {
         createEntityOpPermissions();
         createEntityAttrPermissions();
+
+        //add cuba.restApi.enabled for each role
+        List<UUID> roleIds = Arrays.asList(colorReadRoleId, colorUpdateRoleId, colorCreateRoleId, colorDeleteRoleId,
+                carReadRoleId, noColorReadRoleId);
+        for (UUID roleId : roleIds) {
+            executePrepared("insert into sec_permission(id, role_id, permission_type, target, value_) " +
+                            "values(?, ?, ?, ?, ?)",
+                    dirtyData.createPermissionUuid(),
+                    roleId,
+                    PermissionType.SPECIFIC.getId(),
+                    "cuba.restApi.enabled",
+                    Access.ALLOW.getId()
+            );
+        }
     }
 
     private void createEntityOpPermissions() throws SQLException {
@@ -405,6 +418,15 @@ public class EntitiesControllerSecurityFT {
                 "ref$Colour:description",
                 DENY
         );
+
+        //colorUpdateRole can update colour.name property
+        executePrepared("insert into sec_permission(id, role_id, permission_type, target, value_) values(?, ?, ?, ?, ?)",
+                dirtyData.createPermissionUuid(),
+                colorUpdateRoleId,
+                PermissionType.ENTITY_ATTR.getId(),
+                "ref$Colour:name",
+                2
+        );
     }
 
     private void createDbUserRoles() throws SQLException {
@@ -460,50 +482,62 @@ public class EntitiesControllerSecurityFT {
     private void createDbRoles() throws SQLException {
         //read-only role. can read colours, can't read cars
         colorReadRoleId = dirtyData.createRoleUuid();
-        executePrepared("insert into sec_role(id, role_type, name) values(?, ?, ?)",
+        executePrepared("insert into sec_role(id, name, security_scope, default_entity_read_access) " +
+                        "values(?, ?, ?, ?)",
                 colorReadRoleId,
-                RoleType.READONLY.getId(),
-                "colorReadRole"
+                "colorReadRole",
+                "REST",
+                1
         );
 
         //read_only role. can update colours, can't update cars
         colorUpdateRoleId = dirtyData.createRoleUuid();
-        executePrepared("insert into sec_role(id, role_type, name) values(?, ?, ?)",
+        executePrepared("insert into sec_role(id, name, security_scope, default_entity_read_access) " +
+                        "values(?, ?, ?, ?)",
                 colorUpdateRoleId,
-                RoleType.READONLY.getId(),
-                "colorUpdateRole"
+                "colorUpdateRole",
+                "REST",
+                1
         );
 
         //read-only role. can create colours
         colorCreateRoleId = dirtyData.createRoleUuid();
-        executePrepared("insert into sec_role(id, role_type, name) values(?, ?, ?)",
+        executePrepared("insert into sec_role(id, name, security_scope, default_entity_read_access) " +
+                        "values(?, ?, ?, ?)",
                 colorCreateRoleId,
-                RoleType.READONLY.getId(),
-                "colorCreateRole"
+                "colorCreateRole",
+                "REST",
+                1
         );
 
         //read-only role. can delete colours
         colorDeleteRoleId = dirtyData.createRoleUuid();
-        executePrepared("insert into sec_role(id, role_type, name) values(?, ?, ?)",
+        executePrepared("insert into sec_role(id, name, security_scope, default_entity_read_access) " +
+                        "values(?, ?, ?, ?)",
                 colorDeleteRoleId,
-                RoleType.READONLY.getId(),
-                "colorDeleteRole"
+                "colorDeleteRole",
+                "REST",
+                1
         );
 
         //read-only role for attributes access tests
         carReadRoleId = dirtyData.createRoleUuid();
-        executePrepared("insert into sec_role(id, role_type, name) values(?, ?, ?)",
+        executePrepared("insert into sec_role(id, name, security_scope, default_entity_read_access) " +
+                        "values(?, ?, ?, ?)",
                 carReadRoleId,
-                RoleType.READONLY.getId(),
-                "carReadRole"
+                "carReadRole",
+                "REST",
+                1
         );
 
         //read-only role, prohibiting viewing the colors
         noColorReadRoleId = dirtyData.createRoleUuid();
-        executePrepared("insert into sec_role(id, role_type, name) values(?, ?, ?)",
+        executePrepared("insert into sec_role(id, name, security_scope, default_entity_read_access) " +
+                        "values(?, ?, ?, ?)",
                 noColorReadRoleId,
-                RoleType.READONLY.getId(),
-                "noColorReadRole"
+                "noColorReadRole",
+                "REST",
+                1
         );
     }
 

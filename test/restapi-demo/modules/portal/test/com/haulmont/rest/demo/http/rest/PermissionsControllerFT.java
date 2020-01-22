@@ -87,17 +87,27 @@ public class PermissionsControllerFT {
                 testUserLogin.toLowerCase()
         );
 
-
         roleId = dirtyData.createRoleUuid();
-        executePrepared("insert into sec_role(id, role_type, name) values(?, ?, ?)",
+        executePrepared("insert into sec_role(id, role_type, name, security_scope) values(?, ?, ?, ?)",
                 roleId,
                 RoleType.READONLY.getId(),
-                "testRole"
+                "testRole",
+                "REST"
         );
 
         int ALLOW = 1;
         int DENY = 0;
         int PROPERTY_MODIFY = 2;
+
+        //rest api enabled
+        UUID restApiEnabledPrmsId = dirtyData.createPermissionUuid();
+        executePrepared("insert into sec_permission(id, role_id, permission_type, target, value_) values(?, ?, ?, ?, ?)",
+                restApiEnabledPrmsId,
+                roleId,
+                PermissionType.SPECIFIC.getId(),
+                "cuba.restApi.enabled",
+                ALLOW
+        );
 
         //testRole forbids to update cars
         UUID cantUpdateCarPrmsId = dirtyData.createPermissionUuid();

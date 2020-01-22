@@ -2,6 +2,7 @@ package com.haulmont.rest.demo.http.rest;
 
 import com.haulmont.masquerade.Connectors;
 import com.haulmont.rest.demo.core.app.PortalTestService;
+import com.haulmont.rest.demo.http.rest.jmx.UserSessionsJmxService;
 import com.haulmont.rest.demo.http.rest.jmx.WebConfigStorageJmxService;
 import com.jayway.jsonpath.ReadContext;
 import org.apache.http.HttpStatus;
@@ -15,9 +16,14 @@ import org.junit.Before;
 import org.junit.Test;
 
 import javax.annotation.Nullable;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import static com.haulmont.rest.demo.http.rest.RestTestUtils.*;
 import static org.junit.Assert.assertEquals;
@@ -26,20 +32,31 @@ public class AnonymousAccessFT {
 
     protected Map<String, String> serviceParams;
 
+    private static final String DB_URL = "jdbc:hsqldb:hsql://localhost:9010/rest_demo";
+    private static final UUID anonymousUserId = UUID.fromString("a405db59-e674-4f63-8afe-269dda788fe8");
+    private Connection conn;
+
     @Before
-    public void setUp() {
+    public void setUp() throws Exception {
         serviceParams = new HashMap<>();
 
         serviceParams.put("number1", "2");
         serviceParams.put("number2", "3");
+
+        prepareDb();
+        Connectors.jmx(UserSessionsJmxService.class)
+                .initializeAnonymousSessions();
     }
 
     @After
-    public void tearDown() {
+    public void tearDown() throws SQLException {
         Connectors.jmx(WebConfigStorageJmxService.class)
                 .setAppProperty("cuba.rest.anonymousEnabled", "false");
-    }
 
+        deleteUserRoles(conn, anonymousUserId);
+        if (conn != null)
+            conn.close();
+    }
 
     @Test
     public void executeServiceMethodWithAnonymousEnabled() throws Exception {
@@ -149,4 +166,39 @@ public class AnonymousAccessFT {
         return httpClient.execute(httpGet);
     }
 
+    private void prepareDb() throws Exception {
+        Class.forName("org.hsqldb.jdbc.JDBCDriver");
+        conn = DriverManager.getConnection(DB_URL, "sa", "");
+        createDbUserRoles();
+    }
+
+    private void createDbUserRoles() throws SQLException {
+        UUID id = UUID.randomUUID();
+        //colorReadUser has colorReadRole role (read-only)
+        executePrepared("insert into sec_user_role(id, user_id, role_name) values(?, ?, ?)",
+                id,
+                anonymousUserId,
+                "rest-test-anonymous"
+        );
+    }
+
+    private void executePrepared(String sql, Object... params) throws SQLException {
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            for (int i = 0; i < params.length; i++) {
+                stmt.setObject(i + 1, params[i]);
+            }
+            stmt.executeUpdate();
+        }
+    }
+
+    private void deleteUserRoles(Connection conn, UUID userId) throws SQLException {
+        PreparedStatement stmt;
+        stmt = conn.prepareStatement("delete from sec_user_role where user_id = ?");
+        try {
+            stmt.setObject(1, userId);
+            stmt.executeUpdate();
+        } finally {
+            stmt.close();
+        }
+    }
 }

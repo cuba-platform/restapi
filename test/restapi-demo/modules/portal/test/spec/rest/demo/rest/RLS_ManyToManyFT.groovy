@@ -41,8 +41,10 @@ class RLS_ManyToManyFT extends Specification {
                 "!{E}.name.startsWith('Model#2_') && !{E}.name.startsWith('Model#5_')",
                 groupId)
 
-        createUser(dirtyData, sql,
+        UUID userId = createUser(dirtyData, sql,
                 userLogin, userPassword, groupId)
+
+        createUserRole(dirtyData, sql, userId, 'rest-full-access')
 
         plantId = createPlant(dirtyData, sql, '001')
 

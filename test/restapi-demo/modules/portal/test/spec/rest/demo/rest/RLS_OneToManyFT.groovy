@@ -41,8 +41,9 @@ class RLS_OneToManyFT extends Specification {
                 "!{E}.description.startsWith('InsuranceCase#2_') && !{E}.description.startsWith('InsuranceCase#5_')",
                 groupId)
 
-        createUser(dirtyData, sql,
+        UUID userId = createUser(dirtyData, sql,
                 userLogin, userPassword, groupId)
+        createUserRole(dirtyData, sql, userId, 'rest-full-access')
 
         carId = createCar(dirtyData, sql, '001')
 
