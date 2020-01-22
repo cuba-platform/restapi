@@ -533,6 +533,13 @@ public class EntitiesControllerAttributeAccessFT {
                 groupUuid, //"Company" group
                 driverReadUserLogin.toLowerCase()
         );
+        executePrepared("insert into sec_user_role(id, version, user_id, role_name) " +
+                        "values(?, ?, ?, ?)",
+                UUID.randomUUID(),
+                1l,
+                driverReadUserId,
+                "rest-full-access"
+        );
     }
 
     private void executePrepared(String sql, Object... params) throws SQLException {

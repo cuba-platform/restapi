@@ -303,6 +303,15 @@ public class RowLevelSecurityFT {
                 userLogin.toLowerCase()
         );
 
+        //user must have a rest-full-access role
+        executePrepared("insert into sec_user_role(id, version, user_id, role_name) " +
+                        "values(?, ?, ?, ?)",
+                UUID.randomUUID(),
+                1l,
+                userId,
+                "rest-full-access"
+        );
+
         carId = dirtyData.createCarUuid();
         executePrepared("insert into ref_car(id, version, vin) " +
                         "values(?, ?, ?)",

@@ -62,12 +62,13 @@ class DataUtils {
         return userId
     }
 
-    static UUID createRole(DataSet dataSet, Sql sql, String name) {
+    static UUID createRole(DataSet dataSet, Sql sql, String name, String securityScope) {
         def roleId = dataSet.createRoleUuid()
         sql.dataSet('sec_role').add(
                 id: roleId,
                 version: 1,
-                name: name
+                name: name,
+                security_scope: securityScope
         )
         return roleId
     }
@@ -90,6 +91,17 @@ class DataUtils {
                 version: 1,
                 user_id: userId,
                 role_id: roleId
+        )
+        return id
+    }
+
+    static UUID createUserRole(DataSet dataSet, Sql sql, UUID userId, String roleName) {
+        UUID id = UUID.randomUUID();
+        sql.dataSet('sec_user_role').add(
+                id: id,
+                version: 1,
+                user_id: userId,
+                role_name: roleName
         )
         return id
     }
