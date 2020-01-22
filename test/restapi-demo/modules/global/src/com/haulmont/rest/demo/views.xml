@@ -348,4 +348,9 @@
           name="identityCustomerWithName">
         <property name="name"/>
     </view>
+
+    <view class="com.haulmont.rest.demo.core.entity.InsuranceCase" extends="_local"
+          name="insuranceCase-with-car">
+        <property name="car" view="_local"/>
+    </view>
 </views>
