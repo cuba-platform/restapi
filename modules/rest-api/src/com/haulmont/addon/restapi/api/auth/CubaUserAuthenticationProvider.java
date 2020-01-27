@@ -105,6 +105,9 @@ public class CubaUserAuthenticationProvider implements AuthenticationProvider {
 
             String login = (String) token.getPrincipal();
 
+            //noinspection unchecked
+            Map<String, Object> details = (Map<String, Object>) authentication.getDetails();
+
             UserSession session;
             try {
                 LoginPasswordCredentials credentials = new LoginPasswordCredentials(login, (String) token.getCredentials());
@@ -112,6 +115,7 @@ public class CubaUserAuthenticationProvider implements AuthenticationProvider {
                 credentials.setClientType(ClientType.REST_API);
                 credentials.setClientInfo(makeClientInfo(request.getHeader(HttpHeaders.USER_AGENT)));
                 credentials.setSecurityScope(restApiConfig.getSecurityScope());
+                credentials.setParams(details);
 
                 //if the locale value is explicitly passed in the Accept-Language header then set its value to the
                 //credentials. Otherwise, the locale of the user should be used
@@ -144,8 +148,6 @@ public class CubaUserAuthenticationProvider implements AuthenticationProvider {
 
             UsernamePasswordAuthenticationToken result = new UsernamePasswordAuthenticationToken(authentication.getPrincipal(),
                     authentication.getCredentials(), getRoleUserAuthorities(authentication));
-            @SuppressWarnings("unchecked")
-            Map<String, String> details = (Map<String, String>) authentication.getDetails();
             details.put(SESSION_ID_DETAILS_ATTRIBUTE, session.getId().toString());
             result.setDetails(details);
             return result;
