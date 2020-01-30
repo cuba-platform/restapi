@@ -111,10 +111,10 @@ public class PermissionsControllerManager {
 
     public EffectiveRoleInfo getEffectiveRole(EffectiveRoleRequestParams params) {
         RoleDefinition joinedRole = userSessionSource.getUserSession().getJoinedRole();
-        return creatEffectiveRoleInfo(joinedRole, params);
+        return createEffectiveRoleInfo(joinedRole, params);
     }
 
-    public EffectiveRoleInfo creatEffectiveRoleInfo(RoleDefinition role, EffectiveRoleRequestParams params) {
+    public EffectiveRoleInfo createEffectiveRoleInfo(RoleDefinition role, EffectiveRoleRequestParams params) {
         EffectiveRoleInfo roleInfo = new EffectiveRoleInfo();
         DefaultValuesInfo defaultValues = roleInfo.getDefaultValues();
         ExplicitPermissionsInfo explicitPermissionsInfo = roleInfo.getExplicitPermissions();
