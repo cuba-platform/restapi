@@ -23,7 +23,7 @@ public class EffectiveRoleInfo {
 
     private DefaultValuesInfo defaultValues = new DefaultValuesInfo();
 
-    private int undefinedPermissionValue = 0;
+    private String undefinedPermissionPolicy = "DENY";
 
     public EffectiveRoleInfo() {
     }
@@ -44,11 +44,11 @@ public class EffectiveRoleInfo {
         this.defaultValues = defaultValues;
     }
 
-    public int getUndefinedPermissionValue() {
-        return undefinedPermissionValue;
+    public String getUndefinedPermissionPolicy() {
+        return undefinedPermissionPolicy;
     }
 
-    public void setUndefinedPermissionValue(int undefinedPermissionValue) {
-        this.undefinedPermissionValue = undefinedPermissionValue;
+    public void setUndefinedPermissionPolicy(String undefinedPermissionPolicy) {
+        this.undefinedPermissionPolicy = undefinedPermissionPolicy;
     }
 }

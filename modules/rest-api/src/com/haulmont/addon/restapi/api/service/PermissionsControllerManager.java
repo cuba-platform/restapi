@@ -152,7 +152,7 @@ public class PermissionsControllerManager {
                     null);
         }
 
-        roleInfo.setUndefinedPermissionValue(rolesService.getPermissionUndefinedAccessPolicy().getId());
+        roleInfo.setUndefinedPermissionPolicy(rolesService.getPermissionUndefinedAccessPolicy().name());
 
         return roleInfo;
     }
