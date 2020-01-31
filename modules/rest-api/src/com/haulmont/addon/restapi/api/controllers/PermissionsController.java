@@ -19,7 +19,6 @@ package com.haulmont.addon.restapi.api.controllers;
 import com.haulmont.addon.restapi.api.service.filter.data.EffectiveRoleInfo;
 import com.haulmont.addon.restapi.api.service.filter.data.PermissionInfo;
 import com.haulmont.addon.restapi.api.service.PermissionsControllerManager;
-import com.haulmont.addon.restapi.api.service.filter.data.RolesInfo;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -56,8 +55,4 @@ public class PermissionsController {
         return permissionsControllerManager.getEffectiveRole(params);
     }
 
-    @GetMapping("/v2/roles")
-    public RolesInfo getRoles() {
-        return permissionsControllerManager.getRolesInfo();
-    }
 }
