@@ -16,12 +16,14 @@
 
 package com.haulmont.addon.restapi.api.controllers;
 
+import com.haulmont.addon.restapi.api.service.filter.data.EffectiveRoleInfo;
 import com.haulmont.addon.restapi.api.service.filter.data.PermissionInfo;
 import com.haulmont.addon.restapi.api.service.PermissionsControllerManager;
 import com.haulmont.addon.restapi.api.service.filter.data.RolesInfo;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.inject.Inject;
@@ -40,6 +42,18 @@ public class PermissionsController {
     @GetMapping("/v2/permissions")
     public Collection<PermissionInfo> getPermissions() {
         return permissionsControllerManager.getPermissionInfos();
+    }
+
+    @GetMapping("/v2/permissions/effective")
+    public EffectiveRoleInfo getEffectiveRole(@RequestParam(required = false) boolean entities,
+                                              @RequestParam(required = false) boolean entityAttributes,
+                                              @RequestParam(required = false) boolean specific) {
+        PermissionsControllerManager.EffectiveRoleRequestParams params =
+                new PermissionsControllerManager.EffectiveRoleRequestParams();
+        params.setEntities(entities);
+        params.setEntityAttributes(entityAttributes);
+        params.setSpecific(specific);
+        return permissionsControllerManager.getEffectiveRole(params);
     }
 
     @GetMapping("/v2/roles")
