@@ -72,6 +72,37 @@ public class PermissionsControllerFT {
         }
     }
 
+    @Test
+    public void getEffectiveEntitiesPermissions() throws Exception {
+        String url = "/permissions/effective?entities=true";
+        try (CloseableHttpResponse response = sendGet(url, oauthToken, null)) {
+            assertEquals(HttpStatus.SC_OK, statusCode(response));
+            ReadContext ctx = parseResponse(response);
+            assertEquals(1, ctx.<Collection>read("$.explicitPermissions.entities").size());
+            assertEquals("ref_Car:update", ctx.read("$.explicitPermissions.entities[0].target"));
+            assertEquals(0, (int) ctx.read("$.explicitPermissions.entities[0].value"));
+            assertEquals(0, (int) ctx.read("$.defaultValues.entityCreate"));
+            assertEquals(1, (int) ctx.read("$.defaultValues.entityRead"));
+            assertEquals(0, (int) ctx.read("$.defaultValues.entityUpdate"));
+            assertEquals(0, (int) ctx.read("$.defaultValues.entityDelete"));
+            assertEquals("DENY", ctx.read("$.undefinedPermissionPolicy"));
+        }
+    }
+
+    @Test
+    public void getEffectiveAttributesPermissions() throws Exception {
+        String url = "/permissions/effective?entityAttributes=true";
+        try (CloseableHttpResponse response = sendGet(url, oauthToken, null)) {
+            assertEquals(HttpStatus.SC_OK, statusCode(response));
+            ReadContext ctx = parseResponse(response);
+            assertEquals(1, ctx.<Collection>read("$.explicitPermissions.entityAttributes").size());
+            assertEquals("ref$Currency.name", ctx.read("$.explicitPermissions.entityAttributes[0].target"));
+            assertEquals(2, (int) ctx.read("$.explicitPermissions.entityAttributes[0].value"));
+            assertEquals(0, (int) ctx.read("$.defaultValues.entityAttribute"));
+            assertEquals("DENY", ctx.read("$.undefinedPermissionPolicy"));
+        }
+    }
+
     private void prepareDb() throws SQLException {
 
         UUID testUserId = dirtyData.createUserUuid();
@@ -88,11 +119,15 @@ public class PermissionsControllerFT {
         );
 
         roleId = dirtyData.createRoleUuid();
-        executePrepared("insert into sec_role(id, role_type, name, security_scope) values(?, ?, ?, ?)",
+        executePrepared("insert into sec_role(id, role_type, name, security_scope, " +
+                        "default_entity_create_access, default_entity_read_access, " +
+                        "default_entity_update_access, default_entity_delete_access," +
+                        "default_entity_attr_access) values(?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 roleId,
                 RoleType.READONLY.getId(),
                 "testRole",
-                "REST"
+                "REST",
+                0, 1, 0, 0, 0
         );
 
         int ALLOW = 1;
