@@ -18,8 +18,8 @@
 package com.haulmont.rest.demo.core.roles;
 
 import com.haulmont.cuba.security.app.role.AnnotatedRoleDefinition;
-import com.haulmont.cuba.security.app.role.annotation.DefaultEntityAttributeAccess;
 import com.haulmont.cuba.security.app.role.annotation.EntityAccess;
+import com.haulmont.cuba.security.app.role.annotation.EntityAttributeAccess;
 import com.haulmont.cuba.security.app.role.annotation.Role;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
@@ -36,13 +36,13 @@ public class RestTestAnonymousRole extends AnnotatedRoleDefinition {
 
 
     @Override
-    @EntityAccess(target = User.class, allow = {EntityOp.READ})
+    @EntityAccess(entityClass = User.class, operations = {EntityOp.READ})
     public EntityPermissionsContainer entityPermissions() {
         return super.entityPermissions();
     }
 
     @Override
-    @DefaultEntityAttributeAccess(value = EntityAttrAccess.VIEW)
+    @EntityAttributeAccess(entityName = "*", view = "*")
     public EntityAttributePermissionsContainer entityAttributePermissions() {
         return super.entityAttributePermissions();
     }

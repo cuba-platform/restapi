@@ -116,40 +116,21 @@ public class PermissionsControllerManager {
 
     public EffectiveRoleInfo createEffectiveRoleInfo(RoleDefinition role, EffectiveRoleRequestParams params) {
         EffectiveRoleInfo roleInfo = new EffectiveRoleInfo();
-        DefaultValuesInfo defaultValues = roleInfo.getDefaultValues();
         ExplicitPermissionsInfo explicitPermissionsInfo = roleInfo.getExplicitPermissions();
         if (params.isEntities()) {
             explicitPermissionsInfo.setEntities(new ArrayList<>());
             role.entityPermissions().getExplicitPermissions().forEach((key, value) ->
                     explicitPermissionsInfo.getEntities().add(new ShortPermissionInfo(key, value)));
-            defaultValues.setEntityCreate(role.entityPermissions().getDefaultEntityCreateAccess() != null ?
-                    role.entityPermissions().getDefaultEntityCreateAccess().getId() :
-                    null);
-            defaultValues.setEntityRead(role.entityPermissions().getDefaultEntityReadAccess() != null ?
-                    role.entityPermissions().getDefaultEntityReadAccess().getId() :
-                    null);
-            defaultValues.setEntityUpdate(role.entityPermissions().getDefaultEntityUpdateAccess() != null ?
-                    role.entityPermissions().getDefaultEntityUpdateAccess().getId() :
-                    null);
-            defaultValues.setEntityDelete(role.entityPermissions().getDefaultEntityDeleteAccess() != null ?
-                    role.entityPermissions().getDefaultEntityDeleteAccess().getId() :
-                    null);
         }
         if (params.isEntityAttributes()) {
             explicitPermissionsInfo.setEntityAttributes(new ArrayList<>());
             role.entityAttributePermissions().getExplicitPermissions().forEach((key, value) ->
                     explicitPermissionsInfo.getEntityAttributes().add(new ShortPermissionInfo(key, value)));
-            defaultValues.setEntityAttribute(role.entityAttributePermissions().getDefaultEntityAttributeAccess() != null ?
-                    role.entityAttributePermissions().getDefaultEntityAttributeAccess().getId() :
-                    null);
         }
         if (params.isSpecific()) {
             explicitPermissionsInfo.setSpecific(new ArrayList<>());
             role.specificPermissions().getExplicitPermissions().forEach((key, value) ->
                     explicitPermissionsInfo.getSpecific().add(new ShortPermissionInfo(key, value)));
-            defaultValues.setSpecific(role.specificPermissions().getDefaultSpecificAccess() != null ?
-                    role.specificPermissions().getDefaultSpecificAccess().getId() :
-                    null);
         }
 
         roleInfo.setUndefinedPermissionPolicy(rolesService.getPermissionUndefinedAccessPolicy().name());
