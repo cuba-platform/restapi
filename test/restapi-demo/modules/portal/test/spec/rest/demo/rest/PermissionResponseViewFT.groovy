@@ -52,9 +52,15 @@ class PermissionResponseViewFT extends Specification {
 
     private void createUser(DataSet dirtyData, Sql sql) {
         def userId = createUser(dirtyData, sql, userLogin, userPassword, COMPANY_GROUP_ID)
-        def roleId = createRole(dirtyData, sql, 'Limited role')
+        def roleId = createRole(dirtyData, sql, 'Limited role', 'REST')
 
+        createPermission(dirtyData, sql, roleId, PermissionType.ENTITY_OP, '*:create', 1)
+        createPermission(dirtyData, sql, roleId, PermissionType.ENTITY_OP, '*:read', 1)
+        createPermission(dirtyData, sql, roleId, PermissionType.ENTITY_OP, '*:update', 1)
+        createPermission(dirtyData, sql, roleId, PermissionType.ENTITY_ATTR, 'ref_Car:*', 2)
+        createPermission(dirtyData, sql, roleId, PermissionType.ENTITY_ATTR, 'ref$InsuranceCase:*', 2)
         createPermission(dirtyData, sql, roleId, PermissionType.ENTITY_ATTR, 'ref_Car:vin', 0)
+        createPermission(dirtyData, sql, roleId, PermissionType.SPECIFIC, 'cuba.restApi.enabled', 1)
         createUserRole(dirtyData, sql, userId, roleId)
     }
 
