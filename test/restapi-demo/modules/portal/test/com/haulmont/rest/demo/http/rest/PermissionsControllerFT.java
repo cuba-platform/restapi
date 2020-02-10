@@ -22,6 +22,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 import static com.haulmont.rest.demo.http.rest.RestTestUtils.*;
@@ -67,7 +68,7 @@ public class PermissionsControllerFT {
             assertEquals(HttpStatus.SC_OK, statusCode(response));
             ReadContext ctx = parseResponse(response);
             assertTrue(ctx.<Collection>read("$").size() > 0);
-            assertEquals("MODIFY", ctx.<Collection>read("$[?(@.target == 'ref$Currency.name')].value").iterator().next());
+            assertEquals("MODIFY", ctx.<Collection>read("$[?(@.target == 'ref$Currency:name')].value").iterator().next());
             assertEquals("DENY", ctx.<Collection>read("$[?(@.target == 'ref_Car:update')].value").iterator().next());
         }
     }
@@ -78,13 +79,9 @@ public class PermissionsControllerFT {
         try (CloseableHttpResponse response = sendGet(url, oauthToken, null)) {
             assertEquals(HttpStatus.SC_OK, statusCode(response));
             ReadContext ctx = parseResponse(response);
-            assertEquals(1, ctx.<Collection>read("$.explicitPermissions.entities").size());
-            assertEquals("ref_Car:update", ctx.read("$.explicitPermissions.entities[0].target"));
-            assertEquals(0, (int) ctx.read("$.explicitPermissions.entities[0].value"));
-            assertEquals(0, (int) ctx.read("$.defaultValues.entityCreate"));
-            assertEquals(1, (int) ctx.read("$.defaultValues.entityRead"));
-            assertEquals(0, (int) ctx.read("$.defaultValues.entityUpdate"));
-            assertEquals(0, (int) ctx.read("$.defaultValues.entityDelete"));
+            assertEquals(2, ctx.<Collection>read("$.explicitPermissions.entities").size());
+            assertEquals(0, (int) ctx.read("$.explicitPermissions.entities[?(@.target == 'ref_Car:update')].value", List.class).get(0));
+            assertEquals(1, (int) ctx.read("$.explicitPermissions.entities[?(@.target == '*:read')].value", List.class).get(0));
             assertEquals("DENY", ctx.read("$.undefinedPermissionPolicy"));
         }
     }
@@ -96,9 +93,8 @@ public class PermissionsControllerFT {
             assertEquals(HttpStatus.SC_OK, statusCode(response));
             ReadContext ctx = parseResponse(response);
             assertEquals(1, ctx.<Collection>read("$.explicitPermissions.entityAttributes").size());
-            assertEquals("ref$Currency.name", ctx.read("$.explicitPermissions.entityAttributes[0].target"));
+            assertEquals("ref$Currency:name", ctx.read("$.explicitPermissions.entityAttributes[0].target"));
             assertEquals(2, (int) ctx.read("$.explicitPermissions.entityAttributes[0].value"));
-            assertEquals(0, (int) ctx.read("$.defaultValues.entityAttribute"));
             assertEquals("DENY", ctx.read("$.undefinedPermissionPolicy"));
         }
     }
@@ -119,15 +115,12 @@ public class PermissionsControllerFT {
         );
 
         roleId = dirtyData.createRoleUuid();
-        executePrepared("insert into sec_role(id, role_type, name, security_scope, " +
-                        "default_entity_create_access, default_entity_read_access, " +
-                        "default_entity_update_access, default_entity_delete_access," +
-                        "default_entity_attr_access) values(?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        executePrepared("insert into sec_role(id, role_type, name, security_scope)" +
+                        " values(?, ?, ?, ?)",
                 roleId,
                 RoleType.READONLY.getId(),
                 "testRole",
-                "REST",
-                0, 1, 0, 0, 0
+                "REST"
         );
 
         int ALLOW = 1;
@@ -154,6 +147,14 @@ public class PermissionsControllerFT {
                 DENY
         );
 
+        executePrepared("insert into sec_permission(id, role_id, permission_type, target, value_) values(?, ?, ?, ?, ?)",
+                dirtyData.createPermissionUuid(),
+                roleId,
+                PermissionType.ENTITY_OP.getId(),
+                "*:read",
+                ALLOW
+        );
+
         //testRole forbids currencies browser screen
         UUID currenciesScreenPrmsId = dirtyData.createPermissionUuid();
         executePrepared("insert into sec_permission(id, role_id, permission_type, target, value_) values(?, ?, ?, ?, ?)",
@@ -164,13 +165,11 @@ public class PermissionsControllerFT {
                 DENY
         );
 
-        //testRole forbids currencies browser screen
-        UUID entityAttrModifyAllowPrmsId = dirtyData.createPermissionUuid();
         executePrepared("insert into sec_permission(id, role_id, permission_type, target, value_) values(?, ?, ?, ?, ?)",
-                entityAttrModifyAllowPrmsId,
+                dirtyData.createPermissionUuid(),
                 roleId,
                 PermissionType.ENTITY_ATTR.getId(),
-                "ref$Currency.name",
+                "ref$Currency:name",
                 PROPERTY_MODIFY
         );
 
@@ -181,7 +180,6 @@ public class PermissionsControllerFT {
                 testUserId,
                 roleId
         );
-
     }
 
     private void executePrepared(String sql, Object... params) throws SQLException {

@@ -10,31 +10,27 @@ import com.haulmont.cuba.security.role.*;
 /**
  * Role grants full access for REST API
  */
-@Role(name = RestFullAccessRole.NAME, securityScope = "REST")
+@Role(name = RestFullAccessRole.NAME, securityScope = "REST", isSuper = true)
 public class RestFullAccessRole extends AnnotatedRoleDefinition {
 
     public static final String NAME = "rest-full-access";
 
     @Override
-    @DefaultEntityAccess(allow = {EntityOp.CREATE, EntityOp.READ, EntityOp.UPDATE, EntityOp.DELETE})
     public EntityPermissionsContainer entityPermissions() {
         return super.entityPermissions();
     }
 
     @Override
-    @DefaultEntityAttributeAccess(EntityAttrAccess.MODIFY)
     public EntityAttributePermissionsContainer entityAttributePermissions() {
         return super.entityAttributePermissions();
     }
 
     @Override
-    @DefaultSpecificAccess(Access.ALLOW)
     public SpecificPermissionsContainer specificPermissions() {
         return super.specificPermissions();
     }
 
     @Override
-    @DefaultScreenAccess(Access.ALLOW)
     public ScreenPermissionsContainer screenPermissions() {
         return super.screenPermissions();
     }
