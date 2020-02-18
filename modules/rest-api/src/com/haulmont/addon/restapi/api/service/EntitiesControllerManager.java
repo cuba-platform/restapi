@@ -191,10 +191,15 @@ public class EntitiesControllerManager {
             throw new RestAPIException("Cannot parse entities filter", e.getMessage(), HttpStatus.BAD_REQUEST, e);
         }
 
-        String jpqlWhere = filterParseResult.getJpqlWhere().replace("{E}", "e");
+        String jpqlWhere = filterParseResult.getJpqlWhere();
         Map<String, Object> queryParameters = filterParseResult.getQueryParameters();
 
-        String queryString = "select e from " + entityName + " e where " + jpqlWhere;
+        String queryString = "select e from " + entityName + " e";
+
+        if (jpqlWhere != null) {
+            queryString += " where " + jpqlWhere.replace("{E}", "e");
+        }
+
         String json = _loadEntitiesList(queryString, viewName, limit, offset, sort, returnNulls,
                 dynamicAttributes, modelVersion, metaClass, queryParameters);
         Long count = null;
@@ -225,11 +230,18 @@ public class EntitiesControllerManager {
             throw new RestAPIException("Cannot parse entities filter", e.getMessage(), HttpStatus.BAD_REQUEST, e);
         }
 
-        String jpqlWhere = filterParseResult.getJpqlWhere().replace("{E}", "e");
+        String jpqlWhere = filterParseResult.getJpqlWhere();
         Map<String, Object> queryParameters = filterParseResult.getQueryParameters();
 
-        String queryString = "select count(e) from " + entityName + " e where " + jpqlWhere;
-        return dataManager.loadValue(queryString, Long.class).setParameters(queryParameters).one();
+        String queryString = "select count(e) from " + entityName + " e";
+
+        if (jpqlWhere != null) {
+            queryString += " where " + jpqlWhere.replace("{E}", "e");
+        }
+
+        return dataManager.loadValue(queryString, Long.class)
+                .setParameters(queryParameters)
+                .one();
     }
 
     public EntitiesSearchResult searchEntities(String entityName, String searchRequestBody) {
