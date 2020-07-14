@@ -391,9 +391,11 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
         }
 
         if (restConfig.getSyncTokenReplication()) {
-            clusterManagerAPI.sendSync(new TokenStoreAddRefreshTokenMsg(refreshTokenValue, refreshTokenBytes, authenticationBytes, tokenExpiry, userLogin, null));
+            clusterManagerAPI.sendSync(new TokenStoreAddRefreshTokenMsg(refreshTokenValue, refreshTokenBytes,
+                    authenticationBytes, tokenExpiry, userLogin, null));
         } else {
-            clusterManagerAPI.send(new TokenStoreAddRefreshTokenMsg(refreshTokenValue, refreshTokenBytes, authenticationBytes, tokenExpiry, userLogin, null));
+            clusterManagerAPI.send(new TokenStoreAddRefreshTokenMsg(refreshTokenValue, refreshTokenBytes, authenticationBytes,
+                    tokenExpiry, userLogin, null));
         }
 
     }
