@@ -389,6 +389,13 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
                 tx.commit();
             }
         }
+
+        if (restConfig.getSyncTokenReplication()) {
+            clusterManagerAPI.sendSync(new TokenStoreAddRefreshTokenMsg(refreshTokenValue, refreshTokenBytes, authenticationBytes, tokenExpiry, userLogin, null));
+        } else {
+            clusterManagerAPI.send(new TokenStoreAddRefreshTokenMsg(refreshTokenValue, refreshTokenBytes, authenticationBytes, tokenExpiry, userLogin, null));
+        }
+
     }
 
     protected void storeRefreshTokenToMemory(String refreshTokenValue,
@@ -643,6 +650,12 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
 
         if (restConfig.getRestStoreTokensInDb()) {
             removeRefreshTokenFromDatabase(refreshTokenValue);
+        }
+
+        if (restConfig.getSyncTokenReplication()) {
+            clusterManagerAPI.sendSync(new TokenStoreRemoveRefreshTokenMsg(refreshTokenValue));
+        } else {
+            clusterManagerAPI.send(new TokenStoreRemoveRefreshTokenMsg(refreshTokenValue));
         }
     }
 
