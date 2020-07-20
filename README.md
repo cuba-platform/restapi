@@ -3,4 +3,4 @@
 
 # CUBA REST API Add-on
 
-See the [documentation](https://doc.cuba-platform.com/restapi-7.1/).
+See the [documentation](https://doc.cuba-platform.com/restapi-latest/).
