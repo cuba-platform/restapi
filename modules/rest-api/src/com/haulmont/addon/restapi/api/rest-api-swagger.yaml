@@ -1,7 +1,7 @@
 swagger: '2.0'
 
 info:
-  version: "7.1"
+  version: "7.2"
   title: CUBA Platform REST API
   description: |
 
@@ -399,7 +399,7 @@ definitions:
         type: string
         example: sample-file.docx
       size:
-        type: long
+        type: number
         example: 105396
 
   viewInfo:
@@ -471,7 +471,7 @@ securityDefinitions:
 
 security:
   - oauth2:
-    - rest-api
+      - rest-api
 
 ################################################################################
 #                                   Paths                                      #
@@ -719,6 +719,8 @@ paths:
 
 
   /entities/{entityName}/search:
+    parameters:
+      - $ref: '#/parameters/entityNameParam'
     get:
       tags:
         - Entities
@@ -796,11 +798,6 @@ paths:
         * notIn
 
       parameters:
-        - $ref: '#/parameters/entityNameParam'
-        - name: entityName
-          description: |
-            A JSON object with filter conditions
-          in: path
         - name: filter
           in: query
           description: JSON with filter definition
@@ -1180,6 +1177,7 @@ paths:
           description: |
             FileDescriptor identifier
           default: ""
+          required: true
         - name: attachment
           in: query
           type: boolean
@@ -1327,7 +1325,7 @@ paths:
             items:
               $ref: '#/definitions/datatype'
 
-############################### Messages #######################################
+  ############################### Messages #######################################
   /messages/entities:
     get:
       tags:
@@ -1446,6 +1444,7 @@ paths:
           type: string
           description: swagger format (json or yaml)
           default: yaml
+          required: true
       responses:
         200:
           description: Success
