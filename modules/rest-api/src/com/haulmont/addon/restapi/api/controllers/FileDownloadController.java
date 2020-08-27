@@ -17,6 +17,7 @@
 package com.haulmont.addon.restapi.api.controllers;
 
 import com.haulmont.addon.restapi.api.exception.RestAPIException;
+import com.haulmont.bali.util.URLEncodeUtils;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.*;
@@ -85,7 +86,7 @@ public class FileDownloadController {
             response.setDateHeader("Expires", 0);
             response.setHeader("Content-Type", getContentType(fd));
             response.setHeader("Content-Disposition", (BooleanUtils.isTrue(attachment) ? "attachment" : "inline")
-                    + "; filename=\"" + fd.getName() + "\"");
+                    + "; filename=\"" + URLEncodeUtils.encodeUtf8(fd.getName()) + "\"");
 
             downloadFromMiddlewareAndWriteResponse(fd, response);
         } catch (Exception e) {
