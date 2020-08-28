@@ -1189,6 +1189,8 @@ paths:
       responses:
         200:
           description: Successfully downloaded. The file contents is returned in the response body.
+        403:
+          description: Forbidden. The user doesn't have permissions to read the 'sys$FileDescriptor' entity.
         404:
           description: File with the given ID not found
 
