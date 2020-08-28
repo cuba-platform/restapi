@@ -22,6 +22,7 @@ import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.remoting.discovery.ServerSelector;
+import com.haulmont.cuba.security.entity.EntityOp;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -61,10 +62,16 @@ public class FileDownloadController {
     @Inject
     protected FileLoader fileLoader;
 
+    @Inject
+    protected Security security;
+
     @GetMapping("/{fileDescriptorId}")
     public void downloadFile(@PathVariable String fileDescriptorId,
                              @RequestParam(required = false) Boolean attachment,
                              HttpServletResponse response) {
+
+        checkCanReadFileDescriptor();
+
         UUID uuid;
         try {
             uuid = UUID.fromString(fileDescriptorId);
@@ -114,5 +121,13 @@ public class FileDownloadController {
         }
 
         return FileTypesHelper.getMIMEType("." + fd.getExtension().toLowerCase());
+    }
+
+    protected void checkCanReadFileDescriptor() {
+        if (!security.isEntityOpPermitted(FileDescriptor.class, EntityOp.READ)) {
+            throw new RestAPIException("Reading forbidden",
+                    "Reading of the sys$FileDescriptor is forbidden",
+                    HttpStatus.FORBIDDEN);
+        }
     }
 }
