@@ -64,7 +64,7 @@ public class RestAuthUtils {
             if (availableLocales.values().contains(requestLocale)) {
                 locale = requestLocale;
             } else {
-                log.warn("Locale {} passed in the Accept-Language header is not supported by the application. It was ignored.", requestLocale);
+                log.debug("Locale {} passed in the Accept-Language header is not supported by the application. It was ignored.", requestLocale);
             }
         }
         return locale;
