@@ -794,6 +794,7 @@ paths:
         * endsWith
         * contains
         * notEmpty
+        * isNull
         * in
         * notIn
 
