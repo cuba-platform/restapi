@@ -17,11 +17,13 @@
 package com.haulmont.addon.restapi.store;
 
 import com.google.common.base.Strings;
+import com.haulmont.addon.restapi.api.common.RestTokenMasker;
 import com.haulmont.addon.restapi.config.RestConfig;
 import com.haulmont.addon.restapi.entity.AccessToken;
 import com.haulmont.addon.restapi.entity.RefreshToken;
 import com.haulmont.addon.restapi.rest.RestUserSessionInfo;
 import com.haulmont.addon.restapi.rest.ServerTokenStore;
+import com.haulmont.chile.core.datatypes.DatatypeRegistry;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Transaction;
@@ -83,6 +85,13 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
 
     @Inject
     protected TimeSource timeSource;
+
+    @Inject
+    protected RestTokenMasker restTokenMasker;
+
+    @Inject
+    protected DatatypeRegistry datatypes;
+
 
     private static final Logger log = LoggerFactory.getLogger(ServerTokenStoreImpl.class);
 
@@ -331,6 +340,11 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
                                             @Nullable String refreshTokenValue) {
         lock.writeLock().lock();
         try {
+            if (log.isDebugEnabled()) {
+                log.debug("Store access token {} for user {}, expiring {}", obfuscateToken(accessTokenValue),
+                        obfuscateUser(userLogin), formatDate(tokenExpiry));
+            }
+
             accessTokenValueToAccessTokenStore.put(accessTokenValue, accessTokenBytes);
             authenticationToAccessTokenStore.put(authenticationKey, accessTokenBytes);
             accessTokenValueToAuthenticationStore.put(accessTokenValue, authenticationBytes);
@@ -405,6 +419,11 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
                                              byte[] authenticationBytes,
                                              Date tokenExpiry,
                                              String userLogin) {
+        if (log.isDebugEnabled()) {
+            log.debug("Store refresh token {} for user {}, expiring {}", obfuscateToken(refreshTokenValue),
+                    obfuscateUser(userLogin), formatDate(tokenExpiry));
+        }
+
         refreshTokenValueToRefreshTokenStore.put(refreshTokenValue, refreshTokenBytes);
         refreshTokenValueToAuthenticationStore.put(refreshTokenValue, authenticationBytes);
         refreshTokenValueToUserLoginStore.put(refreshTokenValue, userLogin);
@@ -514,6 +533,10 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
 
     @Override
     public byte[] getRefreshTokenByTokenValue(String tokenValue) {
+        if (log.isDebugEnabled()) {
+            log.debug("Get refresh token by value {}", obfuscateToken(tokenValue));
+        }
+
         byte[] tokenBytes = getRefreshTokenByTokenValueFromMemory(tokenValue);
         if (tokenBytes == null && restConfig.getRestStoreTokensInDb()) {
             RefreshToken refreshToken = getRefreshTokenByTokenValueFromDatabase(tokenValue);
@@ -607,6 +630,10 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
         RestUserSessionInfo sessionInfo;
         lock.writeLock().lock();
         try {
+            if (log.isDebugEnabled()) {
+                log.debug("Remove access token {}", obfuscateToken(tokenValue));
+            }
+
             accessTokenValueToAccessTokenStore.remove(tokenValue);
             accessTokenValueToAuthenticationStore.remove(tokenValue);
             accessTokenValueToUserLoginStore.remove(tokenValue);
@@ -664,6 +691,10 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
     protected void removeRefreshTokenFromMemory(String refreshTokenValue) {
         lock.writeLock().lock();
         try {
+            if (log.isDebugEnabled()) {
+                log.debug("Remove refresh token {}", obfuscateToken(refreshTokenValue));
+            }
+
             refreshTokenValueToRefreshTokenStore.remove(refreshTokenValue);
             refreshTokenValueToAuthenticationStore.remove(refreshTokenValue);
             refreshTokenValueToAccessTokenValueStore.remove(refreshTokenValue);
@@ -684,6 +715,7 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
 
     @Override
     public void deleteExpiredTokens() {
+        log.debug("Start deleting expired access and refresh tokens");
         deleteExpiredAccessTokensInMemory();
         deleteExpiredRefreshTokensInMemory();
         if (restConfig.getRestStoreTokensInDb() && clusterManagerAPI.isMaster()) {
@@ -698,14 +730,26 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
 
     @Override
     public byte[] getAuthenticationByRefreshTokenValue(String tokenValue) {
+        if (log.isDebugEnabled()) {
+            log.debug("Get authentication by Refresh token {}", obfuscateToken(tokenValue));
+        }
         return refreshTokenValueToAuthenticationStore.get(tokenValue);
     }
 
     @Override
     public void removeAccessTokenUsingRefreshToken(String refreshTokenValue) {
         String accessTokenValue = getAccessTokenValueByRefreshTokenValue(refreshTokenValue);
-        if (accessTokenValue != null)
+
+        if (accessTokenValue != null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Using refresh token {} to remove access token {}.", obfuscateToken(refreshTokenValue), obfuscateToken(accessTokenValue));
+            }
             removeAccessToken(accessTokenValue);
+        } else if (log.isDebugEnabled()) {
+            log.debug("Cannot remove access token by refresh token {}. Access token not found.",
+                    obfuscateToken(refreshTokenValue));
+        }
+
     }
 
     protected String getAccessTokenValueByRefreshTokenValue(String refreshTokenValue) {
@@ -762,6 +806,18 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
                     .executeUpdate();
             tx.commit();
         }
+    }
+
+    protected String obfuscateToken(String token) {
+        return restTokenMasker.maskToken(token);
+    }
+
+    protected String obfuscateUser(String user) {
+        return user;
+    }
+
+    protected String formatDate(Date date) {
+        return datatypes.getNN(Date.class).format(date);
     }
 
     protected static class TokenExpiry implements Delayed {

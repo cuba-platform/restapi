@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2019 Haulmont.
+ * Copyright (c) 2008-2020 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 
 package com.haulmont.addon.restapi.api.config;
@@ -24,7 +25,6 @@ import com.haulmont.cuba.core.config.defaults.DefaultBoolean;
 import com.haulmont.cuba.core.config.defaults.DefaultString;
 import com.haulmont.cuba.core.config.type.CommaSeparatedStringListTypeFactory;
 import com.haulmont.cuba.core.config.type.Factory;
-import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import java.util.List;
 
@@ -94,7 +94,8 @@ public interface RestApiConfig extends Config {
      *    cuba.web.externalRestBypassPatterns = +/idp/,
      * </pre>
      *
-     * @return Comma-separated list with trailing comma of patterns for REST {@link RequestMatcher} to bypass.
+     * @return Comma-separated list with trailing comma of patterns for REST {@code RequestMatcher} to bypass.<p/>
+     * (see org.springframework.security.web.util.matcher.RequestMatcher)
      */
     @Property("cuba.web.externalRestBypassPatterns")
     @Factory(factory = CommaSeparatedStringListTypeFactory.class)
