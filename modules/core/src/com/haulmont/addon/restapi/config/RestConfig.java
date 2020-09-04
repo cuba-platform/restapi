@@ -21,6 +21,11 @@ import com.haulmont.cuba.core.config.Property;
 import com.haulmont.cuba.core.config.Source;
 import com.haulmont.cuba.core.config.SourceType;
 import com.haulmont.cuba.core.config.defaults.DefaultBoolean;
+import com.haulmont.cuba.core.config.type.Factory;
+import com.haulmont.cuba.core.config.type.UuidTypeFactory;
+
+import javax.annotation.Nullable;
+import java.util.UUID;
 
 public interface RestConfig extends Config {
 
@@ -39,4 +44,10 @@ public interface RestConfig extends Config {
     @Source(type = SourceType.APP)
     @DefaultBoolean(false)
     boolean getSyncTokenReplication();
+
+    @Property("cuba.rest.anonymousSessionId")
+    @Factory(factory = UuidTypeFactory.class)
+    @Nullable
+    UUID getRestAnonymousSessionId();
+
 }

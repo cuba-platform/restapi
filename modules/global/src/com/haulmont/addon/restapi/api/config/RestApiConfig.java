@@ -25,8 +25,11 @@ import com.haulmont.cuba.core.config.defaults.DefaultBoolean;
 import com.haulmont.cuba.core.config.defaults.DefaultString;
 import com.haulmont.cuba.core.config.type.CommaSeparatedStringListTypeFactory;
 import com.haulmont.cuba.core.config.type.Factory;
+import com.haulmont.cuba.core.config.type.UuidTypeFactory;
 
+import javax.annotation.Nullable;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * REST-API config.
@@ -115,4 +118,9 @@ public interface RestApiConfig extends Config {
     @Property("cuba.rest.securityScope")
     @DefaultString("REST")
     String getSecurityScope();
+
+    @Property("cuba.restAnonymousSessionId")
+    @Factory(factory = UuidTypeFactory.class)
+    @Nullable
+    UUID getRestAnonymousSessionId();
 }

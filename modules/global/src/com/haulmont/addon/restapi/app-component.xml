@@ -34,6 +34,7 @@
         <property name="cuba.remotingSpringContextConfig"
                   value="+com/haulmont/addon/restapi/remoting-spring.xml"/>
         <property name="cuba.securityScopes" value="+REST"/>
+        <property name="cuba.rest.anonymousSessionId" value="dc7d1890-eddc-11ea-adc1-0242ac120002"/>
     </module>
 
     <module name="rest-api" dependsOn="global" blocks="web,portal">
@@ -64,6 +65,7 @@
         <property name="cuba.rest.maxUploadSize" value="20971520"/>
         <property name="cuba.rest.responseViewEnabled" value="true"/>
         <property name="cuba.rest.securityScope" value="REST"/>
+        <property name="cuba.rest.anonymousSessionId" value="dc7d1890-eddc-11ea-adc1-0242ac120002"/>
     </module>
 
     <module name="portal" dependsOn="rest-api" blocks="portal">
@@ -83,5 +85,6 @@
         <property name="cuba.rest.maxUploadSize" value="20971520"/>
         <property name="cuba.rest.responseViewEnabled" value="true"/>
         <property name="cuba.rest.securityScope" value="REST"/>
+        <property name="cuba.rest.anonymousSessionId" value="dc7d1890-eddc-11ea-adc1-0242ac120002"/>
     </module>
 </app-component>
