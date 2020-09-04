@@ -18,11 +18,7 @@ package com.haulmont.addon.restapi.api.service;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonElement;
+import com.google.gson.*;
 import com.haulmont.addon.restapi.api.common.RestControllerUtils;
 import com.haulmont.addon.restapi.api.config.RestApiConfig;
 import com.haulmont.addon.restapi.api.controllers.EntitiesController;
@@ -35,6 +31,8 @@ import com.haulmont.addon.restapi.api.service.filter.data.ResponseInfo;
 import com.haulmont.addon.restapi.api.transform.JsonTransformationDirection;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.client.sys.PersistenceManagerClient;
 import com.haulmont.cuba.core.app.importexport.EntityImportException;
 import com.haulmont.cuba.core.app.importexport.EntityImportExportService;
@@ -100,6 +98,9 @@ public class EntitiesControllerManager {
 
     @Inject
     protected EntityStates entityStates;
+
+    @Inject
+    protected MetadataTools metadataTools;
 
     public String loadEntity(String entityName,
                              String entityId,
@@ -292,7 +293,7 @@ public class EntitiesControllerManager {
                                        MetaClass metaClass,
                                        Map<String, Object> queryParameters) {
         LoadContext<Entity> ctx = new LoadContext<>(metaClass);
-        String orderedQueryString = addOrderBy(queryString, sort);
+        String orderedQueryString = addOrderBy(queryString, sort, metaClass);
         LoadContext.Query query = new LoadContext.Query(orderedQueryString);
 
         if (limit != null) {
@@ -328,23 +329,65 @@ public class EntitiesControllerManager {
         return json;
     }
 
-    protected String addOrderBy(String queryString, @Nullable String sort) {
+    protected String addOrderBy(String queryString, @Nullable String sort, MetaClass metaClass) {
         if (Strings.isNullOrEmpty(sort)) {
             return queryString;
         }
         StringBuilder orderBy = new StringBuilder(queryString).append(" order by ");
         Iterable<String> iterableColumns = Splitter.on(",").trimResults().omitEmptyStrings().split(sort);
         for (String column : iterableColumns) {
-            String order = " asc, ";
-            if (column.startsWith("-")) {
-                order = " desc, ";
-                column = column.substring(1);
-            } else if (column.startsWith("+")) {
+            String order = "";
+            if (column.startsWith("-") || column.startsWith("+")) {
+                order = column.substring(0, 1);
                 column = column.substring(1);
             }
-            orderBy.append("e.").append(column).append(order);
+            MetaPropertyPath propertyPath = metaClass.getPropertyPath(column);
+            if (propertyPath != null) {
+                switch (order) {
+                    case "-":
+                        order = " desc, ";
+                        break;
+                    case "+":
+                    default:
+                        order = " asc, ";
+                        break;
+                }
+                MetaProperty metaProperty = propertyPath.getMetaProperty();
+                if (metaProperty.getRange().isClass()) {
+                    if (!metaProperty.getRange().getCardinality().isMany()) {
+                        for (String exp : getEntityPropertySortExpression(propertyPath)) {
+                            orderBy.append(exp).append(order);
+                        }
+                    }
+                } else {
+                    orderBy.append("e.").append(column).append(order);
+                }
+            }
         }
         return orderBy.substring(0, orderBy.length() - 2);
+    }
+
+    protected List<String> getEntityPropertySortExpression(MetaPropertyPath metaPropertyPath) {
+        Collection<MetaProperty> properties = metadataTools.getNamePatternProperties(
+                metaPropertyPath.getMetaProperty().getRange().asClass());
+        if (!properties.isEmpty()) {
+            List<String> sortExpressions = new ArrayList<>(properties.size());
+            for (MetaProperty metaProperty : properties) {
+                if (metadataTools.isPersistent(metaProperty)) {
+                    MetaPropertyPath childPropertyPath = new MetaPropertyPath(metaPropertyPath, metaProperty);
+                    if (metaProperty.getRange().isClass()) {
+                        if (!metaProperty.getRange().getCardinality().isMany()) {
+                            sortExpressions.addAll(getEntityPropertySortExpression(childPropertyPath));
+                        }
+                    } else {
+                        sortExpressions.add(String.format("e.%s", childPropertyPath.toString()));
+                    }
+                }
+            }
+            return sortExpressions;
+        } else {
+            return Collections.singletonList(String.format("e.%s", metaPropertyPath.toString()));
+        }
     }
 
     public ResponseInfo createEntity(String entityJson,
@@ -693,7 +736,8 @@ public class EntitiesControllerManager {
         return restControllerUtils.transformJsonIfRequired(metaClass.getName(), version, JsonTransformationDirection.TO_VERSION, json);
     }
 
-    protected String createEntitiesJson(Collection<Entity> entities, MetaClass metaClass, String responseView, String version) {
+    protected String createEntitiesJson(Collection<Entity> entities, MetaClass metaClass, String
+            responseView, String version) {
         String json;
         if (restApiConfig.getRestResponseViewEnabled()) {
             View view = findOrCreateResponseView(metaClass, responseView);
