@@ -345,11 +345,11 @@ public class EntitiesControllerManager {
             if (propertyPath != null) {
                 switch (order) {
                     case "-":
-                        order = " desc, ";
+                        order = " desc NULLS LAST, ";
                         break;
                     case "+":
                     default:
-                        order = " asc, ";
+                        order = " asc NULLS FIRST, ";
                         break;
                 }
                 MetaProperty metaProperty = propertyPath.getMetaProperty();
