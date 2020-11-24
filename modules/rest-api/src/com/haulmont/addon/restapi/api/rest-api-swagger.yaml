@@ -620,6 +620,11 @@ paths:
         * Otherwise a referenced entity with the given id will be searched. If it is found then the saved entity will
         have a reference to it. Otherwise, a response with code 400 will be returned.
       parameters:
+        - name: responseView
+          in: query
+          description: Name of the view which is used for loading the entity to the result JSON
+          type: string
+          default: ""
         - name: entityJson
           description: |
             A JSON object with the entity
@@ -684,6 +689,11 @@ paths:
       description: |
         Updates the entity. Only fields that are passed in the JSON object (the request body) are updated.
       parameters:
+        - name: responseView
+          in: query
+          description: Name of the view which is used for loading the entity to the result JSON
+          type: string
+          default: ""
         - $ref: '#/parameters/entityJsonParam'
       responses:
         200:
