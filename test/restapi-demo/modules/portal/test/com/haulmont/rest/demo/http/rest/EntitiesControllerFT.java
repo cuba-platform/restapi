@@ -66,10 +66,10 @@ public class EntitiesControllerFT {
         Class.forName("org.hsqldb.jdbc.JDBCDriver");
         conn = DriverManager.getConnection(DB_URL, "sa", "");
         prepareDb();
-//        Connectors.jmx(CoreCachingFacadeJmxService.class)
-//                .clearDynamicAttributesCache();
-//        Connectors.jmx(WebCachingFacadeJmxService.class)
-//                .clearDynamicAttributesCache();
+        Connectors.jmx(CoreCachingFacadeJmxService.class)
+                .clearDynamicAttributesCache();
+        Connectors.jmx(WebCachingFacadeJmxService.class)
+                .clearDynamicAttributesCache();
     }
 
     @After
