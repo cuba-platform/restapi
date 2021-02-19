@@ -43,6 +43,8 @@ import com.haulmont.cuba.core.app.serialization.EntitySerializationOption;
 import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.entity.EntityOp;
+import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.io.HexDump;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
@@ -54,6 +56,7 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 /**
@@ -652,7 +655,12 @@ public class EntitiesControllerManager {
                 } else if (Long.class.isAssignableFrom(idClass)) {
                     return Long.valueOf(entityId);
                 } else {
-                    return entityId;
+                    if (metadataTools.hasCompositePrimaryKey(metaClass)) {
+                        String entityIdJson = new String(Base64.getUrlDecoder().decode(entityId), StandardCharsets.UTF_8);
+                        return entitySerializationAPI.entityFromJson(entityIdJson, metadata.getClass(idClass));
+                    } else {
+                        return entityId;
+                    }
                 }
             }
         } catch (Exception e) {

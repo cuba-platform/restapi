@@ -34,5 +34,7 @@
         <class>com.haulmont.rest.demo.core.entity.identity.IdentityOrder</class>
         <class>com.haulmont.rest.demo.core.entity.identity.IdentityOrderLine</class>
         <class>com.haulmont.rest.demo.core.entity.identity.IdentityOrderLineTag</class>
+        <class>com.haulmont.rest.demo.core.entity.EntityKey</class>
+        <class>com.haulmont.rest.demo.core.entity.CompositeKeyEntity</class>
     </persistence-unit>
 </persistence>

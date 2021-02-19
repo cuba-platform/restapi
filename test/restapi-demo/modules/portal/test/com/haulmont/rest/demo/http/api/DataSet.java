@@ -11,6 +11,8 @@ import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class DataSet {
 
@@ -40,6 +42,11 @@ public class DataSet {
     private Set<UUID> constraintIds = new HashSet<>();
     private Set<UUID> plantIds = new HashSet<>();
     private Set<String> currencyIds = new HashSet<>();
+    private Set<Long> compositeKeyEntityIds = new HashSet<>();
+    private Set<Integer> compositeKeyEntityTenantIds = new HashSet<>();
+
+    private AtomicLong compositeKeyEntityIdGen = new AtomicLong();
+    private AtomicInteger compositeKeyEntityTenantIdGen = new AtomicInteger();
 
     public void addCarId(UUID uuid) {
         if (uuid != null)
@@ -176,6 +183,7 @@ public class DataSet {
         deleteInstances(conn, "SEC_GROUP", groupIds);
         deleteInstances(conn, "REF_PLANT", plantIds);
         deleteStringInstances(conn, "REF_CURRENCY", "CODE", currencyIds);
+        deleteCompositeKeyEntities(conn);
     }
 
     private void deleteSellers(Connection conn) throws SQLException {
@@ -394,6 +402,28 @@ public class DataSet {
         }
     }
 
+    private void deleteCompositeKeyEntities(Connection conn) throws SQLException {
+        PreparedStatement stmt;
+        stmt = conn.prepareStatement("delete from ref_composite_key where entity_id = ?");
+        try {
+            for (Long entityId : compositeKeyEntityIds) {
+                stmt.setLong(1, entityId);
+                stmt.executeUpdate();
+            }
+        } finally {
+            stmt.close();
+        }
+        stmt = conn.prepareStatement("delete from ref_composite_key where tenant = ?");
+        try {
+            for (Integer tenant : compositeKeyEntityTenantIds) {
+                stmt.setInt(1, tenant);
+                stmt.executeUpdate();
+            }
+        } finally {
+            stmt.close();
+        }
+    }
+
     private void deleteStringInstances(Connection conn, String tableName, String idColumn, Set<String> ids) throws SQLException {
         PreparedStatement stmt;
         stmt = conn.prepareStatement("delete from " + tableName + " where " + idColumn + " = ?");
@@ -555,6 +585,18 @@ public class DataSet {
     public UUID createConstraintId() {
         UUID result = UUID.randomUUID();
         addConstraintId(result);
+        return result;
+    }
+
+    public Long createCompositeKeyEntityId() {
+        Long result = compositeKeyEntityIdGen.incrementAndGet();
+        compositeKeyEntityIds.add(result);
+        return result;
+    }
+
+    public Integer createCompositeKeyEntityTenantId() {
+        Integer result = compositeKeyEntityTenantIdGen.incrementAndGet();
+        compositeKeyEntityTenantIds.add(result);
         return result;
     }
 }
