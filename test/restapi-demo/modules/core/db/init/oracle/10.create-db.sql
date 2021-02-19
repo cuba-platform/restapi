@@ -513,3 +513,10 @@ create table REF_PLANT_MODEL_LINK (
     primary key (PLANT_ID, MODEL_ID)
 )^
 -- end REF_PLANT_MODEL_LINK
+create table REF_COMPOSITE_KEY (
+    TENANT integer not null,
+    ENTITY_ID bigint not null,
+    NAME varchar(50),
+    EMAIL varchar(100),
+    primary key (TENANT, ENTITY_ID)
+)^
