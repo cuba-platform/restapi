@@ -45,8 +45,8 @@ public class DataSet {
     private Set<Long> compositeKeyEntityIds = new HashSet<>();
     private Set<Integer> compositeKeyEntityTenantIds = new HashSet<>();
 
-    private AtomicLong compositeKeyEntityIdGen = new AtomicLong();
-    private AtomicInteger compositeKeyEntityTenantIdGen = new AtomicInteger();
+    private static AtomicLong compositeKeyEntityIdGen = new AtomicLong();
+    private static AtomicInteger compositeKeyEntityTenantIdGen = new AtomicInteger();
 
     public void addCarId(UUID uuid) {
         if (uuid != null)
