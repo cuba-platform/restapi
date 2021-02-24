@@ -12,6 +12,8 @@
     <service name="restdemo_PortalTestService">
         <method name="sum"/>
 
+        <method name="convertDate"/>
+
         <method name="emptyMethod"/>
 
         <method name="overloadedMethod"/>

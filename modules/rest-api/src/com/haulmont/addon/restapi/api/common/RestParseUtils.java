@@ -35,6 +35,7 @@ import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.sql.Time;
 import java.text.ParseException;
+import java.time.*;
 import java.util.*;
 
 /**
@@ -87,6 +88,21 @@ public class RestParseUtils {
                     return Datatypes.getNN(Time.class).parse(value);
                 }
             }
+        }
+        if (LocalDate.class == clazz) {
+            return Datatypes.getNN(LocalDate.class).parse(value);
+        }
+        if (LocalDateTime.class == clazz) {
+            return Datatypes.getNN(LocalDateTime.class).parse(value);
+        }
+        if (LocalTime.class == clazz) {
+            return Datatypes.getNN(LocalTime.class).parse(value);
+        }
+        if (OffsetDateTime.class == clazz) {
+            return Datatypes.getNN(OffsetDateTime.class).parse(value);
+        }
+        if (OffsetTime.class == clazz) {
+            return Datatypes.getNN(OffsetTime.class).parse(value);
         }
         if (BigDecimal.class == clazz) return Datatypes.getNN(BigDecimal.class).parse(value);
         if (Boolean.class == clazz || Boolean.TYPE == clazz) return Datatypes.getNN(Boolean.class).parse(value);

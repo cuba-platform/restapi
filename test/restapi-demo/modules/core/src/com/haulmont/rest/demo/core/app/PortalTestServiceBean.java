@@ -27,6 +27,7 @@ import javax.validation.constraints.Pattern;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -51,6 +52,16 @@ public class PortalTestServiceBean implements PortalTestService {
     @Override
     public Integer sum(int number1, String number2) {
         return number1 + Integer.valueOf(number2);
+    }
+
+    @Override
+    public String convertDate(LocalDate localDate, LocalDateTime localDateTime, LocalTime localTime, OffsetDateTime offsetDateTime, OffsetTime offsetTime) {
+        StringBuilder builder = new StringBuilder(localDate.toString()).append(",");
+        builder.append(localDateTime.toString()).append(",");
+        builder.append(localTime.toString()).append(",");
+        builder.append(offsetDateTime.toString()).append(",");
+        builder.append(offsetTime.toString());
+        return builder.toString();
     }
 
     @Override
