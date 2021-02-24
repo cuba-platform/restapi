@@ -15,6 +15,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.math.BigDecimal;
 import java.text.ParseException;
+import java.time.*;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +33,8 @@ public interface PortalTestService {
     void notPermittedMethod();
 
     Integer sum(int number1, String number2);
+
+    String convertDate(LocalDate localDate, LocalDateTime localDateTime, LocalTime localTime, OffsetDateTime offsetDateTime, OffsetTime offsetTime);
 
     void methodWithCustomException();
 
