@@ -79,7 +79,7 @@ public class ServicesControllerFT {
         String requestBody = getFileContent("serviceWithDateParams.json", null);
         try (CloseableHttpResponse response = sendPost("/services/" + PortalTestService.NAME + "/convertDate", oauthToken, requestBody, null)) {
             assertEquals(HttpStatus.SC_OK, statusCode(response));
-            assertEquals("2021-02-24,2021-02-24T15:15:15.053,15:15:15,2021-02-24T15:15:15.053+04:00,15:15:15+04:00", responseToString(response));
+            assertEquals("2021-02-24,2021-02-24T15:15:15.053,15:15:15,2021-02-24T15:15:15.053+04:00,15:15:15+04:00,15:15:15", responseToString(response));
         }
     }
 

@@ -105,7 +105,11 @@ public class RestParseUtils {
             return Datatypes.getNN(OffsetTime.class).parse(value);
         }
         if (Time.class == clazz) {
-            return Datatypes.getNN(Time.class).parse(value);
+            LocalTime result = Datatypes.getNN(LocalTime.class).parse(value);
+            if (result == null) {
+                return null;
+            }
+            return Time.valueOf(result);
         }
         if (BigDecimal.class == clazz) return Datatypes.getNN(BigDecimal.class).parse(value);
         if (Boolean.class == clazz || Boolean.TYPE == clazz) return Datatypes.getNN(Boolean.class).parse(value);

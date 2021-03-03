@@ -61,7 +61,7 @@ public class PortalTestServiceBean implements PortalTestService {
         builder.append(localDateTime.toString()).append(",");
         builder.append(localTime.toString()).append(",");
         builder.append(offsetDateTime.toString()).append(",");
-        builder.append(offsetTime.toString());
+        builder.append(offsetTime.toString()).append(",");
         builder.append(time.toString());
         return builder.toString();
     }
