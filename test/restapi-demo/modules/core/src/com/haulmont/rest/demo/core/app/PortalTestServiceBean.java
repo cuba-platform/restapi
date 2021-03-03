@@ -25,6 +25,7 @@ import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.validation.constraints.Pattern;
 import java.math.BigDecimal;
+import java.sql.Time;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.*;
@@ -55,12 +56,13 @@ public class PortalTestServiceBean implements PortalTestService {
     }
 
     @Override
-    public String convertDate(LocalDate localDate, LocalDateTime localDateTime, LocalTime localTime, OffsetDateTime offsetDateTime, OffsetTime offsetTime) {
+    public String convertDate(LocalDate localDate, LocalDateTime localDateTime, LocalTime localTime, OffsetDateTime offsetDateTime, OffsetTime offsetTime, Time time) {
         StringBuilder builder = new StringBuilder(localDate.toString()).append(",");
         builder.append(localDateTime.toString()).append(",");
         builder.append(localTime.toString()).append(",");
         builder.append(offsetDateTime.toString()).append(",");
-        builder.append(offsetTime.toString());
+        builder.append(offsetTime.toString()).append(",");
+        builder.append(time.toString());
         return builder.toString();
     }
 
