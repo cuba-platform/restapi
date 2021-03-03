@@ -104,6 +104,9 @@ public class RestParseUtils {
         if (OffsetTime.class == clazz) {
             return Datatypes.getNN(OffsetTime.class).parse(value);
         }
+        if (Time.class == clazz) {
+            return Datatypes.getNN(Time.class).parse(value);
+        }
         if (BigDecimal.class == clazz) return Datatypes.getNN(BigDecimal.class).parse(value);
         if (Boolean.class == clazz || Boolean.TYPE == clazz) return Datatypes.getNN(Boolean.class).parse(value);
         if (Long.class == clazz || Long.TYPE == clazz) return Datatypes.getNN(Long.class).parse(value);
