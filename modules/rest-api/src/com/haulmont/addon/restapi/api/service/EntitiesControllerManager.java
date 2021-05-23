@@ -338,6 +338,7 @@ public class EntitiesControllerManager {
         Iterable<String> iterableColumns = Splitter.on(",").trimResults().omitEmptyStrings().split(sort);
         for (String column : iterableColumns) {
             String order = "";
+            String nullOrder = "";
             if (column.startsWith("-") || column.startsWith("+")) {
                 order = column.substring(0, 1);
                 column = column.substring(1);
@@ -346,11 +347,15 @@ public class EntitiesControllerManager {
             if (propertyPath != null) {
                 switch (order) {
                     case "-":
-                        order = " desc NULLS LAST, ";
+                        //order = " desc NULLS LAST, ";
+                        order = " desc , ";
+                        nullOrder = "COALESCE(e."+column+",'              ') desc, ";
                         break;
                     case "+":
                     default:
-                        order = " asc NULLS FIRST, ";
+                        //order = " asc NULLS FIRST, ";
+                        order = " asc , ";
+                        nullOrder = "COALESCE(e."+column+",'              ') asc, ";
                         break;
                 }
                 MetaProperty metaProperty = propertyPath.getMetaProperty();
@@ -361,7 +366,12 @@ public class EntitiesControllerManager {
                         }
                     }
                 } else {
-                    orderBy.append("e.").append(column).append(order);
+                    if(!Strings.isNullOrEmpty(nullOrder)){
+                        orderBy.append(nullOrder);
+                    }
+                    else {
+                        orderBy.append("e.").append(column).append(order);
+                    }
                 }
             }
         }
