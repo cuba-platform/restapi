@@ -149,8 +149,9 @@ public class ServicesControllerManager {
             return null;
         }
 
-        Class<?> methodReturnType = serviceMethod.getReturnType();
-        if (Entity.class.isAssignableFrom(methodReturnType)) {
+        Class<?> resultClass = methodResult.getClass();
+//        Class<?> methodReturnType = serviceMethod.getReturnType();
+        if (Entity.class.isAssignableFrom(resultClass)) {
             Entity entity = (Entity) methodResult;
             restControllerUtils.applyAttributesSecurity(entity);
             String entityJson = entitySerializationAPI.toJson(entity,
@@ -159,30 +160,32 @@ public class ServicesControllerManager {
             entityJson = restControllerUtils.transformJsonIfRequired(entity.getMetaClass().getName(),
                     modelVersion, JsonTransformationDirection.TO_VERSION, entityJson);
             return new ServiceCallResult(entityJson, true);
-        } else if (Collection.class.isAssignableFrom(methodReturnType)) {
-            Type returnTypeArgument = getMethodReturnTypeArgument(serviceMethod);
-            if ((returnTypeArgument instanceof Class && Entity.class.isAssignableFrom((Class) returnTypeArgument))
+        } else if (Collection.class.isAssignableFrom(resultClass)) {
+            Class<?> elemClass = ((Collection) methodResult).iterator().next().getClass();
+//            Type returnTypeArgument = getMethodReturnTypeArgument(serviceMethod);
+//            if ((returnTypeArgument instanceof Class && Entity.class.isAssignableFrom((Class) returnTypeArgument))
+            if(Entity.class.isAssignableFrom(elemClass)
                     || isEntitiesCollection((Collection) methodResult)) {
                 Collection<? extends Entity> entities = (Collection<? extends Entity>) methodResult;
                 entities.forEach(entity -> restControllerUtils.applyAttributesSecurity(entity));
                 String entitiesJson = entitySerializationAPI.toJson(entities,
                         null,
                         EntitySerializationOption.SERIALIZE_INSTANCE_NAME);
-                if (returnTypeArgument != null) {
-                    MetaClass metaClass = metadata.getClass((Class) returnTypeArgument);
+//                if (elemClass != null) {
+                    MetaClass metaClass = metadata.getClass(elemClass);
                     if (metaClass != null) {
                         entitiesJson = restControllerUtils.transformJsonIfRequired(metaClass.getName(), modelVersion,
                                 JsonTransformationDirection.TO_VERSION, entitiesJson);
-                    } else {
-                        log.error("MetaClass for service collection parameter type {} not found", returnTypeArgument);
-                    }
+//                    } else {
+//                        log.error("MetaClass for service collection parameter type {} not found", elemClass);
+//                    }
                 }
                 return new ServiceCallResult(entitiesJson, true);
             } else {
                 return new ServiceCallResult(restParseUtils.serialize(methodResult), true);
             }
         } else {
-            Datatype<?> datatype = Datatypes.get(methodReturnType);
+            Datatype<?> datatype = Datatypes.get(resultClass);
             if (datatype != null) {
                 return new ServiceCallResult(datatype.format(methodResult), false);
             } else {
@@ -191,18 +194,18 @@ public class ServicesControllerManager {
         }
     }
 
-    @Nullable
-    protected Type getMethodReturnTypeArgument(Method serviceMethod) {
-        Type returnTypeArgument = null;
-        Type genericReturnType = serviceMethod.getGenericReturnType();
-        if (genericReturnType instanceof ParameterizedType) {
-            Type[] actualTypeArguments = ((ParameterizedType) genericReturnType).getActualTypeArguments();
-            if (actualTypeArguments.length > 0) {
-                returnTypeArgument = actualTypeArguments[0];
-            }
-        }
-        return returnTypeArgument;
-    }
+//    @Nullable
+//    protected Type getMethodReturnTypeArgument(Method serviceMethod) {
+//        Type returnTypeArgument = null;
+//        Type genericReturnType = serviceMethod.getGenericReturnType();
+//        if (genericReturnType instanceof ParameterizedType) {
+//            Type[] actualTypeArguments = ((ParameterizedType) genericReturnType).getActualTypeArguments();
+//            if (actualTypeArguments.length > 0) {
+//                returnTypeArgument = actualTypeArguments[0];
+//            }
+//        }
+//        return returnTypeArgument;
+//    }
 
     protected boolean isEntitiesCollection(Collection collection) {
         if (collection.isEmpty()) return false;
