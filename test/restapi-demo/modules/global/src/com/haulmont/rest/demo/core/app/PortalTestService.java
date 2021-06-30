@@ -67,6 +67,10 @@ public interface PortalTestService {
 
     List<TestPojo> getPojoList() throws ParseException;
 
+    <M extends Model> List<M> getEntitiesListWithBoundedTypeVar();
+
+    List<? extends Model> getEntitiesListWithUpperBoundedWildcard();
+
     int methodWithPojoParameter(TestPojo pojo);
 
     int methodWithPojoCollectionParameter(List<TestPojo> pojoCollection);

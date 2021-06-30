@@ -37,10 +37,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
+import java.lang.reflect.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -149,9 +146,8 @@ public class ServicesControllerManager {
             return null;
         }
 
-        Class<?> resultClass = methodResult.getClass();
-//        Class<?> methodReturnType = serviceMethod.getReturnType();
-        if (Entity.class.isAssignableFrom(resultClass)) {
+        Class<?> methodReturnType = serviceMethod.getReturnType();
+        if (Entity.class.isAssignableFrom(methodReturnType)) {
             Entity entity = (Entity) methodResult;
             restControllerUtils.applyAttributesSecurity(entity);
             String entityJson = entitySerializationAPI.toJson(entity,
@@ -160,32 +156,32 @@ public class ServicesControllerManager {
             entityJson = restControllerUtils.transformJsonIfRequired(entity.getMetaClass().getName(),
                     modelVersion, JsonTransformationDirection.TO_VERSION, entityJson);
             return new ServiceCallResult(entityJson, true);
-        } else if (Collection.class.isAssignableFrom(resultClass)) {
-            Class<?> elemClass = ((Collection) methodResult).iterator().next().getClass();
-//            Type returnTypeArgument = getMethodReturnTypeArgument(serviceMethod);
-//            if ((returnTypeArgument instanceof Class && Entity.class.isAssignableFrom((Class) returnTypeArgument))
-            if(Entity.class.isAssignableFrom(elemClass)
+        } else if (Collection.class.isAssignableFrom(methodReturnType)) {
+            Type returnTypeArgument = getMethodReturnTypeArgument(serviceMethod);
+            if ((returnTypeArgument instanceof Class && Entity.class.isAssignableFrom((Class) returnTypeArgument))
                     || isEntitiesCollection((Collection) methodResult)) {
                 Collection<? extends Entity> entities = (Collection<? extends Entity>) methodResult;
                 entities.forEach(entity -> restControllerUtils.applyAttributesSecurity(entity));
                 String entitiesJson = entitySerializationAPI.toJson(entities,
                         null,
                         EntitySerializationOption.SERIALIZE_INSTANCE_NAME);
-//                if (elemClass != null) {
-                    MetaClass metaClass = metadata.getClass(elemClass);
+                if (returnTypeArgument != null) {
+                    MetaClass metaClass = metadata.getClass((Class<?>) returnTypeArgument);
                     if (metaClass != null) {
                         entitiesJson = restControllerUtils.transformJsonIfRequired(metaClass.getName(), modelVersion,
                                 JsonTransformationDirection.TO_VERSION, entitiesJson);
-//                    } else {
-//                        log.error("MetaClass for service collection parameter type {} not found", elemClass);
-//                    }
+                    } else {
+                        log.error("MetaClass for the returned collection type parameter (or the appropriate wildcard/type " +
+                                        "variable upper bound) {} of service method is not found",
+                                returnTypeArgument);
+                    }
                 }
                 return new ServiceCallResult(entitiesJson, true);
             } else {
                 return new ServiceCallResult(restParseUtils.serialize(methodResult), true);
             }
         } else {
-            Datatype<?> datatype = Datatypes.get(resultClass);
+            Datatype<?> datatype = Datatypes.get(methodReturnType);
             if (datatype != null) {
                 return new ServiceCallResult(datatype.format(methodResult), false);
             } else {
@@ -194,18 +190,44 @@ public class ServicesControllerManager {
         }
     }
 
-//    @Nullable
-//    protected Type getMethodReturnTypeArgument(Method serviceMethod) {
-//        Type returnTypeArgument = null;
-//        Type genericReturnType = serviceMethod.getGenericReturnType();
-//        if (genericReturnType instanceof ParameterizedType) {
-//            Type[] actualTypeArguments = ((ParameterizedType) genericReturnType).getActualTypeArguments();
-//            if (actualTypeArguments.length > 0) {
-//                returnTypeArgument = actualTypeArguments[0];
-//            }
-//        }
-//        return returnTypeArgument;
-//    }
+    @Nullable
+    protected Type getMethodReturnTypeArgument(Method serviceMethod) {
+        TypeVariable<Method>[] typeParameters = serviceMethod.getTypeParameters();
+
+        Type parameterizedReturnType = getParameterizedReturnType(serviceMethod);
+
+        if (parameterizedReturnType == null) {
+            return null;
+        }
+
+        if (parameterizedReturnType instanceof WildcardType) {
+            return ((WildcardType) parameterizedReturnType).getUpperBounds()[0];
+        } else {
+            if (typeParameters.length != 0) {
+                TypeVariable<Method> typeParameter = typeParameters[0];
+                Type bound = typeParameter.getBounds()[0];
+                if (parameterizedReturnType.getTypeName().equals(typeParameter.getTypeName())) {
+                    return bound;
+                }
+            }
+            return parameterizedReturnType;
+        }
+    }
+
+    @Nullable
+    protected Type getParameterizedReturnType(Method serviceMethod) {
+        Type returnTypeArgument = null;
+
+        Type genericReturnType = serviceMethod.getGenericReturnType();
+        if (genericReturnType instanceof ParameterizedType) {
+            Type[] actualTypeArguments = ((ParameterizedType) genericReturnType).getActualTypeArguments();
+            if (actualTypeArguments.length > 0) {
+                returnTypeArgument = actualTypeArguments[0];
+            }
+        }
+
+        return returnTypeArgument;
+    }
 
     protected boolean isEntitiesCollection(Collection collection) {
         if (collection.isEmpty()) return false;

@@ -180,6 +180,33 @@ public class PortalTestServiceBean implements PortalTestService {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
+    public <M extends Model> List<M> getBoundedEntitiesList() {
+        Model model = metadata.create(Model.class);
+        ExtModel extModel = metadata.create(ExtModel.class);
+
+        ArrayList<Model> models = new ArrayList<>();
+
+        models.add(model);
+        models.add(extModel);
+
+        return (List<M>) models;
+    }
+
+    @Override
+    public List<? extends Model> getEntitiesListWithUpperBoundedWildcard() {
+        Model model = metadata.create(Model.class);
+        ExtModel extModel = metadata.create(ExtModel.class);
+
+        ArrayList<Model> models = new ArrayList<>();
+
+        models.add(model);
+        models.add(extModel);
+
+        return models;
+    }
+
+    @Override
     public int methodWithPojoParameter(TestPojo pojo) {
         return pojo.getNestedPojo().getNestedField();
     }
