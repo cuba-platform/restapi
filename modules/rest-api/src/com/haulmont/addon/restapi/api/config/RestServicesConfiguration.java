@@ -70,8 +70,7 @@ public class RestServicesConfiguration {
     protected Resources resources;
 
     /**
-     * @deprecated the method will be removed in one of next releases. Use {@link #getRestMethodInfo(String, String,
-     * List)} instead
+     * @deprecated the method will be removed in one of next releases. Use {@link #getRestMethodInfo(String, String, List, String)} instead
      */
     @Nullable
     @Deprecated
@@ -97,7 +96,10 @@ public class RestServicesConfiguration {
     }
 
     @Nullable
-    public RestMethodInfo getRestMethodInfo(String serviceName, String methodName, List<String> methodParamNames) {
+    public RestMethodInfo getRestMethodInfo(String serviceName,
+                                            String methodName,
+                                            List<String> methodParamNames,
+                                            String httpMethod) {
         lock.readLock().lock();
         try {
             checkInitialized();
@@ -105,12 +107,20 @@ public class RestServicesConfiguration {
             if (restServiceInfo == null) return null;
             return restServiceInfo.getMethods().stream()
                     .filter(restMethodInfo -> methodName.equals(restMethodInfo.getName())
-                            && paramsMatches(restMethodInfo.getParams(), methodParamNames))
+                            && paramsMatches(restMethodInfo.getParams(), methodParamNames)
+                            && httpMethodMatches(restMethodInfo.getHttpMethod(), httpMethod))
                     .findFirst()
                     .orElse(null);
         } finally {
             lock.readLock().unlock();
         }
+    }
+
+    private boolean httpMethodMatches(String httpMethod1, String httpMethod2) {
+        if (httpMethod1 == null || httpMethod2 == null) {
+            return true;
+        }
+        return httpMethod1.equalsIgnoreCase(httpMethod2);
     }
 
     protected boolean paramsMatches(List<RestMethodParamInfo> paramInfos, List<String> paramNames) {
@@ -177,7 +187,8 @@ public class RestServicesConfiguration {
                 }
                 Method method = _findMethod(serviceName, methodName, params);
                 if (method != null) {
-                    methodInfos.add(new RestMethodInfo(methodName, params, method, anonymousAllowed));
+                    String httpMethod = methodElem.attributeValue("httpMethod");
+                    methodInfos.add(new RestMethodInfo(methodName, params, method, anonymousAllowed, httpMethod));
                 }
             }
 
@@ -305,16 +316,18 @@ public class RestServicesConfiguration {
 
     public static class RestMethodInfo {
         protected String name;
+        protected String httpMethod;
         protected List<RestMethodParamInfo> params;
         protected boolean anonymousAllowed;
         @JsonIgnore
         protected Method method;
 
-        public RestMethodInfo(String name, List<RestMethodParamInfo> params, Method method, boolean anonymousAllowed) {
+        public RestMethodInfo(String name, List<RestMethodParamInfo> params, Method method, boolean anonymousAllowed, String httpMethod) {
             this.name = name;
             this.params = params;
             this.method = method;
             this.anonymousAllowed = anonymousAllowed;
+            this.httpMethod = httpMethod;
         }
 
         public String getName() {
@@ -348,6 +361,14 @@ public class RestServicesConfiguration {
 
         public void setAnonymousAllowed(boolean anonymousAllowed) {
             this.anonymousAllowed = anonymousAllowed;
+        }
+
+        public String getHttpMethod() {
+            return httpMethod;
+        }
+
+        public void setHttpMethod(String httpMethod) {
+            this.httpMethod = httpMethod;
         }
     }
 
