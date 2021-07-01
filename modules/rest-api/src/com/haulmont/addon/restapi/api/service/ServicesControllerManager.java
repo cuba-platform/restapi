@@ -37,10 +37,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
+import java.lang.reflect.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -169,12 +166,14 @@ public class ServicesControllerManager {
                         null,
                         EntitySerializationOption.SERIALIZE_INSTANCE_NAME);
                 if (returnTypeArgument != null) {
-                    MetaClass metaClass = metadata.getClass((Class) returnTypeArgument);
+                    MetaClass metaClass = metadata.getClass((Class<?>) returnTypeArgument);
                     if (metaClass != null) {
                         entitiesJson = restControllerUtils.transformJsonIfRequired(metaClass.getName(), modelVersion,
                                 JsonTransformationDirection.TO_VERSION, entitiesJson);
                     } else {
-                        log.error("MetaClass for service collection parameter type {} not found", returnTypeArgument);
+                        log.error("MetaClass for the returned collection type parameter (or the appropriate wildcard/type " +
+                                        "variable upper bound) {} of service method is not found",
+                                returnTypeArgument);
                     }
                 }
                 return new ServiceCallResult(entitiesJson, true);
@@ -193,7 +192,32 @@ public class ServicesControllerManager {
 
     @Nullable
     protected Type getMethodReturnTypeArgument(Method serviceMethod) {
+        TypeVariable<Method>[] typeParameters = serviceMethod.getTypeParameters();
+
+        Type parameterizedReturnType = getParameterizedReturnType(serviceMethod);
+
+        if (parameterizedReturnType == null) {
+            return null;
+        }
+
+        if (parameterizedReturnType instanceof WildcardType) {
+            return ((WildcardType) parameterizedReturnType).getUpperBounds()[0];
+        } else {
+            if (typeParameters.length != 0) {
+                TypeVariable<Method> typeParameter = typeParameters[0];
+                Type bound = typeParameter.getBounds()[0];
+                if (parameterizedReturnType.getTypeName().equals(typeParameter.getTypeName())) {
+                    return bound;
+                }
+            }
+            return parameterizedReturnType;
+        }
+    }
+
+    @Nullable
+    protected Type getParameterizedReturnType(Method serviceMethod) {
         Type returnTypeArgument = null;
+
         Type genericReturnType = serviceMethod.getGenericReturnType();
         if (genericReturnType instanceof ParameterizedType) {
             Type[] actualTypeArguments = ((ParameterizedType) genericReturnType).getActualTypeArguments();
@@ -201,6 +225,7 @@ public class ServicesControllerManager {
                 returnTypeArgument = actualTypeArguments[0];
             }
         }
+
         return returnTypeArgument;
     }
 

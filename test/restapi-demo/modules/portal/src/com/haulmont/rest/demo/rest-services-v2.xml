@@ -75,6 +75,12 @@
 
         <method name="getPojoList"/>
 
+        <method name="getEntityOfBoundedType"/>
+
+        <method name="getEntitiesListWithBoundedTypeVar"/>
+
+        <method name="getEntitiesListWithUpperBoundedWildcard"/>
+
         <method name="methodWithPojoParameter">
             <param name="pojo"/>
         </method>

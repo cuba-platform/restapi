@@ -483,6 +483,34 @@ public class ServicesControllerFT {
     }
 
     @Test
+    public void serviceThatReturnsEntityOfBoundedType() throws Exception {
+        try (CloseableHttpResponse response = sendPost("/services/" + PortalTestService.NAME + "/getEntityOfBoundedType",
+                oauthToken, "", null)) {
+            assertEquals(HttpStatus.SC_OK, statusCode(response));
+        }
+    }
+
+    @Test
+    public void serviceThatReturnsEntitiesListWithBoundedTypeVar() throws Exception {
+        try (CloseableHttpResponse response = sendPost("/services/" + PortalTestService.NAME + "/getEntitiesListWithBoundedTypeVar",
+                oauthToken, "", null)) {
+            assertEquals(HttpStatus.SC_OK, statusCode(response));
+            ReadContext ctx = parseResponse(response);
+            assertEquals(2, ctx.<Collection>read("$").size());
+        }
+    }
+
+    @Test
+    public void serviceThatReturnsEntitiesListWithUpperBoundedWildcard() throws Exception {
+        try (CloseableHttpResponse response = sendPost("/services/" + PortalTestService.NAME + "/getEntitiesListWithUpperBoundedWildcard",
+                oauthToken, "", null)) {
+            assertEquals(HttpStatus.SC_OK, statusCode(response));
+            ReadContext ctx = parseResponse(response);
+            assertEquals(2, ctx.<Collection>read("$").size());
+        }
+    }
+
+    @Test
     public void serviceThatReturnsPojoWithNestedEntitiesList() throws Exception {
         try (CloseableHttpResponse response = sendPost("/services/" + PortalTestService.NAME + "/getPojosWithNestedEntity", oauthToken, "", null)) {
             assertEquals(HttpStatus.SC_OK, statusCode(response));
@@ -660,7 +688,7 @@ public class ServicesControllerFT {
             assertEquals(HttpStatus.SC_OK, statusCode(response));
             ReadContext readContext = parseResponse(response);
             assertEquals("restdemo_PortalTestService", readContext.read("$.name"));
-            assertEquals(29, readContext.<Collection>read("$.methods").size());
+            assertEquals(32, readContext.<Collection>read("$.methods").size());
             assertEquals(2, readContext.read("$.methods[?(@.name == 'sum')].params.length()", List.class).get(0));
 
             assertEquals("number1", readContext.read("$.methods[?(@.name == 'sum')].params[0].name", List.class).get(0));
