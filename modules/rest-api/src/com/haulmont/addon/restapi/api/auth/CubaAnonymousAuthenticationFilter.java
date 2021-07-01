@@ -119,7 +119,7 @@ public class CubaAnonymousAuthenticationFilter implements Filter {
                             return;
                         }
                         RestServicesConfiguration.RestMethodInfo restMethodInfo = restServicesConfiguration
-                                .getRestMethodInfo(serviceName, methodName, methodParamNames);
+                                .getRestMethodInfo(serviceName, methodName, methodParamNames, methodType);
                         if (restMethodInfo != null && restMethodInfo.isAnonymousAllowed()) {
                             populateSecurityContextWithAnonymousSession();
                         }

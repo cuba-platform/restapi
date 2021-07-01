@@ -32,6 +32,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
@@ -77,7 +78,7 @@ public class ServicesControllerManager {
         paramsMap.remove("modelVersion");
         List<String> paramNames = new ArrayList<>(paramsMap.keySet());
         List<String> paramValuesStr = new ArrayList<>(paramsMap.values());
-        return _invokeServiceMethod(serviceName, methodName, paramNames, paramValuesStr, modelVersion);
+        return _invokeServiceMethod(serviceName, methodName, paramNames, paramValuesStr, modelVersion, HttpMethod.GET);
     }
 
     @Nullable
@@ -88,7 +89,7 @@ public class ServicesControllerManager {
         Map<String, String> paramsMap = restParseUtils.parseParamsJson(paramsJson);
         List<String> paramNames = new ArrayList<>(paramsMap.keySet());
         List<String> paramValuesStr = new ArrayList<>(paramsMap.values());
-        return _invokeServiceMethod(serviceName, methodName, paramNames, paramValuesStr, modelVersion);
+        return _invokeServiceMethod(serviceName, methodName, paramNames, paramValuesStr, modelVersion, HttpMethod.POST);
     }
 
     public Collection<RestServicesConfiguration.RestServiceInfo> getServiceInfos() {
@@ -110,9 +111,10 @@ public class ServicesControllerManager {
                                                      String methodName,
                                                      List<String> paramNames,
                                                      List<String> paramValuesStr,
-                                                     String modelVersion) throws Throwable {
+                                                     String modelVersion,
+                                                     HttpMethod paramHttpMethod) throws Throwable {
         Object service = AppBeans.get(serviceName);
-        RestServicesConfiguration.RestMethodInfo restMethodInfo = restServicesConfiguration.getRestMethodInfo(serviceName, methodName, paramNames);
+        RestServicesConfiguration.RestMethodInfo restMethodInfo = restServicesConfiguration.getRestMethodInfo(serviceName, methodName, paramNames, paramHttpMethod.name());
         if (restMethodInfo == null) {
             throw new RestAPIException("Service method not found",
                     serviceName + "." + methodName + "(" + paramNames.stream().collect(Collectors.joining(",")) + ")",
