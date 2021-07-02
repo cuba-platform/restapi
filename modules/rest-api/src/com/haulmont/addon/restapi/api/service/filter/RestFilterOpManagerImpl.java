@@ -63,6 +63,9 @@ public class RestFilterOpManagerImpl implements RestFilterOpManager {
                 || Entity.class.isAssignableFrom(javaClass))
             return EnumSet.of(EQUAL, IN, NOT_IN, NOT_EQUAL, NOT_EMPTY, IS_NULL);
 
+        else if (Character.class.equals(javaClass))
+            return EnumSet.of(EQUAL, IN, NOT_IN, NOT_EQUAL, NOT_EMPTY);
+
         else
             throw new UnsupportedOperationException("Unsupported java class: " + javaClass);
     }
