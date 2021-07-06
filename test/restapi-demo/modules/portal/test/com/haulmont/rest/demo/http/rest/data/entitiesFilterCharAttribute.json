@@ -1,0 +1,9 @@
+{
+  "conditions": [
+    {
+      "property": "segment",
+      "operator": "notIn",
+      "value": ["E", "J"]
+    }
+  ]
+}

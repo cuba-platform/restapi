@@ -545,6 +545,20 @@ public class EntitiesControllerFT {
     }
 
     @Test
+    public void loadEntitiesWithCharAttributeFilter() throws Exception {
+        String url = "/entities/ref_Car/search";
+        String json = getFileContent("entitiesFilterCharAttribute.json", null);
+        Map<String, String> params = new HashMap<>();
+        params.put("filter", json);
+        try (CloseableHttpResponse response = sendGet(url, oauthToken, params)) {
+            assertEquals(HttpStatus.SC_OK, statusCode(response));
+            ReadContext ctx = parseResponse(response);
+            assertEquals(1, ctx.<Collection>read("$").size());
+            assertEquals("F", ctx.read("$[0].segment"));
+        }
+    }
+
+    @Test
     public void loadEntitiesFilterWithViewPost() throws Exception {
         String url = "/entities/ref_Car/search";
         String json = getFileContent("entitiesFilterWithView.json", null);
@@ -1774,10 +1788,12 @@ public class EntitiesControllerFT {
 
         UUID carUuid = dirtyData.createCarUuid();
         carUuidString = carUuid.toString();
-        executePrepared("insert into ref_car(id, version, vin, colour_id, model_id, car_documentation_id, create_ts) values(?, ?, ?, ?, ?, ?, ?)",
+        executePrepared("insert into ref_car(id, version, vin, segment, colour_id, model_id, car_documentation_id, create_ts)" +
+                        " values(?, ?, ?, ?, ?, ?, ?, ?)",
                 carUuid,
                 1L,
                 "VWV000",
+                "J",
                 colourId,
                 modelId,
                 carDocumentationUuid,
@@ -1786,13 +1802,13 @@ public class EntitiesControllerFT {
 
         UUID secondCarUuid = dirtyData.createCarUuid();
         secondCarUuidString = secondCarUuid.toString();
-        executePrepared("insert into ref_car(id, version, vin, colour_id) values(?, ?, ?, ?)",
+        executePrepared("insert into ref_car(id, version, vin, segment, colour_id) values(?, ?, ?, ?, ?)",
                 secondCarUuid,
                 1L,
                 "VWV002",
+                "F",
                 colourId
         );
-
         UUID repairId = dirtyData.createRepairUuid();
         repairUuidString = repairId.toString();
         executePrepared("insert into ref_repair(id, car_id, repair_date, version) values (?, ?, ?, 1)",

@@ -58,6 +58,9 @@ public class RestFilterOpManagerImpl implements RestFilterOpManager {
         else if (Boolean.class.equals(javaClass))
             return EnumSet.of(EQUAL, NOT_EQUAL, NOT_EMPTY, IS_NULL);
 
+        else if (Character.class.equals(javaClass))
+            return EnumSet.of(EQUAL, IN, NOT_IN, NOT_EQUAL, NOT_EMPTY);
+
         else if (UUID.class.equals(javaClass)
                 || Enum.class.isAssignableFrom(javaClass)
                 || Entity.class.isAssignableFrom(javaClass))
