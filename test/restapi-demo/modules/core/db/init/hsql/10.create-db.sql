@@ -449,6 +449,7 @@ create table REF_CAR (
     DELETED_BY varchar(50),
     --
     VIN varchar(255),
+    SEGMENT char,
     COLOUR_ID varchar(36),
     MODEL_ID varchar(36),
     CAR_DOCUMENTATION_ID varchar(36),
