@@ -698,6 +698,8 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
             refreshTokenValueToRefreshTokenStore.remove(refreshTokenValue);
             refreshTokenValueToAuthenticationStore.remove(refreshTokenValue);
             refreshTokenValueToAccessTokenValueStore.remove(refreshTokenValue);
+            refreshTokenValueToUserLoginStore.remove(refreshTokenValue);
+
         } finally {
             lock.writeLock().unlock();
         }
