@@ -14,9 +14,7 @@ import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.global.validation.CustomValidationException;
-import com.haulmont.rest.demo.core.entity.Car;
-import com.haulmont.rest.demo.core.entity.RefappNotPersistentStringIdEntity;
-import com.haulmont.rest.demo.core.entity.TransientDriver;
+import com.haulmont.rest.demo.core.entity.*;
 import com.haulmont.rest.demo.core.exception.CustomHttpClientErrorException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -187,7 +185,7 @@ public class PortalTestServiceBean implements PortalTestService {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <M extends Model> List<M> getBoundedEntitiesList() {
+    public <M extends Model> List<M> getEntitiesListWithBoundedTypeVar() {
         Model model = metadata.create(Model.class);
         ExtModel extModel = metadata.create(ExtModel.class);
 
