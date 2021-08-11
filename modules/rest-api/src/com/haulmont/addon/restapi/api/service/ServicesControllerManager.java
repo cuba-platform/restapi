@@ -114,7 +114,8 @@ public class ServicesControllerManager {
                                                      String modelVersion,
                                                      HttpMethod paramHttpMethod) throws Throwable {
         Object service = AppBeans.get(serviceName);
-        RestServicesConfiguration.RestMethodInfo restMethodInfo = restServicesConfiguration.getRestMethodInfo(serviceName, methodName, paramNames, paramHttpMethod.name());
+        RestServicesConfiguration.RestMethodInfo restMethodInfo = restServicesConfiguration.getRestMethodInfo(serviceName,
+                methodName, paramNames, paramHttpMethod.name());
         if (restMethodInfo == null) {
             throw new RestAPIException("Service method not found",
                     serviceName + "." + methodName + "(" + paramNames.stream().collect(Collectors.joining(",")) + ")",
