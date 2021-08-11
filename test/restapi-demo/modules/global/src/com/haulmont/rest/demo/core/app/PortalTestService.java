@@ -7,6 +7,7 @@ package com.haulmont.rest.demo.core.app;
 
 import com.haulmont.bpm.entity.stencil.Stencil;
 import com.haulmont.rest.demo.core.entity.Car;
+import com.haulmont.rest.demo.core.entity.Model;
 import com.haulmont.rest.demo.core.entity.RefappNotPersistentStringIdEntity;
 import com.haulmont.rest.demo.core.entity.TransientDriver;
 import org.springframework.validation.annotation.Validated;
