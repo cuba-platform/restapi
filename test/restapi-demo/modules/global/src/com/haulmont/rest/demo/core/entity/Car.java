@@ -51,6 +51,9 @@ public class Car extends CategorizedEntity implements Versioned, Creatable, Upda
     @Column(name = "VIN")
     private String vin;
 
+    @Column(name = "SEGMENT")
+    private Character segment;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "COLOUR_ID")
     private Colour colour;
@@ -202,6 +205,14 @@ public class Car extends CategorizedEntity implements Versioned, Creatable, Upda
 
     public void setVin(String vin) {
         this.vin = vin;
+    }
+
+    public Character getSegment() {
+        return segment;
+    }
+
+    public void setSegment(Character segment) {
+        this.segment = segment;
     }
 
     public Colour getColour() {
