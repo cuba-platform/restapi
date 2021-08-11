@@ -16,8 +16,8 @@
 
 package com.haulmont.addon.restapi.api.sys;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.haulmont.addon.restapi.api.exception.ErrorInfo;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
