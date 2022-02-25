@@ -29,16 +29,9 @@ buildscript {
                 url System.getenv('HAULMONT_REPOSITORY_URL')
             }
         } else {
-            jcenter()
-
-            /*maven { url "https://dl.bintray.com/cuba-platform/main" }*/
-
+            mavenCentral()
             maven {
                 url 'https://repo.cuba-platform.com/content/groups/work'
-                credentials {
-                    username 'cuba'
-                    password 'cuba123'
-                }
             }
         }
     }
