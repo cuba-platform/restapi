@@ -207,7 +207,10 @@ public class EntitiesControllerManager {
         Long count = null;
         if (BooleanUtils.isTrue(returnCount)) {
             LoadContext ctx = LoadContext.create(metaClass.getJavaClass())
-                    .setQuery(LoadContext.createQuery(queryString).setParameters(queryParameters));
+                    .setQuery(LoadContext.createQuery(queryString));
+            if (queryParameters != null) {
+                ctx.getQuery().setParameters(queryParameters);
+            }
             count = dataManager.getCount(ctx);
         }
 
