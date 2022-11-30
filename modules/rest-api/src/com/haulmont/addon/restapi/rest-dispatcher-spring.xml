@@ -213,7 +213,7 @@
     </bean>
 
     <bean id="cuba_RestCorsConfig" class="org.springframework.web.cors.CorsConfiguration">
-        <property name="allowedOrigins" value="${cuba.rest.allowedOrigins}"/>
+        <property name="allowedOriginPatterns" value="${cuba.rest.allowedOrigins}"/>
         <property name="allowedHeaders" value="*"/>
         <property name="allowedMethods" value="*"/>
         <property name="allowCredentials" value="true"/>
