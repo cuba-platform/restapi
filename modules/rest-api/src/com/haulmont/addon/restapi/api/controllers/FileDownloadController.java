@@ -16,6 +16,7 @@
 
 package com.haulmont.addon.restapi.api.controllers;
 
+import com.haulmont.addon.restapi.api.config.RestApiConfig;
 import com.haulmont.addon.restapi.api.exception.RestAPIException;
 import com.haulmont.bali.util.URLEncodeUtils;
 import com.haulmont.cuba.core.app.DataService;
@@ -23,6 +24,7 @@ import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.remoting.discovery.ServerSelector;
 import com.haulmont.cuba.security.entity.EntityOp;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -37,6 +39,8 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -65,6 +69,9 @@ public class FileDownloadController {
     @Inject
     protected Security security;
 
+    @Inject
+    protected RestApiConfig restApiConfig;
+
     @GetMapping("/{fileDescriptorId}")
     public void downloadFile(@PathVariable String fileDescriptorId,
                              @RequestParam(required = false) Boolean attachment,
@@ -86,6 +93,8 @@ public class FileDownloadController {
         if (fd == null) {
             throw new RestAPIException("File not found", "File not found. Id: " + fileDescriptorId, HttpStatus.NOT_FOUND);
         }
+
+        attachment = resolveAttachmentValue(attachment, fd);
 
         try {
             response.setHeader("Cache-Control", "no-cache");
@@ -128,6 +137,23 @@ public class FileDownloadController {
             throw new RestAPIException("Reading forbidden",
                     "Reading of the sys$FileDescriptor is forbidden",
                     HttpStatus.FORBIDDEN);
+        }
+    }
+
+    protected boolean resolveAttachmentValue(Boolean attachmentRequestParameterValue, FileDescriptor fileDescriptor) {
+        if (BooleanUtils.isTrue(attachmentRequestParameterValue)) {
+            return true;
+        }
+
+        String fileName = fileDescriptor.getName();
+        String extension = FilenameUtils.getExtension(fileName);
+        if (StringUtils.isEmpty(extension)) {
+            // No extension - just download
+            return true;
+        } else {
+            // Check if file is allowed to be opened inline
+            Set<String> inlineEnabledFileExtensions = new HashSet<>(restApiConfig.getInlineEnabledFileExtensions());
+            return !inlineEnabledFileExtensions.contains(StringUtils.lowerCase(extension));
         }
     }
 }
