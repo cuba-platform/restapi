@@ -39,8 +39,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -152,7 +151,7 @@ public class FileDownloadController {
             return true;
         } else {
             // Check if file is allowed to be opened inline
-            Set<String> inlineEnabledFileExtensions = new HashSet<>(restApiConfig.getInlineEnabledFileExtensions());
+            List<String> inlineEnabledFileExtensions = restApiConfig.getInlineEnabledFileExtensions();
             return !inlineEnabledFileExtensions.contains(StringUtils.lowerCase(extension));
         }
     }
