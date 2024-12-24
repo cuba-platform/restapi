@@ -21,6 +21,7 @@ import com.haulmont.cuba.core.config.Config;
 import com.haulmont.cuba.core.config.Property;
 import com.haulmont.cuba.core.config.Source;
 import com.haulmont.cuba.core.config.SourceType;
+import com.haulmont.cuba.core.config.defaults.Default;
 import com.haulmont.cuba.core.config.defaults.DefaultBoolean;
 import com.haulmont.cuba.core.config.defaults.DefaultString;
 import com.haulmont.cuba.core.config.type.CommaSeparatedStringListTypeFactory;
@@ -123,4 +124,12 @@ public interface RestApiConfig extends Config {
     @Factory(factory = UuidTypeFactory.class)
     @Nullable
     UUID getRestAnonymousSessionId();
+
+    /**
+     * File extensions that can be opened for viewing in a browser by replying with 'Content-Disposition=inline' header.
+     */
+    @Property("cuba.rest.inlineEnabledFileExtensions")
+    @Factory(factory = CommaSeparatedStringListTypeFactory.class)
+    @Default("jpg, png, jpeg, pdf")
+    List<String> getInlineEnabledFileExtensions();
 }
