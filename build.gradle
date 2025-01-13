@@ -272,6 +272,11 @@ configure(restApiModule) {
 
         compile("com.haulmont.cuba:cuba-client-tests:$cubaVersion")
 
+        compile(bom['org.dom4j:dom4j']) {
+            exclude group: 'xpp3', module: 'xpp3'
+            exclude group: 'pull-parser', module: 'pull-parser'
+        }
+
         // required for Spring multipart resolver
         compile(bom['commons-fileupload:commons-fileupload'])
 
