@@ -96,7 +96,7 @@ dependencies {
     appComponent("com.haulmont.cuba:cuba-global:$cubaVersion")
 }
 
-def hsql = 'org.hsqldb:hsqldb:2.4.1'
+def hsql = 'org.hsqldb:hsqldb:2.5.2'
 
 configure([globalModule, coreModule, webModule, restApiModule, portalModule]) {
     apply(plugin: 'java')
@@ -271,6 +271,11 @@ configure(restApiModule) {
         compile(globalModule)
 
         compile("com.haulmont.cuba:cuba-client-tests:$cubaVersion")
+
+        compile(bom['org.dom4j:dom4j']) {
+            exclude group: 'xpp3', module: 'xpp3'
+            exclude group: 'pull-parser', module: 'pull-parser'
+        }
 
         // required for Spring multipart resolver
         compile(bom['commons-fileupload:commons-fileupload'])
